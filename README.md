@@ -17,7 +17,9 @@ There are different approaches that can be taken to achieve these aims (eg, WebG
 
 ## Technologies
 
-Dawn, a WebGPU implementation, will be used to create a C++ codebase, using WebGPU to render the 3D shapes. This will be compiled into WebAssembly using emscripten, and the WebAssembly will be run through the browser.
+Babylon.js, Vite and TypeScript will be used to create the web application. The official documentation for this approach can be found [here](https://doc.babylonjs.com/guidedLearning/usingVite).
+
+Babylon.js, which is an open-source web rendering engine, will utilise the WebGPU engine.
 
 ## Important Links & Docs
 
@@ -28,4 +30,4 @@ Dawn, a WebGPU implementation, will be used to create a C++ codebase, using WebG
 
 ## Last Updated
 
-This README was last updated on 20 September 2024.
+This README was last updated on 25 September 2024.
