@@ -96,12 +96,16 @@ class App {
   private loadEngine(): Promise<Engine | WebGPUEngine> {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
       async (resolve, reject) => {
-        if (navigator.gpu) {
-          var engine = new WebGPUEngine(this.canvas);
-          await engine.initAsync();
-          resolve(engine);
-        } else {
-          resolve(new Engine(this.canvas, true));
+        try {
+          if (navigator.gpu) {
+            var engine = new WebGPUEngine(this.canvas);
+            await engine.initAsync();
+            resolve(engine);
+          } else {
+            resolve(new Engine(this.canvas, true));
+          }
+        } catch (exception) {
+          reject(exception);
         }
       }
     );
