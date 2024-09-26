@@ -9,6 +9,7 @@ import {
   HemisphericLight,
   Mesh,
   MeshBuilder,
+  Tools,
 } from '@babylonjs/core';
 
 const loadEngine = (
@@ -20,8 +21,9 @@ const loadEngine = (
         var engine = new WebGPUEngine(canvas);
         await engine.initAsync();
         resolve(engine);
+      } else {
+        resolve(new Engine(canvas, true));
       }
-      resolve(new Engine(canvas, true));
     }
   );
   return returnEngine;
@@ -37,25 +39,42 @@ class App {
     document.body.appendChild(canvas);
 
     loadEngine(canvas).then((engine) => {
+      // This creates a basic Babylon Scene object (non-mesh)
       var scene = new Scene(engine);
 
-      var camera: ArcRotateCamera = new ArcRotateCamera(
-        'Camera',
-        Math.PI / 2,
-        Math.PI / 2,
-        2,
+      var camera = new ArcRotateCamera(
+        'camera',
+        Tools.ToRadians(90),
+        Tools.ToRadians(65),
+        10,
         Vector3.Zero(),
         scene
       );
+
+      // This attaches the camera to the canvas
       camera.attachControl(canvas, true);
+
       var light1: HemisphericLight = new HemisphericLight(
         'light1',
-        new Vector3(1, 1, 0),
+        new Vector3(0, 1, 0),
         scene
       );
+
+      // Default intensity is 1. Let's dim the light a small amount
+      light1.intensity = 0.7;
+
       var sphere: Mesh = MeshBuilder.CreateSphere(
         'sphere',
-        { diameter: 1 },
+        { diameter: 2 },
+        scene
+      );
+
+      // More sphere up one half of its height so it stays on the ground
+      sphere.position.y = 1;
+
+      var ground = MeshBuilder.CreateGround(
+        'ground',
+        { width: 6, height: 6 },
         scene
       );
 
@@ -76,10 +95,6 @@ class App {
         scene.render();
       });
     });
-
-    // initialize babylon scene and engine
-    var engine = new WebGPUEngine(canvas);
-    engine.initAsync().then(() => {});
   }
 }
 new App();
