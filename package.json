@@ -11,7 +11,8 @@
     "incrementPatch": "npm version --no-git-tag-version --force patch && git add package.json package-lock.json"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*": "prettier --write --ignore-unknown",
+    "*.ts": "eslint --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -21,11 +22,15 @@
   "devDependencies": {
     "@babylonjs/core": "^7.26.4",
     "@babylonjs/inspector": "^7.26.4",
+    "@eslint/js": "^9.11.1",
+    "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.9.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
+    "typescript-eslint": "^8.7.0",
     "vite": "^5.4.1"
   }
 }
