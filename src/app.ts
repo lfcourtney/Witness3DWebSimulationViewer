@@ -1,5 +1,5 @@
-import '@babylonjs/core/Debug/debugLayer';
-import '@babylonjs/inspector';
+import "@babylonjs/core/Debug/debugLayer";
+import "@babylonjs/inspector";
 import {
   WebGPUEngine,
   Engine,
@@ -11,12 +11,12 @@ import {
   Tools,
   SceneLoader,
   AbstractMesh,
-} from '@babylonjs/core';
-import { blueMat } from './materials/colors';
+} from "@babylonjs/core";
+import { blueMat } from "./materials/colors";
 
 const positionImportedMesh = (
   importedMesh: AbstractMesh,
-  scaleFactor: number
+  scaleFactor: number,
 ) => {
   importedMesh.scaling = new Vector3(scaleFactor, scaleFactor, scaleFactor);
   const heightAdjustment =
@@ -37,15 +37,15 @@ class App {
       const scene = this.createScene();
 
       SceneLoader.ImportMesh(
-        '',
-        'https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/VRNATIVE/example_obj/',
-        'teapot.obj',
+        "",
+        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/VRNATIVE/example_obj/",
+        "teapot.obj",
         scene,
         function (newMeshes) {
           const teapot = newMeshes[0];
           positionImportedMesh(teapot, 0.5);
           teapot.material = blueMat();
-        }
+        },
       );
 
       // var sphere: Mesh = MeshBuilder.CreateSphere(
@@ -57,14 +57,15 @@ class App {
       // More sphere up one half of its height so it stays on the ground
       // sphere.position.y = 1;
 
-      var ground = MeshBuilder.CreateGround(
-        'ground',
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const ground = MeshBuilder.CreateGround(
+        "ground",
         { width: 6, height: 6 },
-        scene
+        scene,
       );
 
       // hide/show the Inspector
-      window.addEventListener('keydown', (ev) => {
+      window.addEventListener("keydown", (ev) => {
         // Shift+Ctrl+Alt+I
         if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
           if (scene.debugLayer.isVisible()) {
@@ -79,15 +80,17 @@ class App {
       engine.runRenderLoop(() => {
         scene.render();
       });
+
+      this.addWindowResizeEventListener();
     });
   }
 
   private createCanvas(): HTMLCanvasElement {
     // create the canvas html element and attach it to the webpage
-    var canvas = document.createElement('canvas');
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.id = 'gameCanvas';
+    const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
     return canvas;
@@ -95,19 +98,20 @@ class App {
 
   private loadEngine(): Promise<Engine | WebGPUEngine> {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
-      async (resolve, reject) => {
+      (resolve, reject) => {
         try {
           if (navigator.gpu) {
-            var engine = new WebGPUEngine(this.canvas);
-            await engine.initAsync();
-            resolve(engine);
+            const engine = new WebGPUEngine(this.canvas);
+            engine.initAsync().then(() => {
+              resolve(engine);
+            });
           } else {
             resolve(new Engine(this.canvas, true));
           }
         } catch (exception) {
           reject(exception);
         }
-      }
+      },
     );
     return returnEngine;
   }
@@ -116,24 +120,24 @@ class App {
     // Watch for browser/canvas resize events
     const engine = this.engine;
     const canvas = this.canvas;
-    window.addEventListener('resize', function () {
+    window.addEventListener("resize", function () {
       engine.resize();
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
     });
   }
 
   private createScene(): Scene {
     // This creates a basic Babylon Scene object (non-mesh)
-    var scene = new Scene(this.engine);
+    const scene = new Scene(this.engine);
 
-    var camera = new ArcRotateCamera(
-      'camera',
+    const camera = new ArcRotateCamera(
+      "camera",
       Tools.ToRadians(90),
       Tools.ToRadians(65),
       10,
       Vector3.Zero(),
-      scene
+      scene,
     );
 
     camera.upperRadiusLimit = 40;
@@ -143,10 +147,10 @@ class App {
     // This attaches the camera to the canvas
     camera.attachControl(this.canvas, true);
 
-    var light1: HemisphericLight = new HemisphericLight(
-      'light1',
+    const light1: HemisphericLight = new HemisphericLight(
+      "light1",
       new Vector3(0, 1, 0),
-      scene
+      scene,
     );
 
     // Default intensity is 1. Let's dim the light a small amount
