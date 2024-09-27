@@ -1,1 +1,1 @@
-npx lint-staged && npm run incrementPatch && git add -A .
+npx lint-staged && npm run incrementPatch
