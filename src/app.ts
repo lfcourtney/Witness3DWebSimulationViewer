@@ -12,16 +12,14 @@ import {
   SceneLoader,
   AbstractMesh,
 } from "@babylonjs/core";
-import { blueMat } from "./materials/colors";
 
-const positionImportedMesh = (
-  importedMesh: AbstractMesh,
-  scaleFactor: number,
+const fixGlbModelToGround = (
+  transformMesh: AbstractMesh,
+  geometryMesh: AbstractMesh,
 ) => {
-  importedMesh.scaling = new Vector3(scaleFactor, scaleFactor, scaleFactor);
   const heightAdjustment =
-    0 - importedMesh.getBoundingInfo().boundingBox.minimumWorld.y;
-  importedMesh.position.y = heightAdjustment * scaleFactor;
+    0 - geometryMesh.getBoundingInfo().boundingBox.minimumWorld.y;
+  transformMesh.position.y = heightAdjustment;
 };
 
 class App {
@@ -38,13 +36,14 @@ class App {
 
       SceneLoader.ImportMesh(
         "",
-        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/VRNATIVE/example_obj/",
-        "teapot.obj",
+        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
+        "dg-ic-Machine.glb",
         scene,
         function (newMeshes) {
-          const teapot = newMeshes[0];
-          positionImportedMesh(teapot, 0.5);
-          teapot.material = blueMat();
+          const transformMachine = newMeshes[0];
+          const geometryMachine = newMeshes[1];
+
+          fixGlbModelToGround(transformMachine, geometryMachine);
         },
       );
 
@@ -60,7 +59,7 @@ class App {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const ground = MeshBuilder.CreateGround(
         "ground",
-        { width: 6, height: 6 },
+        { width: 50, height: 50 },
         scene,
       );
 
