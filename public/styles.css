@@ -8,16 +8,35 @@ body {
 }
 
 .formContainer {
+  overflow-y: auto;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  font-family: sans-serif;
+}
+
+.formContainer > div {
+  margin: 10px;
+}
+
+.formContainer h1 {
+  word-break: break-all;
+}
+
+@media (max-width: 600px) {
+  .formContainer {
+    display: block;
+  }
+
+  .formContainer h1 {
+    font-size: 1.2rem;
+  }
 }
 
 form {
-  font-family: sans-serif;
   background: white;
   margin: 0 auto;
   padding: 20px;
@@ -52,6 +71,12 @@ form button {
   border: 1px ridge black;
   font-size: 0.8rem;
   height: auto;
+}
+
+form button,
+form label,
+form input {
+  cursor: pointer;
 }
 
 form label:hover,
