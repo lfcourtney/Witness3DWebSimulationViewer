@@ -12,7 +12,13 @@ import {
   SceneLoader,
   AbstractMesh,
 } from "@babylonjs/core";
+import { FileUpload } from "./fileUpload";
 
+/**
+ * Increases height of .glb model so that the bottom touches the ground.
+ * @param transformMesh First half of a .glb mesh that can have transformations applied to it to move the mesh in the global scene
+ * @param geometryMesh Latter half of a .glb mesh that contains geometric information on the mesh
+ */
 const fixGlbModelToGround = (
   transformMesh: AbstractMesh,
   geometryMesh: AbstractMesh,
@@ -21,9 +27,9 @@ const fixGlbModelToGround = (
     0 - geometryMesh.getBoundingInfo().boundingBox.minimumWorld.y;
   transformMesh.position.y = heightAdjustment;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class App {
-  readonly canvas: HTMLCanvasElement;
+  private readonly canvas: HTMLCanvasElement;
   private engine: Engine | WebGPUEngine;
 
   constructor() {
@@ -95,6 +101,11 @@ class App {
     return canvas;
   }
 
+  /**
+   * Loads engine used to render Babylon js scene. Experimental WebGPU engine will be used if the client is using a compatible browser.
+   * Otherwise, will fallback to using the standard WebGL 2.0 engine.
+   * @returns The engine used to render the Babylon js scene
+   */
   private loadEngine(): Promise<Engine | WebGPUEngine> {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
       (resolve, reject) => {
@@ -141,7 +152,7 @@ class App {
 
     camera.upperRadiusLimit = 40;
     camera.lowerRadiusLimit = 5;
-    camera.upperBetaLimit = Tools.ToRadians(85);
+    camera.upperBetaLimit = Tools.ToRadians(83);
 
     // This attaches the camera to the canvas
     camera.attachControl(this.canvas, true);
@@ -158,4 +169,12 @@ class App {
     return scene;
   }
 }
-new App();
+// new App();
+
+const w3dFileInput: HTMLInputElement = document.getElementById(
+  "w3dFile",
+) as HTMLInputElement;
+const previewFormSection: HTMLElement =
+  document.getElementById("previewFormSection");
+
+new FileUpload(w3dFileInput, previewFormSection);
