@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "TimeCaculator",
+	"Description": "A plugin that caculates time mostly for ISO8601 format",
+	"Category": "Other",
+	"CreatedBy": "Steven van den Hoven",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TimeCaculator",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
