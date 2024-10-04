@@ -26,7 +26,7 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 ## Installing
 
 - Clone the GitHub repo, and run `npm i` to install Babylon.js, Vite and the other npm dependencies.
-- Run `npm run dev` to begin a development server running the code.
+- Run `npm run dev` to begin a development server running the code. The server will begin on port `4000`.
 - To stop the server, go back to the terminal and press Ctrl+C.
 
 ## Deployment

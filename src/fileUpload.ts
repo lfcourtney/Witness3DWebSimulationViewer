@@ -1,29 +1,40 @@
+import { App } from "./app";
+
 export class FileUpload {
   private readonly fileInputElement: HTMLInputElement;
-  private readonly previewFormSection: HTMLElement;
+  private readonly fileUploadSection: HTMLElement;
+  private readonly fileUploadBtn: HTMLButtonElement;
+  private readonly formContainer: HTMLElement;
+
+  private w3dFile?: File;
 
   constructor(
     _fileInputElement: HTMLInputElement,
-    _previewFormSection: HTMLElement,
+    _fileUploadSection: HTMLElement,
+    _fileUploadBtn: HTMLButtonElement,
+    _formContainer: HTMLElement,
   ) {
     this.fileInputElement = _fileInputElement;
-    this.previewFormSection = _previewFormSection;
+    this.fileUploadSection = _fileUploadSection;
+    this.fileUploadBtn = _fileUploadBtn;
+    this.formContainer = _formContainer;
 
     this.fileInputElement.addEventListener("change", this.addFile.bind(this));
+    this.fileUploadBtn.addEventListener("click", this.submitFile.bind(this));
   }
 
   private addFile() {
-    while (this.previewFormSection.firstChild) {
-      this.previewFormSection.removeChild(this.previewFormSection.firstChild);
+    while (this.fileUploadSection.firstChild) {
+      this.fileUploadSection.removeChild(this.fileUploadSection.firstChild);
     }
 
     const currFiles = this.fileInputElement.files;
 
-    if (currFiles.length === 0) {
+    if (!currFiles || currFiles.length === 0) {
       const para = document.createElement("p");
       para.classList.add("error");
       para.textContent = "No w3d file selected for upload";
-      this.previewFormSection.appendChild(para);
+      this.fileUploadSection.appendChild(para);
       return;
     }
 
@@ -33,13 +44,19 @@ export class FileUpload {
       const para = document.createElement("p");
       para.classList.add("error");
       para.textContent = "Error: w3d file type required";
-      this.previewFormSection.appendChild(para);
+      this.fileUploadSection.appendChild(para);
       return;
     }
 
     const para = document.createElement("p");
     para.textContent = `File name ${w3dFile.name}, file size ${this.returnFileSize(w3dFile.size)}`;
-    this.previewFormSection.appendChild(para);
+    this.fileUploadSection.appendChild(para);
+  }
+
+  private async submitFile(): Promise<void> {
+    // const { App } = await import("./app");
+    new App();
+    this.formContainer.remove();
   }
 
   private hasW3dExtension(filename: string): boolean {
