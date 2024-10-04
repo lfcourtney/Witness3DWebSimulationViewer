@@ -12,7 +12,52 @@ import {
   SceneLoader,
   AbstractMesh,
 } from "@babylonjs/core";
-import { FileUpload } from "./fileUpload";
+
+function getFileUploadElements(): {
+  w3dFileInput: HTMLInputElement;
+  fileUploadSection: HTMLElement;
+  fileUploadBtn: HTMLButtonElement;
+  formContainer: HTMLElement;
+} {
+  const w3dFileInput = document.getElementById("w3dFile");
+
+  if (!w3dFileInput) {
+    throw new Error(
+      "Element of id 'w3dFileInput' was unable to be found within index.html",
+    );
+  }
+
+  const fileUploadSection = document.getElementById("fileUploadSection");
+
+  if (!fileUploadSection) {
+    throw new Error(
+      "Element of id 'fileUploadSection' was unable to be found within index.html",
+    );
+  }
+
+  const fileUploadBtn = document.getElementById("fileUploadBtn");
+
+  if (!fileUploadBtn) {
+    throw new Error(
+      "Element of id 'fileUploadBtn' was unable to be found within index.html",
+    );
+  }
+
+  const formContainer = document.getElementById("formContainer");
+
+  if (!formContainer) {
+    throw new Error(
+      "Element of id 'formContainer' was unable to be found within index.html",
+    );
+  }
+
+  return {
+    w3dFileInput: w3dFileInput as HTMLInputElement,
+    fileUploadSection: fileUploadSection as HTMLElement,
+    fileUploadBtn: fileUploadBtn as HTMLButtonElement,
+    formContainer: formContainer as HTMLElement,
+  };
+}
 
 /**
  * Increases height of .glb model so that the bottom touches the ground.
@@ -27,10 +72,10 @@ const fixGlbModelToGround = (
     0 - geometryMesh.getBoundingInfo().boundingBox.minimumWorld.y;
   transformMesh.position.y = heightAdjustment;
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-class App {
+ 
+export class App {
   private readonly canvas: HTMLCanvasElement;
-  private engine: Engine | WebGPUEngine;
+  private engine?: Engine | WebGPUEngine;
 
   constructor() {
     this.canvas = this.createCanvas();
@@ -127,6 +172,10 @@ class App {
   }
 
   private addWindowResizeEventListener() {
+    if (!this.engine) {
+      throw new Error("Babylon.js engine was undefined");
+    }
+
     // Watch for browser/canvas resize events
     const engine = this.engine;
     const canvas = this.canvas;
@@ -138,6 +187,10 @@ class App {
   }
 
   private createScene(): Scene {
+    if (!this.engine) {
+      throw new Error("Babylon.js engine was undefined");
+    }
+
     // This creates a basic Babylon Scene object (non-mesh)
     const scene = new Scene(this.engine);
 
@@ -171,10 +224,15 @@ class App {
 }
 // new App();
 
-const w3dFileInput: HTMLInputElement = document.getElementById(
-  "w3dFile",
-) as HTMLInputElement;
-const previewFormSection: HTMLElement =
-  document.getElementById("previewFormSection");
+import { FileUpload } from "./fileUpload";
 
-new FileUpload(w3dFileInput, previewFormSection);
+try {
+  const { w3dFileInput, fileUploadSection, fileUploadBtn, formContainer } =
+    getFileUploadElements();
+  new FileUpload(w3dFileInput, fileUploadSection, fileUploadBtn, formContainer);
+} catch (exception) {
+  console.error(exception);
+  throw new Error(
+    "Witness3DWebSimulationViewer html file does not contain the necessary data to begin the application",
+  );
+}

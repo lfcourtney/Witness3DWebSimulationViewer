@@ -1,12 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
     <title>Witness3DWebSimulationViewer</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="formContainer">
+    <div class="formContainer" id="formContainer">
       <div>
         <h1>Witness3DWebSimulationViewer</h1>
         <form method="post" enctype="multipart/form-data">
@@ -14,11 +14,11 @@
             <label for="w3dFile">Choose a w3d file:</label>
             <input type="file" id="w3dFile" accept=".w3d" />
           </div>
-          <div class="preview" id="previewFormSection">
+          <div class="preview" id="fileUploadSection">
             <p>No w3d file selected for upload</p>
           </div>
           <div>
-            <button>Submit</button>
+            <button id="fileUploadBtn" type="button">Submit</button>
           </div>
         </form>
       </div>
