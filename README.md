@@ -13,7 +13,7 @@ By shifting the visualisation of simulations onto the browser, the intended bene
 There are different approaches that can be taken to achieve these aims (eg, WebGL vs. WebGPU). The project will compare the different approaches and justify the approaches it takes.
 
 **Demonstration of Witness Desktop 3D Visualisation Capabilities**
-![Demonstration of Witness Desktop 3D Visualisation Capabilities](./WitnessImages/demonstration_of_witness_desktop_3d_visualisation_capabilities.gif 'Demonstration of Witness Desktop 3D Visualisation Capabilities')
+![Demonstration of Witness Desktop 3D Visualisation Capabilities](./WitnessImages/demonstration_of_witness_desktop_3d_visualisation_capabilities.gif "Demonstration of Witness Desktop 3D Visualisation Capabilities")
 
 ## Technologies
 
@@ -21,13 +21,28 @@ Babylon.js, Vite and TypeScript will be used to create the web application. The 
 
 Babylon.js, which is an open-source web rendering engine, will utilise the WebGPU engine.
 
+# Getting Started
+
+## Installing
+
+- Clone the GitHub repo, and run `npm i` to install Babylon.js, Vite and the other npm dependencies.
+- Run `npm run dev` to begin a development server running the code.
+- To stop the server, go back to the terminal and press Ctrl+C.
+
+## Deployment
+
+- Run `npm run build`. This will bundle the application, outputting this bundle to the `dist` folder within the root directory, creating this directory if it does not already exist.
+- Run `npm run preview` to see the exported code bundle running in a local development server.
+- Now the contents of the `dist` folder can be uploaded to an external server, deploying the application.
+
 ## Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)
 - [Part Queuing Positions Overview 01](./WitnessDocs/Part%20Queuing%20Positions%20Overview%2001.pdf)
+- [The WebGPU Sourcebook](./WitnessDocs/The%20WebGPU%20Sourcebook.pdf)
 - [Witness W3D Queue Implementation](./WitnessDocs/Witness%20W3D%20Queue%20Implementation.pdf)
 - [WITNESS-Unity Proof of Concept 01](./WitnessDocs/WITNESS-Unity%20Proof%20of%20Concept%2001.pdf)
 
 ## Last Updated
 
-This README was last updated on 25 September 2024.
+This README was last updated on 4 October 2024.
