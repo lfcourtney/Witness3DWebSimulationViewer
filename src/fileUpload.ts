@@ -1,5 +1,9 @@
 import { App } from "./app";
 
+/**
+ * Class responsible for managing the state of the initial w3d file input form
+ * and the operations of this form
+ */
 export class FileUpload {
   private readonly fileInputElement: HTMLInputElement;
   private readonly fileUploadSection: HTMLElement;
@@ -8,6 +12,13 @@ export class FileUpload {
 
   private w3dFile?: File;
 
+  /**
+   * Create the object representing the TypeScript representation of the HTML w3d file input form
+   * @param _fileInputElement HTML <input> of type file
+   * @param _fileUploadSection HTML <div> for displaying form information
+   * @param _fileUploadBtn HTML <button> to submit the form
+   * @param _formContainer HTML <div> that is the parent of the entire form. Hiding this will hide the form in HTML
+   */
   constructor(
     _fileInputElement: HTMLInputElement,
     _fileUploadSection: HTMLElement,
