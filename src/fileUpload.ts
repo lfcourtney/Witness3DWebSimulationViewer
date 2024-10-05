@@ -1,3 +1,5 @@
+import { App } from "./app";
+
 export class FileUpload {
   private readonly fileInputElement: HTMLInputElement;
   private readonly fileUploadSection: HTMLElement;
@@ -22,16 +24,7 @@ export class FileUpload {
   }
 
   private addFile() {
-    while (this.fileUploadSection.firstChild) {
-      this.fileUploadSection.removeChild(this.fileUploadSection.firstChild);
-    }
-
-    while (
-      this.fileUploadBtn.previousElementSibling &&
-      this.fileUploadBtn.previousElementSibling.nodeName == "P"
-    ) {
-      this.fileUploadBtn.previousElementSibling.remove();
-    }
+    this.resetHtmlElements();
 
     const currFiles = this.fileInputElement.files;
 
@@ -60,7 +53,7 @@ export class FileUpload {
     this.w3dFile = w3dFile;
   }
 
-  private async submitFile(): Promise<void> {
+  private submitFile(): void {
     if (!this.w3dFile || this.hasW3dExtension(this.w3dFile.name) === false) {
       if (
         !(
@@ -75,12 +68,37 @@ export class FileUpload {
       return;
     }
     // Remove 'formContainer' so that canvas is the only element in the document body
-    this.formContainer.remove();
-
-    const { App } = await import("./app");
+    this.formContainer.style.display = "none";
+    this.reset();
 
     // Initialise app, so canvas element will be added to the document body
-    new App();
+    new App(this.formContainer);
+  }
+
+  private reset(): void {
+    this.w3dFile = undefined;
+
+    this.resetHtmlElements();
+
+    this.fileInputElement.files = null;
+    this.fileInputElement.value = "";
+
+    const para = document.createElement("p");
+    para.textContent = "No w3d file selected for upload";
+    this.fileUploadSection.appendChild(para);
+  }
+
+  private resetHtmlElements(): void {
+    while (this.fileUploadSection.firstChild) {
+      this.fileUploadSection.removeChild(this.fileUploadSection.firstChild);
+    }
+
+    while (
+      this.fileUploadBtn.previousElementSibling &&
+      this.fileUploadBtn.previousElementSibling.nodeName == "P"
+    ) {
+      this.fileUploadBtn.previousElementSibling.remove();
+    }
   }
 
   private hasW3dExtension(filename: string): boolean {
