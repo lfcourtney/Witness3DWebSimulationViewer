@@ -22,8 +22,19 @@ body {
   margin: 10px;
 }
 
-.formContainer h1 {
+h1.formHeader {
   word-break: break-all;
+}
+
+p.formText {
+  max-width: 760px;
+  width: 100%;
+}
+
+@media (max-height: 600px) {
+  .formContainer {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 600px) {

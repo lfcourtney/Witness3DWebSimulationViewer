@@ -12,6 +12,12 @@ import {
   SceneLoader,
   AbstractMesh,
 } from "@babylonjs/core";
+import {
+  StackPanel,
+  AdvancedDynamicTexture,
+  Button,
+  Control,
+} from "@babylonjs/gui";
 
 /**
  * Increases height of .glb model so that the bottom touches the ground.
@@ -31,7 +37,11 @@ export class App {
   private readonly canvas: HTMLCanvasElement;
   private engine?: Engine | WebGPUEngine;
 
-  constructor() {
+  private readonly formContainer: HTMLElement;
+
+  constructor(_formContainer: HTMLElement) {
+    this.formContainer = _formContainer;
+
     this.canvas = this.createCanvas();
 
     this.loadEngine().then((engine) => {
@@ -52,21 +62,14 @@ export class App {
         },
       );
 
-      // var sphere: Mesh = MeshBuilder.CreateSphere(
-      //   'sphere',
-      //   { diameter: 2 },
-      //   scene
-      // );
-
-      // More sphere up one half of its height so it stays on the ground
-      // sphere.position.y = 1;
-
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const ground = MeshBuilder.CreateGround(
         "ground",
         { width: 50, height: 50 },
         scene,
       );
+
+      this.createBackButton();
 
       // hide/show the Inspector
       window.addEventListener("keydown", (ev) => {
@@ -125,7 +128,12 @@ export class App {
     return returnEngine;
   }
 
-  private addWindowResizeEventListener() {
+  /**
+   * Respond to browser resize window even by resizing Babylon.js scene.
+   * This ensures Babylon.js scene matches the dimensions it would conform to
+   * upon initial render in the event that the browser window has been resized.
+   */
+  private addWindowResizeEventListener(): void {
     if (!this.engine) {
       throw new Error("Babylon.js engine was undefined");
     }
@@ -174,5 +182,45 @@ export class App {
     light1.intensity = 0.7;
 
     return scene;
+  }
+
+  /**
+   * Render button responsible for taking the user back to the initial form, whereby the
+   * user uploads a w3d file, and removes the currently rendered Babylon.js scene.
+   */
+  private createBackButton(): void {
+    // GUI
+    const adt = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    const panel = new StackPanel();
+    panel.width = "600px";
+    panel.left = "210px";
+    panel.top = "-25px";
+    panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+    adt.addControl(panel);
+
+    const button = Button.CreateSimpleButton("backButton", "New Simulation");
+    button.width = 0.25;
+    button.height = "40px";
+    button.color = "white";
+    button.background = "green";
+
+    button.onPointerClickObservable.add(() => {
+      this.canvas.remove();
+      this.formContainer.style.display = "";
+      document.body.style.cursor = "";
+    });
+
+    this.canvas.style.cursor = "pointer";
+
+    button.onPointerEnterObservable.add(() => {
+      document.body.style.cursor = "pointer";
+    });
+    button.onPointerOutObservable.add(() => {
+      document.body.style.cursor = "";
+    });
+
+    panel.addControl(button);
   }
 }
