@@ -1,5 +1,3 @@
-import { App } from "./app";
-
 export class FileUpload {
   private readonly fileInputElement: HTMLInputElement;
   private readonly fileUploadSection: HTMLElement;
@@ -28,6 +26,13 @@ export class FileUpload {
       this.fileUploadSection.removeChild(this.fileUploadSection.firstChild);
     }
 
+    while (
+      this.fileUploadBtn.previousElementSibling &&
+      this.fileUploadBtn.previousElementSibling.nodeName == "P"
+    ) {
+      this.fileUploadBtn.previousElementSibling.remove();
+    }
+
     const currFiles = this.fileInputElement.files;
 
     if (!currFiles || currFiles.length === 0) {
@@ -51,12 +56,31 @@ export class FileUpload {
     const para = document.createElement("p");
     para.textContent = `File name ${w3dFile.name}, file size ${this.returnFileSize(w3dFile.size)}`;
     this.fileUploadSection.appendChild(para);
+
+    this.w3dFile = w3dFile;
   }
 
   private async submitFile(): Promise<void> {
-    // const { App } = await import("./app");
-    new App();
+    if (!this.w3dFile || this.hasW3dExtension(this.w3dFile.name) === false) {
+      if (
+        !(
+          this.fileUploadBtn.previousElementSibling &&
+          this.fileUploadBtn.previousElementSibling.nodeName
+        )
+      ) {
+        const para = document.createElement("p");
+        para.textContent = "No w3d file to submit";
+        this.fileUploadBtn.parentNode?.insertBefore(para, this.fileUploadBtn);
+      }
+      return;
+    }
+    // Remove 'formContainer' so that canvas is the only element in the document body
     this.formContainer.remove();
+
+    const { App } = await import("./app");
+
+    // Initialise app, so canvas element will be added to the document body
+    new App();
   }
 
   private hasW3dExtension(filename: string): boolean {
