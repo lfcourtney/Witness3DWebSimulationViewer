@@ -47,19 +47,13 @@ form {
   opacity: 0;
 }
 
-#previewFormSection p {
+#fileUploadSection p {
   background: #eee;
-  display: flex;
-  margin-bottom: 10px;
-  list-style-type: none;
   border: 1px solid black;
-}
-
-#previewFormSection p {
   padding: 10px 16px;
 }
 
-#previewFormSection p.error {
+#fileUploadSection p.error {
   background: #ff9999;
 }
 
@@ -89,4 +83,10 @@ form label:active,
 form button:active {
   background-color: #808080;
   color: black;
+}
+
+#fileUploadBtnSection > p {
+  color: red;
+  margin: 0;
+  font-size: 0.8rem;
 }
