@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore code coverage
+/coverage
+
 # Do not accept regular JavaScript files from src directory
 src/**/*.js

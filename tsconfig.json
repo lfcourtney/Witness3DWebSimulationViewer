@@ -21,7 +21,9 @@
     "strictNullChecks": true, // treats null and undefined as distinct types
     "strictPropertyInitialization": true, // Requires 'strictNullChecks'. ensures that all class properties are initialized either in the constructor or with a default value
     "forceConsistentCasingInFileNames": true, // ensures that file imports maintain consistent casing
-    "skipLibCheck": true // skip type-checking of .d.ts files (it speeds up transpiling)
+    "skipLibCheck": true, // skip type-checking of .d.ts files (it speeds up transpiling)
+    "noEmit": true, // disable generation of JavaScript files during build
+    "types": ["node"]
   },
-  "include": ["src"] // specify location(s) of .ts files
+  "include": ["src", "mocks"] // specify location(s) of .ts files
 }

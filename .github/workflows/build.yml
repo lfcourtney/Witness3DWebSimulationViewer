@@ -1,3 +1,5 @@
+name: Vite Build and Test
+
 on:
   push:
     branches:
@@ -9,7 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    name: CI Build and Test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,8 +19,33 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: "latest"
 
+      - name: Install Dependencies
       - run: npm install
 
+      - name: Build
       - run: npm run build
+
+      - name: Test
+      - run: npm test
+
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "60 80"
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
