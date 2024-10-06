@@ -76,6 +76,7 @@ export class FileUpload {
         para.textContent = "No w3d file to submit";
         this.fileUploadBtn.parentNode?.insertBefore(para, this.fileUploadBtn);
       }
+      // There is no w3d file to upload
       return;
     }
     // Remove 'formContainer' so that canvas is the only element in the document body

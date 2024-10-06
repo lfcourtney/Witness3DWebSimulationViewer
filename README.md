@@ -49,6 +49,10 @@ Test configuration is located in the `vitest.config.ts` file, which is also wher
 
 A successful test run will produce code coverage. The directory for code coverage is `coverage`, which is ignored by Git.
 
+## Debug Tests
+
+A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaScript Debug Terminal` and run `npm run test`. For more information, go to the Vitest [official documentation](https://vitest.dev/guide/debugging).
+
 # Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)
