@@ -11,6 +11,15 @@ export function getFileUploadElements(): {
   fileUploadBtn: HTMLButtonElement;
   formContainer: HTMLElement;
 } {
+  // 'formContainer' should be the parent element of all the others
+  const formContainer = document.getElementById("formContainer");
+
+  if (!formContainer) {
+    throw new Error(
+      "Element of id 'formContainer' was unable to be found within index.html",
+    );
+  }
+
   const w3dFileInput = document.getElementById("w3dFile");
 
   if (!w3dFileInput) {
@@ -32,14 +41,6 @@ export function getFileUploadElements(): {
   if (!fileUploadBtn) {
     throw new Error(
       "Element of id 'fileUploadBtn' was unable to be found within index.html",
-    );
-  }
-
-  const formContainer = document.getElementById("formContainer");
-
-  if (!formContainer) {
-    throw new Error(
-      "Element of id 'formContainer' was unable to be found within index.html",
     );
   }
 

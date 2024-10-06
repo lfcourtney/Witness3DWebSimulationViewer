@@ -1,8 +1,17 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { JSDOM } from "jsdom";
 
-// Represents the corresponding function from the 'startup.ts' file
+// FUNCTION from the 'startup.ts' file
 let getFileUploadElements;
+
+const w3dFileInputErrorMessage =
+  "Element of id 'w3dFileInput' was unable to be found within index.html";
+const fileUploadSectionErrorMessage =
+  "Element of id 'fileUploadSection' was unable to be found within index.html";
+const fileUploadBtnErrorMessage =
+  "Element of id 'fileUploadBtn' was unable to be found within index.html";
+const formContainerErrorMessage =
+  "Element of id 'formContainer' was unable to be found within index.html";
 
 describe("test startup function", () => {
   beforeEach(async () => {
@@ -28,5 +37,45 @@ describe("test startup function", () => {
     expect(fileUploadElements.fileUploadSection.nodeName).toBe("DIV");
     expect(fileUploadElements.fileUploadBtn.nodeName).toBe("BUTTON");
     expect(fileUploadElements.formContainer.nodeName).toBe("DIV");
+  });
+
+  it(`should throw exception if w3dFileInput element cannot be found`, () => {
+    const w3dFileInput = document.getElementById("w3dFile");
+    w3dFileInput?.remove();
+
+    // Correct exception has been thrown
+    expect(() => getFileUploadElements()).toThrowError(
+      w3dFileInputErrorMessage,
+    );
+  });
+
+  it(`should throw exception if fileUploadSection element cannot be found`, () => {
+    const fileUploadSection = document.getElementById("fileUploadSection");
+    fileUploadSection?.remove();
+
+    // Correct exception has been thrown
+    expect(() => getFileUploadElements()).toThrowError(
+      fileUploadSectionErrorMessage,
+    );
+  });
+
+  it(`should throw exception if fileUploadBtn element cannot be found`, () => {
+    const fileUploadBtn = document.getElementById("fileUploadBtn");
+    fileUploadBtn?.remove();
+
+    // Correct exception has been thrown
+    expect(() => getFileUploadElements()).toThrowError(
+      fileUploadBtnErrorMessage,
+    );
+  });
+
+  it(`should throw exception if formContainer element cannot be found`, () => {
+    const formContainer = document.getElementById("formContainer");
+    formContainer?.remove();
+
+    // Correct exception has been thrown
+    expect(() => getFileUploadElements()).toThrowError(
+      formContainerErrorMessage,
+    );
   });
 });
