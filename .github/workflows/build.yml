@@ -11,6 +11,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: read
+
     name: CI Build and Test
     steps:
       - name: Checkout repository
