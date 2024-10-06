@@ -5,7 +5,7 @@ import { FileUpload } from "./fileUpload";
  * whereby user upload a w3d file, from the index.html file.
  * @returns Object of the HTML elements TypeScript logic requires to handle input form
  */
-function getFileUploadElements(): {
+export function getFileUploadElements(): {
   w3dFileInput: HTMLInputElement;
   fileUploadSection: HTMLElement;
   fileUploadBtn: HTMLButtonElement;
