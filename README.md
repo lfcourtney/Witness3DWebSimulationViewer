@@ -23,19 +23,33 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 
 # Getting Started
 
-## Installing
+## Prerequisites
 
 - Clone the GitHub repo, and run `npm i` to install Babylon.js, Vite and the other npm dependencies.
 - Run `npm run dev` to begin a development server running the code. The server will begin on port `4000`.
 - To stop the server, go back to the terminal and press Ctrl+C.
 
-## Deployment
+## Installing
 
 - Run `npm run build`. This will bundle the application, outputting this bundle to the `dist` folder within the root directory, creating this directory if it does not already exist.
 - Run `npm run preview` to see the exported code bundle running in a local development server.
 - Now the contents of the `dist` folder can be uploaded to an external server, deploying the application.
 
-## Important Links & Docs
+# Running the tests
+
+Witness 3D Web Simulation Viewer uses the Vitest testing library, created by the same team as the Vite build tool and comes with Vite integration, to create unit tests.
+
+Test configuration is located in the `vitest.config.ts` file, which is also where the Vite configuration is located.
+
+## Run Tests
+
+- Run `npm test`. This will initiate a single run of the unit tests.
+
+## Code Coverage
+
+A successful test run will produce code coverage. The directory for code coverage is `coverage`, which is ignored by Git.
+
+# Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)
 - [Part Queuing Positions Overview 01](./WitnessDocs/Part%20Queuing%20Positions%20Overview%2001.pdf)
@@ -43,6 +57,6 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 - [Witness W3D Queue Implementation](./WitnessDocs/Witness%20W3D%20Queue%20Implementation.pdf)
 - [WITNESS-Unity Proof of Concept 01](./WitnessDocs/WITNESS-Unity%20Proof%20of%20Concept%2001.pdf)
 
-## Last Updated
+# Last Updated
 
-This README was last updated on 4 October 2024.
+This README was last updated on 6 October 2024.
