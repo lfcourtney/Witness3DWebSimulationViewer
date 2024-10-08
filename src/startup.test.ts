@@ -12,6 +12,8 @@ const fileUploadBtnErrorMessage =
   "Element of id 'fileUploadBtn' was unable to be found within index.html";
 const formContainerErrorMessage =
   "Element of id 'formContainer' was unable to be found within index.html";
+const loaderContainerErrorMessage =
+  "Element of id 'loaderContainer' was unable to be found within index.html";
 
 describe("test startup function", () => {
   beforeEach(async () => {
@@ -76,6 +78,16 @@ describe("test startup function", () => {
     // Correct exception has been thrown
     expect(() => getFileUploadElements()).toThrowError(
       formContainerErrorMessage,
+    );
+  });
+
+  it(`should throw exception if loaderContainer element cannot be found`, () => {
+    const loaderContainer = document.getElementById("loaderContainer");
+    loaderContainer?.remove();
+
+    // Correct exception has been thrown
+    expect(() => getFileUploadElements()).toThrowError(
+      loaderContainerErrorMessage,
     );
   });
 });
