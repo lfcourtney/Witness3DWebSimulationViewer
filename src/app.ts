@@ -208,7 +208,8 @@ export class App {
 
     button.onPointerClickObservable.add(() => {
       this.canvas.remove();
-      this.formContainer.style.display = "";
+      // Must set the display to 'flex' because, by default, the display is 'none'
+      this.formContainer.style.display = "flex";
       document.body.style.cursor = "";
     });
 
