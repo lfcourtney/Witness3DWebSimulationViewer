@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { FileUpload } from "./fileUpload";
 import { JSDOM } from "jsdom";
 
@@ -26,6 +26,10 @@ describe("test FileUpload class", () => {
       fileUploadElements.fileUploadBtn,
       fileUploadElements.formContainer,
     );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should return false when a non .w3d file is checked against 'hasW3dExtension' function", () => {
@@ -103,10 +107,10 @@ describe("test FileUpload class", () => {
     expect(paragraphMessage?.textContent).toBe(fileNotW3d);
   });
 
-  it(`should display message information if file has been uploaded when 
-    'addFile' function has been called with appropriate w3d file`, () => {
+  it(`should parse to FileReader when 'addFile' function has been called with
+     appropriate w3d file`, () => {
     // Arrange
-    const fileUploadSection = document.getElementById("fileUploadSection");
+    const readAsTextSpy = vi.spyOn(FileReader.prototype, "readAsText");
     const w3dFile: File = new File([], w3dFileName);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (fileUpload as any).fileInputElement = {
@@ -115,6 +119,24 @@ describe("test FileUpload class", () => {
 
     // Act
     fileUpload["addFile"]();
+
+    expect(readAsTextSpy).toHaveBeenCalledWith(w3dFile);
+  });
+
+  it(`should display message information if loadFile method has been called with appropriate w3d file`, () => {
+    // Arrange
+    const fileUploadSection = document.getElementById("fileUploadSection");
+    const mockEvent = { target: { result: "exampleXML" } };
+    const w3dFile: File = new File([], w3dFileName);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (fileUpload as any).fileInputElement = {
+      files: [w3dFile],
+    };
+
+    // Act
+    fileUpload["resetHtmlElements"]();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fileUpload["loadFile"](mockEvent as any, w3dFile);
 
     const paragraphMessage = fileUploadSection
       ?.getElementsByTagName("p")

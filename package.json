@@ -1,7 +1,7 @@
 {
   "name": "witness3dwebsimulationviewer",
   "private": true,
-  "version": "0.0.20",
+  "version": "0.0.21",
   "type": "module",
   "scripts": {
     "dev": "vite --port 4000",
@@ -29,6 +29,7 @@
     "@vitest/coverage-v8": "^2.1.2",
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
+    "fast-xml-parser": "^4.5.0",
     "globals": "^15.9.0",
     "husky": "^9.1.6",
     "jsdom": "^25.0.1",

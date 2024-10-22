@@ -1,4 +1,16 @@
 import { App } from "./app";
+import { XMLParser } from "fast-xml-parser";
+
+interface W3dFileStructure {
+  create: object[];
+  delete: object[];
+  end: object[];
+  load: object[];
+  new: object;
+  start: object[];
+  update: object[];
+  version: object;
+}
 
 /**
  * Class responsible for managing the state of the initial w3d file input form
@@ -57,11 +69,32 @@ export class FileUpload {
       return;
     }
 
+    const reader = new FileReader();
+    const loadFile = this.loadFile.bind(this);
+    reader.onload = function (e) {
+      loadFile(e, w3dFile);
+    };
+    reader.readAsText(w3dFile);
+  }
+
+  private loadFile(event: ProgressEvent<FileReader>, file: File): void {
+    if (!event.target?.result || typeof event.target.result !== "string")
+      return;
+    const contents = event.target.result;
+
+    const options = {
+      ignoreAttributes: false, // To ensure attributes are parsed
+      attributeNamePrefix: "", // To avoid prefixing attribute names
+    };
+
+    const parser = new XMLParser(options);
+    const jsonObj: W3dFileStructure = parser.parse(contents);
+    console.log(jsonObj); // Display the parsed JavaScript object in the comments
     const para = document.createElement("p");
-    para.textContent = `File name ${w3dFile.name}, file size ${this.returnFileSize(w3dFile.size)}`;
+    para.textContent = `File name ${file.name}, file size ${this.returnFileSize(file.size)}`;
     this.fileUploadSection.appendChild(para);
 
-    this.w3dFile = w3dFile;
+    this.w3dFile = file;
   }
 
   private submitFile(): void {
