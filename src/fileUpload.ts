@@ -88,20 +88,39 @@ export class FileUpload {
     const selfClosingElementRegex = /<([a-zA-Z]+)[^>]*\/>/g;
 
     const lines = contents.split("\n");
+    let currentCommandName = "";
+    let elementStore = "";
     lines.forEach((line) => {
+      if (currentCommandName) {
+        elementStore += line;
+      }
+
+      const elementMatches = elementRegex.exec(line);
+
+      if (elementMatches && elementMatches.length > 1) {
+        const commandName = elementMatches[1];
+        if (commandName === "root") return;
+        if (currentCommandName === commandName) {
+          currentCommandName = "";
+          isolatedComments.push(elementStore);
+          return;
+        }
+        currentCommandName = commandName;
+        return;
+      }
+
+      if (currentCommandName) {
+        return;
+      }
+
       const selfClosingElementMatches = selfClosingElementRegex.exec(line);
       if (selfClosingElementMatches && selfClosingElementMatches.length > 1) {
         isolatedComments.push(selfClosingElementMatches[0]);
         return;
       }
-
-      const elementMatches = elementRegex.exec(line);
-      if (!elementMatches || elementMatches.length < 2) return;
-
-      const commandName = elementMatches[1];
-
-      if (commandName === "root") return;
     });
+
+    console.log(isolatedComments);
 
     // const options = {
     //   ignoreAttributes: false, // To ensure attributes are parsed
