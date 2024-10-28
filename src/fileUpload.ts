@@ -1,16 +1,16 @@
 import { App } from "./app";
-import { XMLParser } from "fast-xml-parser";
+// import { XMLParser } from "fast-xml-parser";
 
-interface W3dFileStructure {
-  create: object[];
-  delete: object[];
-  end: object[];
-  load: object[];
-  new: object;
-  start: object[];
-  update: object[];
-  version: object;
-}
+// interface W3dFileStructure {
+//   create: object[];
+//   delete: object[];
+//   end: object[];
+//   load: object[];
+//   new: object;
+//   start: object[];
+//   update: object[];
+//   version: object;
+// }
 
 /**
  * Class responsible for managing the state of the initial w3d file input form
@@ -82,14 +82,35 @@ export class FileUpload {
       return;
     const contents = event.target.result;
 
-    const options = {
-      ignoreAttributes: false, // To ensure attributes are parsed
-      attributeNamePrefix: "", // To avoid prefixing attribute names
-    };
+    const isolatedComments: string[] = [];
 
-    const parser = new XMLParser(options);
-    const jsonObj: W3dFileStructure = parser.parse(contents);
-    console.log(jsonObj); // Display the parsed JavaScript object in the comments
+    const elementRegex = /<\/?([a-zA-Z]+)[^>/]*>/g;
+    const selfClosingElementRegex = /<([a-zA-Z]+)[^>]*\/>/g;
+
+    const lines = contents.split("\n");
+    lines.forEach((line) => {
+      const selfClosingElementMatches = selfClosingElementRegex.exec(line);
+      if (selfClosingElementMatches && selfClosingElementMatches.length > 1) {
+        isolatedComments.push(selfClosingElementMatches[0]);
+        return;
+      }
+
+      const elementMatches = elementRegex.exec(line);
+      if (!elementMatches || elementMatches.length < 2) return;
+
+      const commandName = elementMatches[1];
+
+      if (commandName === "root") return;
+    });
+
+    // const options = {
+    //   ignoreAttributes: false, // To ensure attributes are parsed
+    //   attributeNamePrefix: "", // To avoid prefixing attribute names
+    // };
+
+    // const parser = new XMLParser(options);
+    // const jsonObj: W3dFileStructure = parser.parse(contents);
+    // console.log(jsonObj); // Display the parsed JavaScript object in the comments
     const para = document.createElement("p");
     para.textContent = `File name ${file.name}, file size ${this.returnFileSize(file.size)}`;
     this.fileUploadSection.appendChild(para);
