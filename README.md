@@ -35,6 +35,30 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 - Run `npm run preview` to see the exported code bundle running in a local development server.
 - Now the contents of the `dist` folder can be uploaded to an external server, deploying the application.
 
+## Debug
+
+Witness 3D Web Simulation Viewer is developed and debugged in Visual Studio Code. An example configuration file that can be used to debug Witness 3D Web Simulation Viewer in Visual Studio Code is shown below. This configuration file is configured to use the Microsoft Edge debugger (built into Visual Studio Code). When run, it will automatically launch Microsoft Edge running on port 4000. There is no need to begin the development server separately; hosting the application on port 4000 is included as the pre launch task in the configuration.
+
+Visual Studio Code may prompt you to begin beginning manually. It could display a message saying that it is waiting for the pre launch task. This message should show if you have begun the debug configuration, yet Microsoft Edge has not opened up, assuming the Edge browser is installed. You should select `Debug Anyway`. The Edge browser should then begin.
+
+    {
+        // Use IntelliSense to learn about possible attributes.
+        // Hover to view descriptions of existing attributes.
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+            {
+            "name": "Launch Edge",
+            "type": "msedge",
+            "request": "launch",
+            "preLaunchTask": "npm: dev",
+            "url": "http://localhost:4000/",
+            "webRoot": "${workspaceFolder}"
+            }
+        ]
+
+    }
+
 # Running the tests
 
 Witness 3D Web Simulation Viewer uses the Vitest testing library, created by the same team as the Vite build tool and comes with Vite integration, to create unit tests.
