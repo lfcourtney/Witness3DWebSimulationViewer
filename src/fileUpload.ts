@@ -84,18 +84,18 @@ export class FileUpload {
 
     const isolatedComments: string[] = [];
 
-    const elementRegex = /<\/?([a-zA-Z]+)[^>/]*>/g;
-    const selfClosingElementRegex = /<([a-zA-Z]+)[^>]*\/>/g;
-
     const lines = contents.split("\n");
     let currentCommandName = "";
     let elementStore = "";
     lines.forEach((line) => {
       if (currentCommandName) {
         elementStore += line;
+        if (!this.checkCurrentLineMatchesClosingTag(line, currentCommandName)) {
+          return;
+        }
       }
 
-      const elementMatches = elementRegex.exec(line);
+      const elementMatches = this.matchClosingTag(line);
 
       if (elementMatches && elementMatches.length > 1) {
         const commandName = elementMatches[1];
@@ -105,18 +105,15 @@ export class FileUpload {
           isolatedComments.push(elementStore);
           return;
         }
+
+        elementStore += line;
         currentCommandName = commandName;
         return;
       }
 
-      if (currentCommandName) {
-        return;
-      }
-
-      const selfClosingElementMatches = selfClosingElementRegex.exec(line);
+      const selfClosingElementMatches = this.matchSelfClosingTag(line);
       if (selfClosingElementMatches && selfClosingElementMatches.length > 1) {
-        isolatedComments.push(selfClosingElementMatches[0]);
-        return;
+        isolatedComments.push(line);
       }
     });
 
@@ -135,6 +132,32 @@ export class FileUpload {
     this.fileUploadSection.appendChild(para);
 
     this.w3dFile = file;
+  }
+
+  private checkCurrentLineMatchesClosingTag(
+    currentLine: string,
+    currentCommand,
+  ): boolean {
+    const elementMatches = this.matchClosingTag(currentLine);
+
+    if (elementMatches && elementMatches.length > 1) {
+      const commandFromLine = elementMatches[1];
+      return commandFromLine === currentCommand;
+    }
+
+    return false;
+  }
+
+  private matchSelfClosingTag(matchString: string) {
+    const selfClosingElementRegex = /<([a-zA-Z]+)[^>]*\/>/;
+
+    return selfClosingElementRegex.exec(matchString);
+  }
+
+  private matchClosingTag(matchString: string) {
+    const elementRegex = /<\/?([a-zA-Z]+)[^>/]*>/;
+
+    return elementRegex.exec(matchString);
   }
 
   private submitFile(): void {
