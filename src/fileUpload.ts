@@ -1,5 +1,5 @@
 import { App } from "./app";
-// import { XMLParser } from "fast-xml-parser";
+import { XMLParser } from "fast-xml-parser";
 
 // interface W3dFileStructure {
 //   create: object[];
@@ -117,7 +117,22 @@ export class FileUpload {
       }
     });
 
+    const options = {
+      ignoreAttributes: false, // To ensure attributes are parsed
+      attributeNamePrefix: "", // To avoid prefixing attribute names
+    };
+    const parser = new XMLParser(options);
+
     console.log(isolatedComments);
+
+    let integer = 0;
+
+    isolatedComments.forEach((isolatedComment) => {
+      if (integer > 20) return;
+      const jsonObj = parser.parse(isolatedComment);
+      console.log(jsonObj); // Display the parsed JavaScript object in the comments
+      integer++;
+    });
 
     // const options = {
     //   ignoreAttributes: false, // To ensure attributes are parsed
