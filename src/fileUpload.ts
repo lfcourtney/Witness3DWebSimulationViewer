@@ -1,16 +1,16 @@
 import { App } from "./app";
 import { XMLParser } from "fast-xml-parser";
 
-// interface W3dFileStructure {
-//   create: object[];
-//   delete: object[];
-//   end: object[];
-//   load: object[];
-//   new: object;
-//   start: object[];
-//   update: object[];
-//   version: object;
-// }
+interface W3dFileStructure {
+  create: object[];
+  delete: object[];
+  end: object[];
+  load: object[];
+  new: object;
+  start: object[];
+  update: object[];
+  version: object;
+}
 
 /**
  * Class responsible for managing the state of the initial w3d file input form
@@ -117,10 +117,12 @@ export class FileUpload {
         isolatedComments.push(line);
       }
     });
+    const parsedTextContent = this.removeRootElement(contents);
 
     const options = {
       ignoreAttributes: false, // To ensure attributes are parsed
       attributeNamePrefix: "", // To avoid prefixing attribute names
+      preserveOrder: true,
     };
     const parser = new XMLParser(options);
 
@@ -143,6 +145,8 @@ export class FileUpload {
     // const parser = new XMLParser(options);
     // const jsonObj: W3dFileStructure = parser.parse(contents);
     // console.log(jsonObj); // Display the parsed JavaScript object in the comments
+    const jsonObj: W3dFileStructure = parser.parse(parsedTextContent);
+    console.log(jsonObj); // Display the parsed JavaScript object in the comments
     const para = document.createElement("p");
     para.textContent = `File name ${file.name}, file size ${this.returnFileSize(file.size)}`;
     this.fileUploadSection.appendChild(para);
@@ -174,6 +178,23 @@ export class FileUpload {
     const elementRegex = /<\/?([a-zA-Z]+)[^>/]*>/;
 
     return elementRegex.exec(matchString);
+  }
+  private removeRootElement(fileContents: string): string {
+    const rootElementRegEx = /<\/?root[^>]*>/;
+
+    // Split the text contents into individual lines
+    const individualLines = fileContents.split("\n");
+
+    if (rootElementRegEx.test(individualLines[0])) {
+      individualLines.shift();
+    }
+
+    if (rootElementRegEx.test(individualLines[individualLines.length - 1])) {
+      individualLines.pop();
+    }
+
+    // Join the individual lines back into a string
+    return individualLines.join("\n");
   }
 
   private submitFile(): void {
