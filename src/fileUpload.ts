@@ -101,8 +101,9 @@ export class FileUpload {
         const commandName = elementMatches[1];
         if (commandName === "root") return;
         if (currentCommandName === commandName) {
-          currentCommandName = "";
           isolatedComments.push(elementStore);
+          currentCommandName = "";
+          elementStore = "";
           return;
         }
 
