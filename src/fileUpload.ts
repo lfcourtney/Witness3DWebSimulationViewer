@@ -13,6 +13,7 @@ export class FileUpload {
   private readonly formContainer: HTMLElement;
 
   private w3dFile?: File;
+  private simulationContents?: SimulationContents;
 
   /**
    * Create the object representing the TypeScript representation of the HTML w3d file input form
@@ -87,7 +88,7 @@ export class FileUpload {
       arrayOfParsedTags,
     );
 
-    console.log(simulationContents.tagName(arrayOfParsedTags[7]));
+    this.simulationContents = simulationContents;
 
     const para = document.createElement("p");
     para.textContent = `File name ${file.name}, file size ${this.returnFileSize(file.size)}`;
@@ -106,7 +107,7 @@ export class FileUpload {
     const rootElementRegEx = /<\/?root[^>]*>/;
 
     // Split the text contents into individual lines
-    const individualLines = fileContents.split("\n");
+    const individualLines = fileContents.trim().split("\n");
 
     if (rootElementRegEx.test(individualLines[0])) {
       individualLines.shift();
