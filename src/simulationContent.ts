@@ -7,16 +7,16 @@ export class SimulationContents {
    * @type {number}
    */
   private tagIndex: number = 0;
-  private readonly tagStore: [object];
+  private readonly tagStore: object[];
 
   /**
    * Create the object that will format and provide access for simulation contents of w3d file
    * @param _tagStore array of w3d tags formatted as JavaScript objects preserving the order of the tags in the original file
    */
-  constructor(_tagStore: [object]) {
+  constructor(_tagStore: object[]) {
     if (!this.isTagStoreArray(_tagStore)) {
       throw new Error(
-        "'_tagStore' argument is not an array of JavaScript objects",
+        "'_tagStore' argument is not an array of XML parsed JavaScript objects",
       );
     }
 
@@ -38,16 +38,52 @@ export class SimulationContents {
     if (indexOfAttributes == -1) return undefined;
 
     const indexOfTagName = keys.find((key) =>
-      key.match(/create|delete|end|load|new|start|update|version/),
+      key.match(
+        /create|delete|end|load|new|start|update|version|translate|rotate|scale|queueInfo|behaviour|position|direction|path|line|arc|extrude|surface|partPosition/,
+      ),
     );
 
     return indexOfTagName;
   }
 
-  private isTagStoreArray(_tagStore: unknown): _tagStore is object[] {
-    return (
-      Array.isArray(_tagStore) &&
-      _tagStore.every((item) => typeof item === "object" && item !== null)
-    );
+  /**
+   *Takes a JavaScript object produced by 'fast-xml-parser' parsing XML tag, where attributes and tag contents are separate, 
+   and reformats this object to make the attribute contents and tag contents part of the same object. For extra information,
+   this is the same format that would be produced by the 'fast-xml-parser' if the 'preserveOrder' option was not enabled, 
+   which it is for this application
+   * @param tag Individual JavaScript object element from 'tagStore'
+   * @returns The formatted JavaScript object, where attributes and tag contents are part of the same object.
+   */
+  formatTag(tag: object): object {
+    const tagName = this.tagName(tag);
+
+    if (tagName === undefined) {
+      throw new Error(
+        "inputted tag is not formatted correctly as per 'fast-xml-parser' npm dependency",
+      );
+    }
+
+    const tagAttributes = tag[":@"];
+
+    // We assume that the tag name field holds an array as its value.
+    // For the reason why, this is the standard format when 'fast-xml-parser'
+    // parses xml content with the 'preserveOrder' option enabled, which it is in this case
+    const tagArray = tag[tagName];
+
+    let tagObject = {};
+
+    if (Array.isArray(tagArray)) {
+      tagArray.forEach((tagIter) => {
+        tagObject = { ...tagObject, ...this.formatTag(tagIter) };
+      });
+    }
+
+    return {
+      [tagName]: { ...tagAttributes, ...tagObject },
+    };
+  }
+
+  private isTagStoreArray(_tagStore: object[]): boolean {
+    return _tagStore.every((tag) => this.tagName(tag) !== undefined);
   }
 }

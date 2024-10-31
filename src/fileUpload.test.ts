@@ -11,6 +11,14 @@ const submitFileButtonMsg = "No w3d file to submit";
 const noFileMsg = "No w3d file selected for upload";
 const fileNotW3d = "Error: w3d file type required";
 
+// Example contents of w3d file
+const exampleXMLStructure = `<root>
+	<start type="session" />
+	<start time="0.000000" type="build" />
+	<version number="1" />
+	<new model="C:\\Dev\\Witness3DWebSimulationViewer\\WitnessModels\\Quick3D.mod" />
+  </root>`;
+
 describe("test FileUpload class", () => {
   beforeEach(async () => {
     const dom = await JSDOM.fromFile("index.html");
@@ -126,15 +134,20 @@ describe("test FileUpload class", () => {
   it(`should display message information if loadFile method has been called with appropriate w3d file`, () => {
     // Arrange
     const fileUploadSection = document.getElementById("fileUploadSection");
-    const mockEvent = { target: { result: "exampleXML" } };
+    const mockEvent = { target: { result: exampleXMLStructure } };
     const w3dFile: File = new File([], w3dFileName);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (fileUpload as any).fileInputElement = {
       files: [w3dFile],
     };
 
-    // Act
+    // Reset HTML elements from previous tests
     fileUpload["resetHtmlElements"]();
+
+    // Assert that 'simulationContents' field has not been set
+    expect(fileUpload["simulationContents"]).toBe(undefined);
+
+    // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fileUpload["loadFile"](mockEvent as any, w3dFile);
 
@@ -149,6 +162,9 @@ describe("test FileUpload class", () => {
     expect(paragraphMessage?.textContent).toBe(
       `File name ${w3dFile.name}, file size ${fileUpload["returnFileSize"](w3dFile.size)}`,
     );
+
+    // Assert that 'simulationContents' field has been set
+    expect(fileUpload["simulationContents"]).not.toBe(undefined);
   });
 
   it(`should reset state of FileUpload object when 'reset' method is called`, () => {
