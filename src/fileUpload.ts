@@ -1,16 +1,6 @@
 import { App } from "./app";
+import { SimulationContents } from "./simulationContent";
 import { XMLParser } from "fast-xml-parser";
-
-interface W3dFileStructure {
-  create: object[];
-  delete: object[];
-  end: object[];
-  load: object[];
-  new: object;
-  start: object[];
-  update: object[];
-  version: object;
-}
 
 /**
  * Class responsible for managing the state of the initial w3d file input form
@@ -82,41 +72,6 @@ export class FileUpload {
       return;
     const contents = event.target.result;
 
-    const isolatedComments: string[] = [];
-
-    const lines = contents.split("\n");
-    let currentCommandName = "";
-    let elementStore = "";
-    lines.forEach((line) => {
-      if (currentCommandName) {
-        elementStore += line;
-        if (!this.checkCurrentLineMatchesClosingTag(line, currentCommandName)) {
-          return;
-        }
-      }
-
-      const elementMatches = this.matchClosingTag(line);
-
-      if (elementMatches && elementMatches.length > 1) {
-        const commandName = elementMatches[1];
-        if (commandName === "root") return;
-        if (currentCommandName === commandName) {
-          isolatedComments.push(elementStore);
-          currentCommandName = "";
-          elementStore = "";
-          return;
-        }
-
-        elementStore += line;
-        currentCommandName = commandName;
-        return;
-      }
-
-      const selfClosingElementMatches = this.matchSelfClosingTag(line);
-      if (selfClosingElementMatches && selfClosingElementMatches.length > 1) {
-        isolatedComments.push(line);
-      }
-    });
     const parsedTextContent = this.removeRootElement(contents);
 
     const options = {
@@ -126,27 +81,14 @@ export class FileUpload {
     };
     const parser = new XMLParser(options);
 
-    console.log(isolatedComments);
+    const arrayOfParsedTags = parser.parse(parsedTextContent);
 
-    let integer = 0;
+    const simulationContents: SimulationContents = new SimulationContents(
+      arrayOfParsedTags,
+    );
 
-    isolatedComments.forEach((isolatedComment) => {
-      if (integer > 20) return;
-      const jsonObj = parser.parse(isolatedComment);
-      console.log(jsonObj); // Display the parsed JavaScript object in the comments
-      integer++;
-    });
+    console.log(simulationContents.tagName(arrayOfParsedTags[7]));
 
-    // const options = {
-    //   ignoreAttributes: false, // To ensure attributes are parsed
-    //   attributeNamePrefix: "", // To avoid prefixing attribute names
-    // };
-
-    // const parser = new XMLParser(options);
-    // const jsonObj: W3dFileStructure = parser.parse(contents);
-    // console.log(jsonObj); // Display the parsed JavaScript object in the comments
-    const jsonObj: W3dFileStructure = parser.parse(parsedTextContent);
-    console.log(jsonObj); // Display the parsed JavaScript object in the comments
     const para = document.createElement("p");
     para.textContent = `File name ${file.name}, file size ${this.returnFileSize(file.size)}`;
     this.fileUploadSection.appendChild(para);
@@ -154,31 +96,12 @@ export class FileUpload {
     this.w3dFile = file;
   }
 
-  private checkCurrentLineMatchesClosingTag(
-    currentLine: string,
-    currentCommand,
-  ): boolean {
-    const elementMatches = this.matchClosingTag(currentLine);
-
-    if (elementMatches && elementMatches.length > 1) {
-      const commandFromLine = elementMatches[1];
-      return commandFromLine === currentCommand;
-    }
-
-    return false;
-  }
-
-  private matchSelfClosingTag(matchString: string) {
-    const selfClosingElementRegex = /<([a-zA-Z]+)[^>]*\/>/;
-
-    return selfClosingElementRegex.exec(matchString);
-  }
-
-  private matchClosingTag(matchString: string) {
-    const elementRegex = /<\/?([a-zA-Z]+)[^>/]*>/;
-
-    return elementRegex.exec(matchString);
-  }
+  /**
+   * Removes opening and closing parent <root> element given text contents of w3d file.
+   * @param {string} fileContents Text content of w3d file
+   * @returns {string} If w3d file contained opening and closing parent <root> element, the text contents of w3d file with these tags removed.
+   * Otherwise, the original, unchanged text contents of w3d file.
+   */
   private removeRootElement(fileContents: string): string {
     const rootElementRegEx = /<\/?root[^>]*>/;
 
