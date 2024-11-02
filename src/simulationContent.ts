@@ -7,7 +7,7 @@ export class SimulationContents {
    * @type {number}
    */
   private tagIndex: number = 0;
-  private readonly tagStore: object[];
+  private readonly _tagStore: object[];
 
   /**
    * Create the object that will format and provide access for simulation contents of w3d file
@@ -20,7 +20,11 @@ export class SimulationContents {
       );
     }
 
-    this.tagStore = _tagStore;
+    this._tagStore = _tagStore;
+  }
+
+  public get tagStore() {
+    return this._tagStore;
   }
 
   /**
