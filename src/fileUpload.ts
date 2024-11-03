@@ -122,7 +122,11 @@ export class FileUpload {
   }
 
   private submitFile(): void {
-    if (!this.w3dFile || this.hasW3dExtension(this.w3dFile.name) === false) {
+    if (
+      !this.w3dFile ||
+      this.hasW3dExtension(this.w3dFile.name) === false ||
+      this.simulationContents === undefined
+    ) {
       if (
         !(
           this.fileUploadBtn.previousElementSibling &&
@@ -141,7 +145,7 @@ export class FileUpload {
     this.reset();
 
     // Initialise app, so canvas element will be added to the document body
-    new App(this.formContainer);
+    new App(this.formContainer, this.simulationContents);
   }
 
   private reset(): void {

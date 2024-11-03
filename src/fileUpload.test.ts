@@ -73,6 +73,48 @@ describe("test FileUpload class", () => {
     expect(errorMessage?.textContent).toBe(submitFileButtonMsg);
   });
 
+  it(`should reset state if form is submitted with w3d file`, () => {
+    // Mock App class
+    vi.mock(import("./app"), () => {
+      const App = vi.fn();
+      // ... other mocks
+      return { App };
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const resetSpy = vi.spyOn<any, string>(fileUpload, "reset");
+
+    // #region call 'loadFile' method to instantiate 'simulationConcepts' field
+    const mockEvent = { target: { result: exampleXMLStructure } };
+    const w3dFile: File = new File([], w3dFileName);
+
+    // Reset HTML elements from previous tests
+    fileUpload["resetHtmlElements"]();
+
+    // Act
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fileUpload["loadFile"](mockEvent as any, w3dFile);
+
+    // Assert that 'simulationContents' field has been defined
+    expect(fileUpload["simulationContents"]).not.toBe(undefined);
+    // #endregion
+
+    // Arrange
+    const formContainer = document.getElementById("formContainer");
+
+    // Assert that formContainer is still visible
+    expect(formContainer?.style.display).not.toBe("none");
+
+    // Act
+    fileUpload["submitFile"]();
+
+    // Assert that formContainer is no longer visible
+    expect(formContainer?.style.display).toBe("none");
+
+    // Assert that 'reset' method has been called
+    expect(resetSpy).toHaveBeenCalled();
+  });
+
   it(`should display appropriate error message if no file has been uploaded when 
     'addFile' function has been called`, () => {
     // Arrange
@@ -136,10 +178,6 @@ describe("test FileUpload class", () => {
     const fileUploadSection = document.getElementById("fileUploadSection");
     const mockEvent = { target: { result: exampleXMLStructure } };
     const w3dFile: File = new File([], w3dFileName);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (fileUpload as any).fileInputElement = {
-      files: [w3dFile],
-    };
 
     // Reset HTML elements from previous tests
     fileUpload["resetHtmlElements"]();
@@ -181,5 +219,23 @@ describe("test FileUpload class", () => {
 
     // Assert that w3d file has been reset
     expect(fileUpload["w3dFile"]).toBe(undefined);
+  });
+
+  it(`should remove submit button warning message when 'resetHtmlElements' method is called`, () => {
+    // Arrange
+    const fileUploadBtn = document.getElementById("fileUploadBtn");
+
+    const para = document.createElement("p");
+    para.textContent = "No w3d file to submit";
+    fileUploadBtn?.parentNode?.insertBefore(para, fileUploadBtn);
+
+    // Assert that error message does exist
+    expect(fileUploadBtn?.previousElementSibling).not.toBeFalsy();
+
+    // Act
+    fileUpload["resetHtmlElements"]();
+
+    // Assert that error message has been removed
+    expect(fileUploadBtn?.previousElementSibling).toBeFalsy();
   });
 });
