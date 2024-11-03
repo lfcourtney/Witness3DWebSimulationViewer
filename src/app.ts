@@ -18,6 +18,7 @@ import {
   Button,
   Control,
 } from "@babylonjs/gui";
+import { SimulationContents } from "./simulationContent";
 
 /**
  * Increases height of .glb model so that the bottom touches the ground.
@@ -37,10 +38,16 @@ export class App {
   private readonly canvas: HTMLCanvasElement;
   private engine?: Engine | WebGPUEngine;
 
+  private simulationContents: SimulationContents;
+
   private readonly formContainer: HTMLElement;
 
-  constructor(_formContainer: HTMLElement) {
+  constructor(
+    _formContainer: HTMLElement,
+    _simulationContents: SimulationContents,
+  ) {
     this.formContainer = _formContainer;
+    this.simulationContents = _simulationContents;
 
     this.canvas = this.createCanvas();
 
