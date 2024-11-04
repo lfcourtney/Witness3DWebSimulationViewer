@@ -18,7 +18,7 @@ import {
   Button,
   Control,
 } from "@babylonjs/gui";
-import { SimulationContents } from "./simulationContent";
+import { SimulationContents } from "./SimulationContent/simulationContent";
 
 /**
  * Increases height of .glb model so that the bottom touches the ground.
@@ -56,18 +56,50 @@ export class App {
 
       const scene = this.createScene();
 
-      SceneLoader.ImportMesh(
-        "",
-        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
-        "dg-ic-Machine.glb",
-        scene,
-        function (newMeshes) {
-          const transformMachine = newMeshes[0];
-          const geometryMachine = newMeshes[1];
+      this.simulationContents.tagStore.forEach((tagObj) => {
+        const tagName = this.simulationContents.tagName(tagObj);
+        if (tagName === "create") {
+          const createTag =
+            this.simulationContents.simulationContentFormat.formatCreateTag(
+              this.simulationContents.formatTag(tagObj),
+            );
+          if (
+            createTag &&
+            createTag.create.geometry &&
+            createTag.create.time === 0
+          ) {
+            const geometryName = this.simulationContents.extractGeometry(
+              createTag.create.geometry,
+            );
+            console.log(geometryName);
+            SceneLoader.ImportMesh(
+              "",
+              "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
+              geometryName + ".glb",
+              scene,
+              function (newMeshes) {
+                const transformMachine = newMeshes[0];
+                const geometryMachine = newMeshes[1];
 
-          fixGlbModelToGround(transformMachine, geometryMachine);
-        },
-      );
+                fixGlbModelToGround(transformMachine, geometryMachine);
+              },
+            );
+          }
+        }
+      });
+
+      // SceneLoader.ImportMesh(
+      //   "",
+      //   "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
+      //   "dg-ic-Machine.glb",
+      //   scene,
+      //   function (newMeshes) {
+      //     const transformMachine = newMeshes[0];
+      //     const geometryMachine = newMeshes[1];
+
+      //     fixGlbModelToGround(transformMachine, geometryMachine);
+      //   },
+      // );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const ground = MeshBuilder.CreateGround(
@@ -119,6 +151,7 @@ export class App {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
       (resolve, reject) => {
         try {
+          // If client is using a browser compatible with WebGPU
           if (navigator.gpu) {
             const engine = new WebGPUEngine(this.canvas);
             engine.initAsync().then(() => {
@@ -155,6 +188,10 @@ export class App {
     });
   }
 
+  /**
+   * Create Babylon.js scene and setup camera and light for scene
+   * @returns Babylon.js scene with camera and light
+   */
   private createScene(): Scene {
     if (!this.engine) {
       throw new Error("Babylon.js engine was undefined");

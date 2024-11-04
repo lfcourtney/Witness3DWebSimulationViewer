@@ -8,6 +8,7 @@ export default defineConfig({
       exclude: [
         "mocks/**",
         "src/materials/**",
+        "src/interfaces/**",
         ...coverageConfigDefaults.exclude,
       ],
     },
