@@ -1,3 +1,5 @@
+import { SimulationContentFormat } from "./simulationContentFormat";
+
 /**
  * Class responsible for allowing access to simulation information from uploaded w3d file and formatting this information.
  */
@@ -8,6 +10,8 @@ export class SimulationContents {
    */
   private tagIndex: number = 0;
   private readonly _tagStore: object[];
+
+  private readonly _simulationContentFormat: SimulationContentFormat;
 
   /**
    * Create the object that will format and provide access for simulation contents of w3d file
@@ -21,10 +25,15 @@ export class SimulationContents {
     }
 
     this._tagStore = _tagStore;
+    this._simulationContentFormat = new SimulationContentFormat();
   }
 
   public get tagStore() {
     return this._tagStore;
+  }
+
+  public get simulationContentFormat() {
+    return this._simulationContentFormat;
   }
 
   /**
@@ -51,7 +60,23 @@ export class SimulationContents {
   }
 
   /**
-   *Takes a JavaScript object produced by 'fast-xml-parser' parsing XML tag, where attributes and tag contents are separate, 
+   * Extract the name of the geometry from the 'geometry' attribute of a create tag
+   * @param geometry The 'geometry' attribute of a create tag
+   * @returns The name of the geometry if there is a valid geometry contained in the string. Or undefined if a valid geometry was unable to be undefined.
+   */
+  extractGeometry(geometry: string): string | undefined {
+    const geometryRegex =
+      /(dg-ic-Machine1|dg-ic-Machine1|dg-ic-WaterTank|dg-ic-Workbench2|dg-lq-Machine|dg-pt-ManWalking1|dg-pt-Part1|dg-vh-Agv1|dgu-pa-Conveyor5|dgu-pa-Conveyor6|dgu-pa-Track)(\.glb)?$/;
+
+    const matchGeometry = geometryRegex.exec(geometry);
+
+    if (!matchGeometry || matchGeometry?.length < 2) return undefined;
+
+    return matchGeometry[1];
+  }
+
+  /**
+   * Takes a JavaScript object produced by 'fast-xml-parser' parsing XML tag, where attributes and tag contents are separate, 
    and reformats this object to make the attribute contents and tag contents part of the same object. For extra information,
    this is the same format that would be produced by the 'fast-xml-parser' if the 'preserveOrder' option was not enabled, 
    which it is for this application
