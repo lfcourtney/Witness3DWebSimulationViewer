@@ -21,7 +21,7 @@ const instantiationErrorMessage =
 const formatTagErrorMessage =
   "inputted tag is not formatted correctly as per 'fast-xml-parser' npm dependency";
 
-describe("test SimulationContents class", () => {
+describe("SimulationContents class", () => {
   beforeAll(() => {
     const options = {
       ignoreAttributes: false, // To ensure attributes are parsed

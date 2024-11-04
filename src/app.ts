@@ -19,20 +19,8 @@ import {
   Control,
 } from "@babylonjs/gui";
 import { SimulationContents } from "./SimulationContent/simulationContent";
-
-/**
- * Increases height of .glb model so that the bottom touches the ground.
- * @param transformMesh First half of a .glb mesh that can have transformations applied to it to move the mesh in the global scene
- * @param geometryMesh Latter half of a .glb mesh that contains geometric information on the mesh
- */
-const fixGlbModelToGround = (
-  transformMesh: AbstractMesh,
-  geometryMesh: AbstractMesh,
-) => {
-  const heightAdjustment =
-    0 - geometryMesh.getBoundingInfo().boundingBox.minimumWorld.y;
-  transformMesh.position.y = heightAdjustment;
-};
+import { Geometry } from "./geometry/geometry";
+import { CreateTag } from "./interfaces/createTag";
 
 export class App {
   private readonly canvas: HTMLCanvasElement;
@@ -41,6 +29,8 @@ export class App {
   private simulationContents: SimulationContents;
 
   private readonly formContainer: HTMLElement;
+
+  private readonly geometriesMap = new Map<string, Geometry>();
 
   constructor(
     _formContainer: HTMLElement,
@@ -51,55 +41,65 @@ export class App {
 
     this.canvas = this.createCanvas();
 
-    this.loadEngine().then((engine) => {
+    this.loadEngine().then(async (engine) => {
       this.engine = engine;
 
       const scene = this.createScene();
 
-      this.simulationContents.tagStore.forEach((tagObj) => {
-        const tagName = this.simulationContents.tagName(tagObj);
-        if (tagName === "create") {
-          const createTag =
-            this.simulationContents.simulationContentFormat.formatCreateTag(
-              this.simulationContents.formatTag(tagObj),
-            );
-          if (
-            createTag &&
-            createTag.create.geometry &&
-            createTag.create.time === 0
-          ) {
-            const geometryName = this.simulationContents.extractGeometry(
-              createTag.create.geometry,
-            );
-            console.log(geometryName);
-            SceneLoader.ImportMesh(
+      for (const tagObj of this.simulationContents.tagStore) {
+        // possibly a <create> tag
+        const createTag =
+          this.simulationContents.simulationContentFormat.formatCreateTag(
+            this.simulationContents.formatTag(tagObj),
+          );
+        if (
+          createTag &&
+          createTag.create.geometry &&
+          createTag.create.time === 0
+        ) {
+          const geometryName = this.simulationContents.extractGeometry(
+            createTag.create.geometry,
+          );
+          try {
+            const importMeshResult = await SceneLoader.ImportMeshAsync(
               "",
               "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
               geometryName + ".glb",
               scene,
-              function (newMeshes) {
-                const transformMachine = newMeshes[0];
-                const geometryMachine = newMeshes[1];
+            );
+            this.importMeshSuccess(importMeshResult.meshes, createTag.create);
+          } catch (error) {
+            console.error("Error loading mesh:", error);
+          }
+          continue;
+        }
 
-                fixGlbModelToGround(transformMachine, geometryMachine);
-              },
+        // possibly an <update> tag
+        const updateTag =
+          this.simulationContents.simulationContentFormat.formatUpdateTag(
+            this.simulationContents.formatTag(tagObj),
+          );
+
+        if (
+          updateTag &&
+          updateTag.update.time === 0 &&
+          updateTag.update.translate
+        ) {
+          const foundGeometry = this.geometriesMap.get(
+            updateTag.update.instanceName,
+          );
+          if (foundGeometry) {
+            foundGeometry.setPosition(
+              new Vector3(
+                updateTag.update.translate.x,
+                updateTag.update.translate.y,
+                updateTag.update.translate.z,
+              ),
             );
           }
+          continue;
         }
-      });
-
-      // SceneLoader.ImportMesh(
-      //   "",
-      //   "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
-      //   "dg-ic-Machine.glb",
-      //   scene,
-      //   function (newMeshes) {
-      //     const transformMachine = newMeshes[0];
-      //     const geometryMachine = newMeshes[1];
-
-      //     fixGlbModelToGround(transformMachine, geometryMachine);
-      //   },
-      // );
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const ground = MeshBuilder.CreateGround(
@@ -131,11 +131,34 @@ export class App {
     });
   }
 
+  /**
+   * Callback function to be used if Babylon.js mesh was successfully imported
+   * @param newMeshes Array of meshes that have been imported
+   * @param createTag The 'instanceName' attribute of corresponding <create> tag
+   */
+  private importMeshSuccess(
+    newMeshes: AbstractMesh[],
+    createTag: CreateTag,
+  ): void {
+    // Must have the main mesh and at least one child mesh
+    if (newMeshes.length < 2) return;
+
+    const transformMesh = newMeshes[0];
+
+    this.geometriesMap.set(
+      createTag.instanceName,
+      new Geometry(transformMesh, createTag.instanceName),
+    );
+  }
+
   private createCanvas(): HTMLCanvasElement {
     // create the canvas html element and attach it to the webpage
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
+    canvas.style.position = "absolute";
+    canvas.style.left = "0";
+    canvas.style.top = "0";
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
