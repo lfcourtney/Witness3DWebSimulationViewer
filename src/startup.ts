@@ -1,24 +1,6 @@
 import { FileUpload } from "./fileUpload";
 
 /**
- * Respond to loading of bundled JavaScript in the browser: hide initial loader element
- * and show the loaderContainer, allowing the user to interact with the form to submit w3d file
- * @param formContainer Element of id 'formContainer' in HTML document
- */
-function hideSpinner(formContainer: HTMLElement): void {
-  const loaderContainer = document.getElementById("loaderContainer");
-
-  if (!loaderContainer) {
-    throw new Error(
-      "Element of id 'loaderContainer' was unable to be found within index.html",
-    );
-  }
-
-  loaderContainer.style.display = "none";
-  formContainer.style.display = "flex";
-}
-
-/**
  * Ascertain the correct HTML elements TypeScript code needs to handle the input form,
  * whereby user upload a w3d file, from the index.html file.
  * @returns Object of the HTML elements TypeScript logic requires to handle input form
@@ -39,8 +21,8 @@ export function getFileUploadElements(): {
   }
 
   // We know that 'formContainer' exists, so we can safely hide the spinner
-  // and show the form instead
-  hideSpinner(formContainer);
+  // by revealing the form on top of the spinner
+  formContainer.style.display = "flex";
 
   const w3dFileInput = document.getElementById("w3dFile");
 

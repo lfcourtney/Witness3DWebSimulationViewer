@@ -19,7 +19,7 @@ const exampleXMLStructure = `<root>
 	<new model="C:\\Dev\\Witness3DWebSimulationViewer\\WitnessModels\\Quick3D.mod" />
   </root>`;
 
-describe("test FileUpload class", () => {
+describe("FileUpload class", () => {
   beforeEach(async () => {
     const dom = await JSDOM.fromFile("index.html");
 
