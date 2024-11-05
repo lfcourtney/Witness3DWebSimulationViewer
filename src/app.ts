@@ -97,6 +97,16 @@ export class App {
             );
           }
 
+          if (updateTag.update.scale) {
+            foundGeometry.setScale(
+              new Vector3(
+                updateTag.update.scale.x,
+                updateTag.update.scale.y,
+                updateTag.update.scale.z,
+              ),
+            );
+          }
+
           if (updateTag.update.visible === false) {
             foundGeometry.changeVisibility(0);
           }
