@@ -6,6 +6,7 @@ import { ScaleTag } from "./scaleTag";
 export interface UpdateTag {
   time: number;
   instanceName: string;
+  visible?: boolean;
   translate?: TranslateTag;
   scale?: ScaleTag;
 }

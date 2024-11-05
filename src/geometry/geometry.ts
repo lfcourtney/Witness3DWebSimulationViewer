@@ -1,4 +1,4 @@
-import { AbstractMesh, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Vector3, Node } from "@babylonjs/core";
 
 /**
  * Generic class responsible for representing the status of an imported geometry in Babylon.js scene
@@ -17,9 +17,6 @@ export class Geometry {
     this.transformMesh = _transformMesh;
 
     this._instanceName = _instanceName;
-
-    // We work with the 'geometryMesh' when we want to make a geometry invisible
-    this.transformMesh.visibility = 0;
 
     this.fixGeometryToGround();
   }
@@ -44,7 +41,7 @@ export class Geometry {
     let minY = 0;
 
     this.transformMesh.getDescendants().forEach((descendant) => {
-      if (descendant instanceof AbstractMesh) {
+      if (this.isNodeAbstractMesh(descendant)) {
         const boundingInfo = descendant.getBoundingInfo();
         const minimum = boundingInfo.boundingBox.minimum;
 
@@ -52,5 +49,21 @@ export class Geometry {
       }
     });
     this.transformMesh.position.y -= minY;
+  }
+
+  private isNodeAbstractMesh(node: Node): node is AbstractMesh {
+    return node instanceof AbstractMesh;
+  }
+
+  /**
+   * Change visibility for geometry
+   * @param newVisibility new visibility number
+   */
+  changeVisibility(newVisibility: number): void {
+    this.transformMesh.getDescendants().forEach((descendant) => {
+      if (this.isNodeAbstractMesh(descendant)) {
+        descendant.visibility = newVisibility;
+      }
+    });
   }
 }
