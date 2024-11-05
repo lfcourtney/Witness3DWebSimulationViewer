@@ -80,15 +80,14 @@ export class App {
             this.simulationContents.formatTag(tagObj),
           );
 
-        if (
-          updateTag &&
-          updateTag.update.time === 0 &&
-          updateTag.update.translate
-        ) {
+        if (updateTag && updateTag.update.time === 0) {
           const foundGeometry = this.geometriesMap.get(
             updateTag.update.instanceName,
           );
-          if (foundGeometry) {
+
+          if (!foundGeometry) continue;
+
+          if (updateTag.update.translate) {
             foundGeometry.setPosition(
               new Vector3(
                 updateTag.update.translate.x,
@@ -97,6 +96,11 @@ export class App {
               ),
             );
           }
+
+          if (updateTag.update.visible === false) {
+            foundGeometry.changeVisibility(0);
+          }
+
           continue;
         }
       }
@@ -279,8 +283,6 @@ export class App {
       this.formContainer.style.display = "flex";
       document.body.style.cursor = "";
     });
-
-    this.canvas.style.cursor = "pointer";
 
     button.onPointerEnterObservable.add(() => {
       document.body.style.cursor = "pointer";

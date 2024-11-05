@@ -57,6 +57,11 @@ export class SimulationContentFormat {
 
     if (!hasEssentialFields) return undefined;
 
+    // Ensure that 'visible' property is casted to a boolean
+    if (updateObj.visible) {
+      updateObj.visible = updateObj.visible === "true";
+    }
+
     const definiteUpdateTag = possibleUpdateTag as { update: UpdateTag };
 
     // Cast time to be a number

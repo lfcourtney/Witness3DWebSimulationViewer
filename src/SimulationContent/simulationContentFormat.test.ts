@@ -12,6 +12,14 @@ const validCreateTag = {
   },
 };
 
+const validUpdateTag = {
+  update: {
+    time: "0.000000",
+    instanceName: "AGV(1) - Entity (88)",
+    visible: "false",
+  },
+};
+
 describe("SimulationContentFormat class", () => {
   beforeAll(() => {
     simulationContentFormat = new SimulationContentFormat();
@@ -27,5 +35,20 @@ describe("SimulationContentFormat class", () => {
 
     // Assert that return create tag has its time parsed as a number
     expect(returnCreateTag?.create.time).toBe(0);
+  });
+
+  it("should format valid update tag appropriately", () => {
+    // Act
+    const returnUpdateTag =
+      simulationContentFormat.formatUpdateTag(validUpdateTag);
+
+    // Assert that return update tag is not undefined
+    expect(returnUpdateTag).toBeTruthy();
+
+    // Assert that update tag has its visible field parsed as a boolean
+    expect(returnUpdateTag?.update.visible).toBe(false);
+
+    // Assert that update update tag has its time parsed as a number
+    expect(returnUpdateTag?.update.time).toBe(0);
   });
 });

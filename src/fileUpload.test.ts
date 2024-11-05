@@ -37,7 +37,7 @@ describe("FileUpload class", () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.restoreAllMocks(); // Restores all mocks to original implementations
   });
 
   it("should return false when a non .w3d file is checked against 'hasW3dExtension' function", () => {
