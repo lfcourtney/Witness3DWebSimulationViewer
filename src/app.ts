@@ -46,6 +46,9 @@ export class App {
 
       const scene = this.createScene();
 
+      // Witness uses the right hand rule to describe the 3d coordinate axis
+      scene.useRightHandedSystem = true;
+
       for (const tagObj of this.simulationContents.tagStore) {
         // possibly a <create> tag
         const createTag =
