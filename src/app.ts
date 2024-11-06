@@ -60,6 +60,9 @@ export class App {
           const geometryName = this.simulationContents.extractGeometry(
             createTag.create.geometry,
           );
+
+          if (!geometryName) continue;
+
           try {
             const importMeshResult = await SceneLoader.ImportMeshAsync(
               "",
