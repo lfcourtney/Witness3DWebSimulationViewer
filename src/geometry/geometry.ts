@@ -41,6 +41,14 @@ export class Geometry {
     this.transformMesh.scaling = newScale;
   }
 
+  getRotation(): Vector3 {
+    return this.transformMesh.rotation;
+  }
+
+  setRotation(newRotation: Vector3): void {
+    this.transformMesh.rotation = newRotation;
+  }
+
   /**
    * Adds to 'y' position of geometry the difference between the origin of the scene and the 'y' position of the
    * geometry to make the geometry level with the floor in the Babylon.js scene
