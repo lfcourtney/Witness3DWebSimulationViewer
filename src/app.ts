@@ -9,8 +9,6 @@ import {
   HemisphericLight,
   MeshBuilder,
   Tools,
-  SceneLoader,
-  AbstractMesh,
 } from "@babylonjs/core";
 import {
   StackPanel,
@@ -18,10 +16,13 @@ import {
   Button,
   Control,
 } from "@babylonjs/gui";
-import { SimulationContents } from "./SimulationContent/simulationContent";
-import { Geometry } from "./geometry/geometry";
-import { CreateTag } from "./interfaces/createTag";
+import { SimulationContents } from "./simulationContent/simulationContent";
+import { MeshGeometry } from "./meshGeometry/meshGeometry";
+import { SimulationContentFormat } from "./simulationContent/simulationContentFormat";
 
+/**
+ * Class responsible for creating Babylon.js engine and rendering 3d scene (environment) to the browser
+ */
 export class App {
   private readonly canvas: HTMLCanvasElement;
   private engine?: Engine | WebGPUEngine;
@@ -30,8 +31,13 @@ export class App {
 
   private readonly formContainer: HTMLElement;
 
-  private readonly geometriesMap = new Map<string, Geometry>();
+  public readonly geometriesMap = new Map<string, MeshGeometry>();
 
+  /**
+   * Create class that renders 3d environment to the browser
+   * @param _formContainer HTML element that contains form to upload .w3d file
+   * @param _simulationContents Simulation information from uploaded .w3d file
+   */
   constructor(
     _formContainer: HTMLElement,
     _simulationContents: SimulationContents,
@@ -50,85 +56,13 @@ export class App {
       scene.useRightHandedSystem = true;
 
       for (const tagObj of this.simulationContents.tagStore) {
-        // possibly a <create> tag
-        const createTag =
-          this.simulationContents.simulationContentFormat.formatCreateTag(
+        const simulationContentFormat: SimulationContentFormat =
+          new SimulationContentFormat(
             this.simulationContents.formatTag(tagObj),
-          );
-        if (
-          createTag &&
-          createTag.create.geometry &&
-          createTag.create.time === 0
-        ) {
-          const geometryName = this.simulationContents.extractGeometry(
-            createTag.create.geometry,
+            { scene: scene, geometriesMap: this.geometriesMap },
           );
 
-          if (!geometryName) continue;
-
-          try {
-            const importMeshResult = await SceneLoader.ImportMeshAsync(
-              "",
-              "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
-              geometryName + ".glb",
-              scene,
-            );
-            this.importMeshSuccess(importMeshResult.meshes, createTag.create);
-          } catch (error) {
-            console.error("Error loading mesh:", error);
-          }
-          continue;
-        }
-
-        // possibly an <update> tag
-        const updateTag =
-          this.simulationContents.simulationContentFormat.formatUpdateTag(
-            this.simulationContents.formatTag(tagObj),
-          );
-
-        if (updateTag && updateTag.update.time === 0) {
-          const foundGeometry = this.geometriesMap.get(
-            updateTag.update.instanceName,
-          );
-
-          if (!foundGeometry) continue;
-
-          if (updateTag.update.translate) {
-            foundGeometry.setPosition(
-              new Vector3(
-                updateTag.update.translate.x,
-                updateTag.update.translate.y,
-                updateTag.update.translate.z,
-              ),
-            );
-          }
-
-          if (updateTag.update.scale) {
-            foundGeometry.setScale(
-              new Vector3(
-                updateTag.update.scale.x,
-                updateTag.update.scale.y,
-                updateTag.update.scale.z,
-              ),
-            );
-          }
-
-          if (updateTag.update.rotate) {
-            foundGeometry.setRotation(
-              new Vector3(
-                Tools.ToRadians(updateTag.update.rotate.x),
-                Tools.ToRadians(updateTag.update.rotate.y),
-                Tools.ToRadians(updateTag.update.rotate.z),
-              ),
-            );
-          }
-
-          if (updateTag.update.visible === false) {
-            foundGeometry.changeVisibility(0);
-          }
-
-          continue;
-        }
+        await simulationContentFormat.actOnTagLogic();
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -162,28 +96,9 @@ export class App {
   }
 
   /**
-   * Callback function to be used if Babylon.js mesh was successfully imported
-   * @param newMeshes Array of meshes that have been imported
-   * @param createTag The 'instanceName' attribute of corresponding <create> tag
+   * Create HTML <canvas> element that will be the target for rendering the 3d scene
+   * @returns HTML <canvas> element that will be the target for rendering the 3d scene
    */
-  private importMeshSuccess(
-    newMeshes: AbstractMesh[],
-    createTag: CreateTag,
-  ): void {
-    // Must have the main mesh and at least one child mesh
-    if (newMeshes.length < 2) return;
-
-    const transformMesh = newMeshes[0];
-
-    // Setting the name of the meshes allows us to search for the meshes from the scene
-    transformMesh.name = createTag.instanceName;
-
-    this.geometriesMap.set(
-      createTag.instanceName,
-      new Geometry(transformMesh, createTag.instanceName),
-    );
-  }
-
   private createCanvas(): HTMLCanvasElement {
     // create the canvas html element and attach it to the webpage
     const canvas = document.createElement("canvas");

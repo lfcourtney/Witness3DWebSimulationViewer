@@ -3,7 +3,7 @@ import { AbstractMesh, Vector3, Node } from "@babylonjs/core";
 /**
  * Generic class responsible for representing the status of an imported geometry in Babylon.js scene
  */
-export class Geometry {
+export class MeshGeometry {
   private readonly transformMesh: AbstractMesh;
 
   private readonly _instanceName: string;

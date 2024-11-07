@@ -1,16 +1,64 @@
 import { CreateTag } from "../interfaces/createTag";
 import { UpdateTag } from "../interfaces/updateTag";
+import {
+  SimulationTag,
+  SimulationTagData,
+} from "../simulationTags/simulationTag";
+import { SimulationCreateTag } from "../simulationTags/simulationCreateTag";
+import { SimulationUpdateTag } from "../simulationTags/simulationUpdateTag";
 
 /**
- * Class responsible for checking formatted content of tags from w3d file and returning these objects in their correct TypeScript interface
+ * Class responsible for checking the format of a generic tag, converting this tag to its specific type (eg, <create>, <update>, etc.)
+ * and invoking the specific functionality of the converted tag.
+ * For instance, through this class, different functionality will be delegated to the different types of tags, including <create>, <update>, etc.
  */
 export class SimulationContentFormat {
+  private readonly simulationTag?: SimulationTag;
+
+  /**
+   * Create class responsible for working with specific functionality of a generic tag
+   * @param tagObj Generic tag
+   * @param simulationTagData Data from Babylon.js scene
+   */
+  constructor(tagObj: object, simulationTagData: SimulationTagData) {
+    // possibly a <create> tag
+    const createTag = this.formatCreateTag(tagObj);
+
+    if (createTag) {
+      this.simulationTag = new SimulationCreateTag(
+        simulationTagData,
+        createTag.create,
+      );
+      return;
+    }
+
+    // possibly an <update> tag
+    const updateTag = this.formatUpdateTag(tagObj);
+
+    if (updateTag) {
+      this.simulationTag = new SimulationUpdateTag(
+        simulationTagData,
+        updateTag.update,
+      );
+      return;
+    }
+  }
+
+  /**
+   * Invoke asynchronous functionality related to specific tag
+   */
+  async actOnTagLogic(): Promise<void> {
+    if (this.simulationTag) {
+      await this.simulationTag.actOnTagLogic();
+    }
+  }
+
   /**
    * Assigns formatted tag to the 'CreateTag' TypeScript interface if object is formatted appropriately. Otherwise, returns undefined.
    * @param possibleCreateTag Object that should be formatted as a 'UpdateTag'
    * @returns Tag formatted as 'CreateTag'. Otherwise, undefined if tag was not formatted as a 'UpdateTag'.
    */
-  formatCreateTag(
+  private formatCreateTag(
     possibleCreateTag: object,
   ): { create: CreateTag } | undefined {
     const createObj = possibleCreateTag["create"];
@@ -41,7 +89,7 @@ export class SimulationContentFormat {
    * @param possibleUpdateTag Object that should be formatted as a 'UpdateTag'
    * @returns Tag formatted as 'UpdateTag'. Otherwise, undefined if tag was not formatted as a 'UpdateTag'.
    */
-  formatUpdateTag(
+  private formatUpdateTag(
     possibleUpdateTag: object,
   ): { update: UpdateTag } | undefined {
     const updateObj = possibleUpdateTag["update"];
@@ -82,6 +130,12 @@ export class SimulationContentFormat {
     return definiteUpdateTag;
   }
 
+  /**
+   * Takes in a generic object and loops through its key value pairs. For each string value,
+   * it will convert the value to a number or boolean providing that the given string value resembles a number or boolean
+   * @param parseObject The generic object to work with
+   * @returns The inputted object with the strings resembling numbers converted to numbers and the strings resembling booleans converted to booleans
+   */
   private parseObjectNumbersAndBooleans(parseObject: object): object {
     for (const key in parseObject) {
       if (typeof parseObject[key] === "string") {
