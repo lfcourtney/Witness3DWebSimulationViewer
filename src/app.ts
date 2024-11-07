@@ -113,6 +113,16 @@ export class App {
             );
           }
 
+          if (updateTag.update.rotate) {
+            foundGeometry.setRotation(
+              new Vector3(
+                Tools.ToRadians(updateTag.update.rotate.x),
+                Tools.ToRadians(updateTag.update.rotate.y),
+                Tools.ToRadians(updateTag.update.rotate.z),
+              ),
+            );
+          }
+
           if (updateTag.update.visible === false) {
             foundGeometry.changeVisibility(0);
           }
@@ -164,6 +174,9 @@ export class App {
     if (newMeshes.length < 2) return;
 
     const transformMesh = newMeshes[0];
+
+    // Setting the name of the meshes allows us to search for the meshes from the scene
+    transformMesh.name = createTag.instanceName;
 
     this.geometriesMap.set(
       createTag.instanceName,

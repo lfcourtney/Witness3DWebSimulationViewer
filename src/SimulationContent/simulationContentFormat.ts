@@ -25,12 +25,13 @@ export class SimulationContentFormat {
         typeof createObj[essentialField] === "string",
     );
 
+    // Does not include necessary fields, so return undefined
     if (!hasEssentialFields) return undefined;
 
     const definiteCreateTag = possibleCreateTag as { create: CreateTag };
 
-    // Cast time to be a number
-    definiteCreateTag.create.time = +definiteCreateTag.create.time;
+    // Ensure numbers and booleans are formatted correctly
+    this.parseObjectNumbersAndBooleans(definiteCreateTag.create);
 
     return definiteCreateTag;
   }
@@ -55,18 +56,56 @@ export class SimulationContentFormat {
         typeof updateObj[essentialField] === "string",
     );
 
+    // Does not include necessary fields, so return undefined
     if (!hasEssentialFields) return undefined;
-
-    // Ensure that 'visible' property is casted to a boolean
-    if (updateObj.visible) {
-      updateObj.visible = updateObj.visible === "true";
-    }
 
     const definiteUpdateTag = possibleUpdateTag as { update: UpdateTag };
 
-    // Cast time to be a number
-    definiteUpdateTag.update.time = +definiteUpdateTag.update.time;
+    // Ensure that translate tag is formatted correctly
+    if (definiteUpdateTag.update.translate) {
+      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.translate);
+    }
+
+    // Ensure that scale tag is formatted correctly
+    if (definiteUpdateTag.update.scale) {
+      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.scale);
+    }
+
+    // Ensure that rotate tag is formatted correctly
+    if (definiteUpdateTag.update.rotate) {
+      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.rotate);
+    }
+
+    // Ensure numbers and booleans are formatted correctly
+    this.parseObjectNumbersAndBooleans(definiteUpdateTag.update);
 
     return definiteUpdateTag;
+  }
+
+  private parseObjectNumbersAndBooleans(parseObject: object): object {
+    for (const key in parseObject) {
+      if (typeof parseObject[key] === "string") {
+        //#region number check
+        const parseNumber = +parseObject[key];
+        if (!isNaN(parseNumber)) {
+          parseObject[key] = parseNumber;
+          continue;
+        }
+        //#endregion
+
+        //#region boolean check
+        if (parseObject[key].toLowerCase() === "true") {
+          parseObject[key] = true;
+          continue;
+        }
+
+        if (parseObject[key].toLowerCase() === "false") {
+          parseObject[key] = false;
+          continue;
+        }
+        //#endregion
+      }
+    }
+    return parseObject;
   }
 }
