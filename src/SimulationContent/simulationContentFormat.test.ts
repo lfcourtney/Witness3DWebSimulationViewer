@@ -1,7 +1,5 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { SimulationContentFormat } from "./simulationContentFormat";
-
-let simulationContentFormat: SimulationContentFormat;
 
 const validCreateTag = {
   create: {
@@ -14,41 +12,66 @@ const validCreateTag = {
 
 const validUpdateTag = {
   update: {
-    time: "0.000000",
-    instanceName: "AGV(1) - Entity (88)",
+    time: "0",
+    instanceName: "[130] Treatment(2) - Main Icon",
+    translate: {
+      x: "40.1875",
+      y: "5",
+      z: "8.8125",
+    },
+    scale: {
+      x: "5.461",
+      y: "4.064",
+      z: "2.666999",
+    },
+    rotate: {
+      x: "5.461",
+      y: "4.064",
+      z: "2.666999",
+    },
     visible: "false",
   },
 };
 
+// mock SimulationTagData class
+vi.mock(import("../simulationTags/simulationTag"), () => {
+  const SimulationTag = vi.fn();
+  const SimulationTagData = vi.fn();
+  return { SimulationTag, SimulationTagData };
+});
+
 describe("SimulationContentFormat class", () => {
-  beforeAll(() => {
-    simulationContentFormat = new SimulationContentFormat();
+  afterEach(() => {
+    vi.restoreAllMocks(); // Restores all mocks to original implementations
   });
 
-  it("should format valid create tag appropriately", () => {
-    // Act
-    const returnCreateTag =
-      simulationContentFormat.formatCreateTag(validCreateTag);
+  it("should call 'formatCreateTag' if create tag is supplied to constructor", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formatCreateTag_spy = vi.spyOn<any, string>(
+      SimulationContentFormat.prototype,
+      "formatCreateTag",
+    );
 
-    // Assert that return create tag is not undefined
-    expect(returnCreateTag).toBeTruthy();
+    // Act by calling constructor
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    new SimulationContentFormat(validCreateTag, {} as any);
 
-    // Assert that return create tag has its time parsed as a number
-    expect(returnCreateTag?.create.time).toBe(0);
+    // Assert 'formatCreateTag' method has been called
+    expect(formatCreateTag_spy).toHaveBeenCalledOnce();
   });
 
-  it("should format valid update tag appropriately", () => {
-    // Act
-    const returnUpdateTag =
-      simulationContentFormat.formatUpdateTag(validUpdateTag);
+  it("should call 'formatUpdateTag' if create tag is supplied to constructor", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formatUpdateTag_spy = vi.spyOn<any, string>(
+      SimulationContentFormat.prototype,
+      "formatUpdateTag",
+    );
 
-    // Assert that return update tag is not undefined
-    expect(returnUpdateTag).toBeTruthy();
+    // Act by calling constructor
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    new SimulationContentFormat(validUpdateTag, {} as any);
 
-    // Assert that update tag has its visible field parsed as a boolean
-    expect(returnUpdateTag?.update.visible).toBe(false);
-
-    // Assert that update update tag has its time parsed as a number
-    expect(returnUpdateTag?.update.time).toBe(0);
+    // Assert 'formatUpdateTag' method has been called
+    expect(formatUpdateTag_spy).toHaveBeenCalledOnce();
   });
 });

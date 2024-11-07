@@ -1,5 +1,5 @@
 import { App } from "./app";
-import { SimulationContents } from "./SimulationContent/simulationContent";
+import { SimulationContents } from "./simulationContent/simulationContent";
 import { XMLParser } from "fast-xml-parser";
 
 /**

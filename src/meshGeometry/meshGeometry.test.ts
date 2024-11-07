@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { Geometry } from "./geometry";
+import { MeshGeometry } from "./meshGeometry";
 
 const exampleGeometryName = "exampleGeometry";
 
@@ -30,9 +30,9 @@ function initialiseAbstractMesh() {
 
 let abstractMesh = initialiseAbstractMesh();
 
-let geometryObject: Geometry;
+let geometryObject: MeshGeometry;
 
-describe("Geometry class", () => {
+describe("MeshGeometry class", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -50,20 +50,20 @@ describe("Geometry class", () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fixGeometryToTheGround_spy = vi.spyOn<any, string>(
-      Geometry.prototype,
+      MeshGeometry.prototype,
       "fixGeometryToGround",
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isNodeAbstractMesh_spy = vi.spyOn<any, string>(
-      Geometry.prototype,
+      MeshGeometry.prototype,
       "isNodeAbstractMesh",
     );
 
     isNodeAbstractMesh_spy.mockReturnValue(true);
 
     // Act
-    geometryObject = new Geometry(
+    geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
       exampleGeometryName,
