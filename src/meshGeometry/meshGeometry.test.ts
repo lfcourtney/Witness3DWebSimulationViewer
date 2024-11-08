@@ -30,30 +30,22 @@ function initialiseAbstractMesh() {
 
 let abstractMesh = initialiseAbstractMesh();
 
-let geometryObject: MeshGeometry;
-
 describe("MeshGeometry class", () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks(); // Restores all mocks to original implementations
   });
 
   beforeEach(() => {
-    if (geometryObject) {
-      abstractMesh = initialiseAbstractMesh();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (geometryObject as any).transformMesh = abstractMesh;
-    }
+    abstractMesh = initialiseAbstractMesh();
   });
 
-  it("should automatically increase position to make geometry level with the floor upon geometry initialisation", () => {
+  it("should increase mesh on y axis to make it level with the floor when 'fixGeometryToGround' method is invoked", () => {
     // Arrange
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fixGeometryToTheGround_spy = vi.spyOn<any, string>(
       MeshGeometry.prototype,
       "fixGeometryToGround",
     );
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isNodeAbstractMesh_spy = vi.spyOn<any, string>(
       MeshGeometry.prototype,
@@ -61,22 +53,36 @@ describe("MeshGeometry class", () => {
     );
 
     isNodeAbstractMesh_spy.mockReturnValue(true);
-
-    // Act
-    geometryObject = new MeshGeometry(
+    const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
       exampleGeometryName,
     );
 
+    // Act
+    geometryObject.fixGeometryToGround();
+
     // Assert that 'fixGeometryToGround' method has been called
     expect(fixGeometryToTheGround_spy).toHaveBeenCalledOnce();
-
     // Assert that 'abstractMesh' position has been moved
     expect(abstractMesh.position.y).toBe(10);
   });
 
   it("should change visibility to zero", () => {
+    // Arrange
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      abstractMesh as any,
+      exampleGeometryName,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isNodeAbstractMesh_spy = vi.spyOn<any, string>(
+      MeshGeometry.prototype,
+      "isNodeAbstractMesh",
+    );
+    isNodeAbstractMesh_spy.mockReturnValue(true);
+
     // Act
     geometryObject.changeVisibility(0);
 

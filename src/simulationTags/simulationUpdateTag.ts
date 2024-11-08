@@ -30,32 +30,26 @@ export class SimulationUpdateTag extends SimulationTag {
       if (!foundGeometry) return;
 
       if (this.updateTag.translate) {
-        foundGeometry.setPosition(
-          new Vector3(
-            this.updateTag.translate.x,
-            this.updateTag.translate.y,
-            this.updateTag.translate.z,
-          ),
+        foundGeometry.transformMesh.position = new Vector3(
+          this.updateTag.translate.x,
+          this.updateTag.translate.y,
+          this.updateTag.translate.z,
         );
       }
 
       if (this.updateTag.scale) {
-        foundGeometry.setScale(
-          new Vector3(
-            this.updateTag.scale.x,
-            this.updateTag.scale.y,
-            this.updateTag.scale.z,
-          ),
+        foundGeometry.transformMesh.scaling = new Vector3(
+          this.updateTag.scale.x,
+          this.updateTag.scale.y,
+          this.updateTag.scale.z,
         );
       }
 
       if (this.updateTag.rotate) {
-        foundGeometry.setRotation(
-          new Vector3(
-            Tools.ToRadians(this.updateTag.rotate.x),
-            Tools.ToRadians(this.updateTag.rotate.y),
-            Tools.ToRadians(this.updateTag.rotate.z),
-          ),
+        foundGeometry.transformMesh.rotation = new Vector3(
+          Tools.ToRadians(this.updateTag.rotate.x),
+          Tools.ToRadians(this.updateTag.rotate.y),
+          Tools.ToRadians(this.updateTag.rotate.z),
         );
       }
 

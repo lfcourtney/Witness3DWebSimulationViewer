@@ -1,4 +1,4 @@
-import { AbstractMesh, SceneLoader } from "@babylonjs/core";
+import { AbstractMesh, SceneLoader, MeshBuilder } from "@babylonjs/core";
 import { MeshGeometry } from "../meshGeometry/meshGeometry";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
@@ -23,6 +23,9 @@ export class SimulationCreateTag extends SimulationTag {
    * Invoke specific functionality related to <create> tag
    */
   async actOnTagLogic(): Promise<void> {
+    /**************************************************
+     *             HANDLE CREATION OF GEOMETRY            *
+     **************************************************/
     if (this.createTag.geometry && this.createTag.time === 0) {
       const geometryName = this.extractGeometry(this.createTag.geometry);
 
@@ -40,6 +43,42 @@ export class SimulationCreateTag extends SimulationTag {
         console.error("Error loading mesh:", error);
       }
       return;
+    }
+
+    /**************************************************
+     *             HANDLE CREATION OF FLOOR            *
+     **************************************************/
+
+    const floorRegex = /^Floor [0-9]+$/;
+
+    if (
+      this.createTag.surface &&
+      floorRegex.test(this.createTag.instanceName)
+    ) {
+      const surfaceTag = this.createTag.surface;
+
+      // Calculate width and depth
+      const width = Math.abs(surfaceTag.x2 - surfaceTag.x1);
+      const depth = Math.abs(surfaceTag.z2 - surfaceTag.z1);
+
+      // Calculate the center position for the floor
+      const centerX = (surfaceTag.x1 + surfaceTag.x2) / 2;
+      const centerZ = (surfaceTag.z1 + surfaceTag.z2) / 2;
+
+      // Create the ground plane
+      const ground = MeshBuilder.CreateGround(
+        this.createTag.instanceName,
+        {
+          width: width,
+          height: depth,
+        },
+        this.simulationTagData.scene,
+      );
+
+      // Position the ground at the center of the coordinates
+      ground.position.x = centerX;
+      ground.position.z = centerZ;
+      ground.position.y = surfaceTag.y1;
     }
   }
 

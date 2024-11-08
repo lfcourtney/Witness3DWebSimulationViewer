@@ -1,10 +1,10 @@
-import { AbstractMesh, Vector3, Node } from "@babylonjs/core";
+import { AbstractMesh, Node } from "@babylonjs/core";
 
 /**
  * Generic class responsible for representing the status of an imported geometry in Babylon.js scene
  */
 export class MeshGeometry {
-  private readonly transformMesh: AbstractMesh;
+  private readonly _transformMesh: AbstractMesh;
 
   private readonly _instanceName: string;
 
@@ -14,49 +14,27 @@ export class MeshGeometry {
    * @param _instanceName The instance name of the geometry
    */
   constructor(_transformMesh: AbstractMesh, _instanceName: string) {
-    this.transformMesh = _transformMesh;
+    this._transformMesh = _transformMesh;
 
     this._instanceName = _instanceName;
-
-    this.fixGeometryToGround();
   }
 
   public get instanceName() {
     return this._instanceName;
   }
 
-  getPosition(): Vector3 {
-    return this.transformMesh.position;
-  }
-
-  setPosition(newPosition: Vector3): void {
-    this.transformMesh.position = newPosition;
-  }
-
-  getScale(): Vector3 {
-    return this.transformMesh.scaling;
-  }
-
-  setScale(newScale: Vector3): void {
-    this.transformMesh.scaling = newScale;
-  }
-
-  getRotation(): Vector3 {
-    return this.transformMesh.rotation;
-  }
-
-  setRotation(newRotation: Vector3): void {
-    this.transformMesh.rotation = newRotation;
+  public get transformMesh() {
+    return this._transformMesh;
   }
 
   /**
    * Adds to 'y' position of geometry the difference between the origin of the scene and the 'y' position of the
    * geometry to make the geometry level with the floor in the Babylon.js scene
    */
-  private fixGeometryToGround(): void {
+  fixGeometryToGround(): void {
     let minY = 0;
 
-    this.transformMesh.getDescendants().forEach((descendant) => {
+    this._transformMesh.getDescendants().forEach((descendant) => {
       if (this.isNodeAbstractMesh(descendant)) {
         const boundingInfo = descendant.getBoundingInfo();
         const minimum = boundingInfo.boundingBox.minimum;
@@ -64,7 +42,7 @@ export class MeshGeometry {
         minY = Math.min(minY, minimum.y);
       }
     });
-    this.transformMesh.position.y -= minY;
+    this._transformMesh.position.y -= minY;
   }
 
   private isNodeAbstractMesh(node: Node): node is AbstractMesh {
@@ -76,7 +54,7 @@ export class MeshGeometry {
    * @param newVisibility new visibility number
    */
   changeVisibility(newVisibility: number): void {
-    this.transformMesh.getDescendants().forEach((descendant) => {
+    this._transformMesh.getDescendants().forEach((descendant) => {
       if (this.isNodeAbstractMesh(descendant)) {
         descendant.visibility = newVisibility;
       }

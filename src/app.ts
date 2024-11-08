@@ -7,8 +7,9 @@ import {
   ArcRotateCamera,
   Vector3,
   HemisphericLight,
-  MeshBuilder,
   Tools,
+  Camera,
+  AbstractMesh,
 } from "@babylonjs/core";
 import {
   StackPanel,
@@ -55,6 +56,9 @@ export class App {
       // Witness uses the right hand rule to describe the 3d coordinate axis
       scene.useRightHandedSystem = true;
 
+      /**************************************************
+       *             MAIN RENDER LOOP OF APPLICATION        *
+       **************************************************/
       for (const tagObj of this.simulationContents.tagStore) {
         const simulationContentFormat: SimulationContentFormat =
           new SimulationContentFormat(
@@ -65,12 +69,9 @@ export class App {
         await simulationContentFormat.actOnTagLogic();
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const ground = MeshBuilder.CreateGround(
-        "ground",
-        { width: 50, height: 50 },
-        scene,
-      );
+      if (scene.cameras.length > 0) {
+        this.positionCameraToFloor(scene.cameras[0], scene);
+      }
 
       this.createBackButton();
 
@@ -93,6 +94,23 @@ export class App {
 
       this.addWindowResizeEventListener();
     });
+  }
+
+  private positionCameraToFloor(camera: Camera, scene: Scene) {
+    // First floor mesh in the scene. Or undefined if there are no floor meshes
+    let floorMesh: AbstractMesh | undefined;
+
+    scene.meshes.forEach((mesh) => {
+      if (floorMesh) return;
+      const floorRegex = /^Floor [0-9]+$/;
+      if (floorRegex.test(mesh.name)) {
+        floorMesh = mesh;
+      }
+    });
+
+    if (camera instanceof ArcRotateCamera && floorMesh !== undefined) {
+      camera.setTarget(floorMesh);
+    }
   }
 
   /**
@@ -175,7 +193,7 @@ export class App {
       "camera",
       Tools.ToRadians(90),
       Tools.ToRadians(65),
-      10,
+      30,
       Vector3.Zero(),
       scene,
     );
