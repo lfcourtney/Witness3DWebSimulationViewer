@@ -78,6 +78,11 @@ export class SimulationContentFormat {
 
     const definiteCreateTag = possibleCreateTag as { create: CreateTag };
 
+    // Ensure that surface tag is formatted correctly
+    if (definiteCreateTag.create.surface) {
+      this.parseObjectNumbersAndBooleans(definiteCreateTag.create.surface);
+    }
+
     // Ensure numbers and booleans are formatted correctly
     this.parseObjectNumbersAndBooleans(definiteCreateTag.create);
 
