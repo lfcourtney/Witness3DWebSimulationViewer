@@ -55,30 +55,7 @@ export class SimulationCreateTag extends SimulationTag {
       this.createTag.surface &&
       floorRegex.test(this.createTag.instanceName)
     ) {
-      const surfaceTag = this.createTag.surface;
-
-      // Calculate width and depth
-      const width = Math.abs(surfaceTag.x2 - surfaceTag.x1);
-      const depth = Math.abs(surfaceTag.z2 - surfaceTag.z1);
-
-      // Calculate the center position for the floor
-      const centerX = (surfaceTag.x1 + surfaceTag.x2) / 2;
-      const centerZ = (surfaceTag.z1 + surfaceTag.z2) / 2;
-
-      // Create the ground plane
-      const ground = MeshBuilder.CreateGround(
-        this.createTag.instanceName,
-        {
-          width: width,
-          height: depth,
-        },
-        this.simulationTagData.scene,
-      );
-
-      // Position the ground at the center of the coordinates
-      ground.position.x = centerX;
-      ground.position.z = centerZ;
-      ground.position.y = surfaceTag.y1;
+      this.renderGround();
     }
   }
 
@@ -100,6 +77,38 @@ export class SimulationCreateTag extends SimulationTag {
       this.createTag.instanceName,
       new MeshGeometry(transformMesh, this.createTag.instanceName),
     );
+  }
+
+  /**
+   * Render and position floor because the given <create> tag specifies a <surface> tag that corresponds to a floor
+   */
+  private renderGround(): void {
+    if (!this.createTag.surface) return;
+
+    const surfaceTag = this.createTag.surface;
+
+    // Calculate width and depth
+    const width = Math.abs(surfaceTag.x2 - surfaceTag.x1);
+    const depth = Math.abs(surfaceTag.z2 - surfaceTag.z1);
+
+    // Calculate the center position for the floor
+    const centerX = (surfaceTag.x1 + surfaceTag.x2) / 2;
+    const centerZ = (surfaceTag.z1 + surfaceTag.z2) / 2;
+
+    // Create the ground plane
+    const ground = MeshBuilder.CreateGround(
+      this.createTag.instanceName,
+      {
+        width: width,
+        height: depth,
+      },
+      this.simulationTagData.scene,
+    );
+
+    // Position the ground at the center of the coordinates
+    ground.position.x = centerX;
+    ground.position.z = centerZ;
+    ground.position.y = surfaceTag.y1;
   }
 
   /**
