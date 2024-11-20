@@ -8,7 +8,6 @@ import {
   Vector3,
   HemisphericLight,
   Tools,
-  Camera,
   AbstractMesh,
 } from "@babylonjs/core";
 import {
@@ -69,9 +68,8 @@ export class App {
         await simulationContentFormat.actOnTagLogic();
       }
 
-      if (scene.cameras.length > 0) {
-        this.positionCameraToFloor(scene.cameras[0], scene);
-      }
+      // Must create camera and, if floor exists, position camera to floor
+      this.createCameraAndPositionToFloor(scene);
 
       this.createBackButton();
 
@@ -96,7 +94,12 @@ export class App {
     });
   }
 
-  private positionCameraToFloor(camera: Camera, scene: Scene) {
+  /**
+   * Create camera. If floor exists in scene, the target of camera will be set to the floor.
+   * Otherwise, the target of the camera is the scene origin.
+   * @param scene Scene to create camera for
+   */
+  private createCameraAndPositionToFloor(scene: Scene) {
     // First floor mesh in the scene. Or undefined if there are no floor meshes
     let floorMesh: AbstractMesh | undefined;
 
@@ -108,9 +111,32 @@ export class App {
       }
     });
 
-    if (camera instanceof ArcRotateCamera && floorMesh !== undefined) {
-      camera.setTarget(floorMesh);
+    // Floor if floor mesh exists. Scene origin otherwise.
+    let cameraTarget: Vector3 = Vector3.Zero();
+
+    if (floorMesh !== undefined) {
+      cameraTarget = new Vector3(
+        floorMesh.position.x,
+        floorMesh.position.y,
+        floorMesh.position.z,
+      );
     }
+
+    const camera = new ArcRotateCamera(
+      "camera",
+      Tools.ToRadians(90),
+      Tools.ToRadians(65),
+      30,
+      cameraTarget,
+      scene,
+    );
+
+    camera.upperRadiusLimit = 40;
+    camera.lowerRadiusLimit = 5;
+    camera.upperBetaLimit = Tools.ToRadians(83);
+
+    // This attaches the camera to the canvas
+    camera.attachControl(this.canvas, true);
   }
 
   /**
@@ -188,22 +214,6 @@ export class App {
 
     // This creates a basic Babylon Scene object (non-mesh)
     const scene = new Scene(this.engine);
-
-    const camera = new ArcRotateCamera(
-      "camera",
-      Tools.ToRadians(90),
-      Tools.ToRadians(65),
-      30,
-      Vector3.Zero(),
-      scene,
-    );
-
-    camera.upperRadiusLimit = 40;
-    camera.lowerRadiusLimit = 5;
-    camera.upperBetaLimit = Tools.ToRadians(83);
-
-    // This attaches the camera to the canvas
-    camera.attachControl(this.canvas, true);
 
     const light1: HemisphericLight = new HemisphericLight(
       "light1",
