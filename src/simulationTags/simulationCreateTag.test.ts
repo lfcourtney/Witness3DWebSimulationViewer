@@ -33,10 +33,12 @@ const mockFloorCreateTag: CreateTag = {
 vi.mock(import("@babylonjs/core"), async () => {
   const SceneLoader = vi.fn(() => ({}));
 
+  const mockAbstractMesh = { name: null };
+
   // use 'undefined' to represent meshes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (SceneLoader as any).ImportMeshAsync = vi.fn(() => ({
-    meshes: [undefined, undefined],
+    meshes: [mockAbstractMesh, mockAbstractMesh],
   }));
 
   const MeshBuilder = vi.fn(() => ({}));
@@ -86,8 +88,13 @@ describe("SimulationCreateTag class", () => {
   it("should call 'importMeshSuccess' when imvoking 'actOnTagLogic' and it is necessary to handle creation of geometry", async () => {
     // Arrange
     const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { scene: undefined } as any,
+      {
+        scene: undefined,
+        geometriesMap: {
+          set: vi.fn(),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
       mockCreateTag,
     );
 
