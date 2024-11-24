@@ -17,6 +17,7 @@ export default defineConfig({
       "@babylonjs/core/Debug/debugLayer": path.resolve("./mocks/babylon.js"),
       "@babylonjs/inspector": path.resolve("./mocks/babylon.js"),
       "@babylonjs/core": path.resolve("./mocks/babylon.js"),
+      "@babylonjs/gui": path.resolve("./mocks/babylon.js"),
     },
   },
 });
