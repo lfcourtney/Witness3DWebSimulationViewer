@@ -1,4 +1,9 @@
-import { AbstractMesh, SceneLoader, MeshBuilder } from "@babylonjs/core";
+import {
+  AbstractMesh,
+  SceneLoader,
+  MeshBuilder,
+  Vector3,
+} from "@babylonjs/core";
 import { MeshGeometry } from "../meshGeometry/meshGeometry";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
@@ -69,6 +74,8 @@ export class SimulationCreateTag extends SimulationTag {
     if (newMeshes.length < 2) return;
 
     const transformMesh = newMeshes[0];
+
+    transformMesh.scaling = new Vector3(0.003, 0.003, 0.003);
 
     // Setting the name of the meshes allows us to search for the meshes from the scene
     transformMesh.name = this.createTag.instanceName;
