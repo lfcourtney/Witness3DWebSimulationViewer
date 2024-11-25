@@ -39,9 +39,9 @@ export class SimulationUpdateTag extends SimulationTag {
 
       if (this.updateTag.scale) {
         foundGeometry.transformMesh.scaling = new Vector3(
-          this.updateTag.scale.x,
-          this.updateTag.scale.y,
-          this.updateTag.scale.z,
+          this.updateTag.scale.x * 0.03,
+          this.updateTag.scale.y * 0.03,
+          this.updateTag.scale.z * 0.03,
         );
       }
 
