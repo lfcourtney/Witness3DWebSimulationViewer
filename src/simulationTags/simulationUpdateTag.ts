@@ -38,11 +38,23 @@ export class SimulationUpdateTag extends SimulationTag {
       }
 
       if (this.updateTag.scale) {
-        foundGeometry.transformMesh.scaling = new Vector3(
-          this.updateTag.scale.x * 0.03,
-          this.updateTag.scale.y * 0.03,
-          this.updateTag.scale.z * 0.03,
-        );
+        // TODO: remove this so that all meshes are scaled the same once new models are uploaded
+        if (
+          this.updateTag.instanceName !== "[130] Treatment(1) - Main Icon" &&
+          this.updateTag.instanceName !== "[130] Treatment(2) - Main Icon"
+        ) {
+          foundGeometry.transformMesh.scaling = new Vector3(
+            this.updateTag.scale.x * 0.03,
+            this.updateTag.scale.y * 0.03,
+            this.updateTag.scale.z * 0.03,
+          );
+        } else {
+          foundGeometry.transformMesh.scaling = new Vector3(
+            this.updateTag.scale.x,
+            this.updateTag.scale.y,
+            this.updateTag.scale.z,
+          );
+        }
       }
 
       if (this.updateTag.rotate) {
