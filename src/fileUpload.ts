@@ -37,6 +37,11 @@ export class FileUpload {
     this.fileUploadBtn.addEventListener("click", this.submitFile.bind(this));
   }
 
+  /**
+   * Event listener that is called whenever the file upload button is clicked on.
+   * Will check the uploaded file, and if it is correct, will pass the file contents
+   * on to another method so that its contents can be passed into text.
+   */
   private addFile() {
     this.resetHtmlElements();
 
@@ -68,6 +73,13 @@ export class FileUpload {
     reader.readAsText(w3dFile);
   }
 
+  /**
+   * Event listener for the FileReader 'load' event. Takes the text content
+   * created by the FileReader, parses this into XML and passes the XML into
+   * an instance of 'SimulationContents' class.
+   * @param event FileReader event. Contains the text contents.
+   * @param file JavaScript File object that contains text content.
+   */
   private loadFile(event: ProgressEvent<FileReader>, file: File): void {
     if (!event.target?.result || typeof event.target.result !== "string")
       return;
@@ -121,6 +133,10 @@ export class FileUpload {
     return individualLines.join("\n");
   }
 
+  /**
+   * Event listener for user clicking on form submit button. If the file has been uploaded correctly
+   * and parsed into XML without errors, will instantiate an instance of 'App'
+   */
   private submitFile(): void {
     if (
       !this.w3dFile ||
@@ -148,6 +164,9 @@ export class FileUpload {
     new App(this.formContainer, this.simulationContents);
   }
 
+  /**
+   * Resets the file input form back to its original state.
+   */
   private reset(): void {
     this.w3dFile = undefined;
 
@@ -174,11 +193,21 @@ export class FileUpload {
     }
   }
 
+  /**
+   * Checks if the given filename has the '.w3d' file extension.
+   * @param filename The given filename.
+   * @returns True if the filename has a '.w3d' extension. Otherwise, false.
+   */
   private hasW3dExtension(filename: string): boolean {
     const w3dRegex = /\.w3d$/;
     return w3dRegex.test(filename);
   }
 
+  /**
+   * Parses the 'size' property of a JavaScript File into a readable format.
+   * @param number 'size' property of JavaScript File.
+   * @returns 'size' of JavaScript file in readable format.
+   */
   private returnFileSize(number) {
     if (number < 1e3) {
       return `${number} bytes`;
