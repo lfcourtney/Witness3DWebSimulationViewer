@@ -78,6 +78,13 @@ export class SimulationContentFormat {
 
     const definiteCreateTag = possibleCreateTag as { create: CreateTag };
 
+    // 'queueInfo' field is optional, so this loop will have no iterations if it does not exist
+    for (const key in definiteCreateTag.create.queueInfo) {
+      this.parseObjectNumbersAndBooleans(
+        definiteCreateTag.create.queueInfo[key],
+      );
+    }
+
     // Ensure that surface tag is formatted correctly
     if (definiteCreateTag.create.surface) {
       this.parseObjectNumbersAndBooleans(definiteCreateTag.create.surface);
@@ -142,17 +149,23 @@ export class SimulationContentFormat {
    * @returns The inputted object with the strings resembling numbers converted to numbers and the strings resembling booleans converted to booleans
    */
   private parseObjectNumbersAndBooleans(parseObject: object): object {
+    if (typeof parseObject !== "object") return parseObject;
+
     for (const key in parseObject) {
       if (typeof parseObject[key] === "string") {
-        //#region number check
+        /**************************************************
+         *             Parse String to Number            *
+         **************************************************/
+        // Result will be 'NaN' if string is not actually a number
         const parseNumber = +parseObject[key];
         if (!isNaN(parseNumber)) {
           parseObject[key] = parseNumber;
           continue;
         }
-        //#endregion
 
-        //#region boolean check
+        /**************************************************
+         *             Parse String to Boolean            *
+         **************************************************/
         if (parseObject[key].toLowerCase() === "true") {
           parseObject[key] = true;
           continue;
@@ -162,7 +175,6 @@ export class SimulationContentFormat {
           parseObject[key] = false;
           continue;
         }
-        //#endregion
       }
     }
     return parseObject;
