@@ -14,9 +14,10 @@ vi.mock(import("./simulationContent/simulationContentFormat"), () => {
 });
 
 // mock needed babylon.js imports
-vi.mock(import("@babylonjs/core"), async () => {
+vi.mock(import("@babylonjs/core"), () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Vector3 = vi.fn((x, y, z) => ({ x, y, z })) as any;
+  Vector3.Zero = vi.fn(() => ({ x: 0, y: 0, z: 0 }));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Tools = vi.fn(() => ({})) as any;
 
@@ -30,8 +31,6 @@ vi.mock(import("@babylonjs/core"), async () => {
 
   // use 'undefined' to represent meshes
   Tools.ToRadians = vi.fn((inputValue) => inputValue);
-
-  Vector3.Zero = vi.fn(() => ({ x: 0, y: 0, z: 0 }));
 
   const AdvancedDynamicTexture = {
     CreateFullscreenUI: vi.fn(() => ({ addControl: vi.fn() })),

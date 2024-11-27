@@ -30,8 +30,9 @@ const mockFloorCreateTag: CreateTag = {
 };
 
 // mock needed babylon.js imports
-vi.mock(import("@babylonjs/core"), async () => {
-  const SceneLoader = vi.fn(() => ({}));
+vi.mock(import("@babylonjs/core"), () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const SceneLoader = vi.fn(() => ({})) as any;
 
   const mockAbstractMesh = { name: null };
 
@@ -41,7 +42,8 @@ vi.mock(import("@babylonjs/core"), async () => {
     meshes: [mockAbstractMesh, mockAbstractMesh],
   }));
 
-  const MeshBuilder = vi.fn(() => ({}));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const MeshBuilder = vi.fn(() => ({})) as any;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (MeshBuilder as any).CreateGround = vi.fn(() => ({
@@ -52,15 +54,11 @@ vi.mock(import("@babylonjs/core"), async () => {
     },
   }));
 
-  const babylonJSImport = await import("@babylonjs/core");
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (babylonJSImport as any).SceneLoader = SceneLoader;
+  const Vector3 = vi.fn((x, y, z) => ({ x, y, z })) as any;
+  Vector3.Zero = vi.fn(() => ({ x: 0, y: 0, z: 0 }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (babylonJSImport as any).MeshBuilder = MeshBuilder;
-
-  return { ...babylonJSImport };
+  return { SceneLoader, MeshBuilder, Vector3 };
 });
 
 describe("SimulationCreateTag class", () => {
