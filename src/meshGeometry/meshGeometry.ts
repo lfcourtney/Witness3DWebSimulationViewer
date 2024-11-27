@@ -4,9 +4,9 @@ import { AbstractMesh, Node } from "@babylonjs/core";
  * Generic class responsible for representing the status of an imported geometry in Babylon.js scene
  */
 export class MeshGeometry {
-  private readonly _transformMesh: AbstractMesh;
+  protected readonly _transformMesh: AbstractMesh;
 
-  private readonly _instanceName: string;
+  protected readonly _instanceName: string;
 
   /**
    * Create an object representing a generic geometry imported into the Babylon.js scene

@@ -7,6 +7,7 @@ import {
 import { MeshGeometry } from "../meshGeometry/meshGeometry";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
+import { MachineGeometry } from "../meshGeometry/machineGeometry";
 
 /**
  * Class responsible for holding specific functionality of <create> tag
@@ -80,10 +81,22 @@ export class SimulationCreateTag extends SimulationTag {
     // Setting the name of the meshes allows us to search for the meshes from the scene
     transformMesh.name = this.createTag.instanceName;
 
-    this.simulationTagData.geometriesMap.set(
-      this.createTag.instanceName,
-      new MeshGeometry(transformMesh, this.createTag.instanceName),
-    );
+    /******************************************************
+     * Only machines will have a <queueInfo> tag as a child
+     * of the <create> tag responsible for creating them
+     ******************************************************/
+
+    if (this.createTag.queueInfo) {
+      this.simulationTagData.geometriesMap.set(
+        this.createTag.instanceName,
+        new MachineGeometry(transformMesh, this.createTag.instanceName, this.createTag.queueInfo),
+      );
+    } else {
+      this.simulationTagData.geometriesMap.set(
+        this.createTag.instanceName,
+        new MeshGeometry(transformMesh, this.createTag.instanceName),
+      );
+    }
   }
 
   /**
