@@ -1,4 +1,5 @@
-import { AbstractMesh } from "@babylonjs/core";
+import { blueMat } from "../materials/colors";
+import { AbstractMesh, MeshBuilder, Mesh, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
 
@@ -7,6 +8,8 @@ import { QueueInfoTag } from "../interfaces/queueInfoTag";
  */
 export class MachineGeometry extends MeshGeometry {
   private readonly queueInfoTag: QueueInfoTag;
+
+  private readonly part: Mesh | undefined;
 
   /**
    * Create an object representing a machine geometry imported into the Babylon.js scene
@@ -21,5 +24,60 @@ export class MachineGeometry extends MeshGeometry {
   ) {
     super(_transformMesh, _instanceName);
     this.queueInfoTag = _queueInfoTag;
+
+    /*********************************************
+     *                  Create part
+     *********************************************/
+    if (this.hasQueuePosition()) {
+      const part = MeshBuilder.CreateBox("part", { size: 0.6 });
+      part.material = blueMat();
+      this.part = part;
+      this.setPositionOfPart(part);
+    }
+  }
+
+  /**
+   * @override
+   * Set the position of the machine. Updates machine part positions in
+   * accordance with this new position.
+   * @param newPosition New position of the machine
+   */
+  setPosition(newPosition: Vector3) {
+    super.setPosition(newPosition);
+    if (this.part) {
+      this.setPositionOfPart(this.part);
+    }
+  }
+
+  /**
+   * Updates the position of the part in relation to the machine mesh. So this method
+   * should be called in conjunction with updating the position of the main machine.
+   * @param part The machine part to update the position of
+   */
+  private setPositionOfPart(part: Mesh): void {
+    // TODO: Mention this odd scale factor in Sprint Review. Why does this arbitrary value of 2
+    // seem to, more or less, be the accurate value and get the parts positioned correctly?
+    const scaleFactor = 2;
+    part.position.x =
+      this._transformMesh.position.x +
+      this.queueInfoTag.position.x * scaleFactor;
+    part.position.y =
+      this._transformMesh.position.y +
+      this.queueInfoTag.position.y * scaleFactor;
+    part.position.z =
+      this._transformMesh.position.z +
+      this.queueInfoTag.position.z * scaleFactor;
+  }
+
+  /**
+   * Checks whether queue position is not 0, 0, 0 on all 3 axes.
+   * @returns True if position is not at origin. False otherwise.
+   */
+  private hasQueuePosition(): boolean {
+    let hasQueuePosition: boolean = false;
+    for (const position in this.queueInfoTag.position) {
+      hasQueuePosition = this.queueInfoTag.position[position] !== 0;
+    }
+    return hasQueuePosition;
   }
 }

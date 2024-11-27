@@ -1,4 +1,4 @@
-import { AbstractMesh, Node } from "@babylonjs/core";
+import { AbstractMesh, Node, Vector3 } from "@babylonjs/core";
 
 /**
  * Generic class responsible for representing the status of an imported geometry in Babylon.js scene
@@ -23,8 +23,28 @@ export class MeshGeometry {
     return this._instanceName;
   }
 
-  public get transformMesh() {
-    return this._transformMesh;
+  /**
+   * Set the position of the mesh
+   * @param newPosition New position of the mesh
+   */
+  setPosition(newPosition: Vector3) {
+    this._transformMesh.position = newPosition;
+  }
+
+  /**
+   * Set the rotation of the mesh
+   * @param newRotation New rotation value of the mesh
+   */
+  setRotation(newRotation: Vector3) {
+    this._transformMesh.rotation = newRotation;
+  }
+
+  /**
+   * Set the scaling of the mesh
+   * @param newScaling New scaling value of the mesh
+   */
+  setScaling(newScaling: Vector3) {
+    this._transformMesh.scaling = newScaling;
   }
 
   /**

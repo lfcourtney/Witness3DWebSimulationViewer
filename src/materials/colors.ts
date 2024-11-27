@@ -1,8 +1,8 @@
-import { StandardMaterial, Color3 } from '@babylonjs/core';
+import { StandardMaterial, Color3 } from "@babylonjs/core";
 
 const blueMat = () => {
-  const blueMat = new StandardMaterial('blue');
-  blueMat.diffuseColor = new Color3(0, 0, 1);
+  const blueMat = new StandardMaterial("blue");
+  blueMat.diffuseColor = Color3.FromHexString("#005779");
 
   return blueMat;
 };
