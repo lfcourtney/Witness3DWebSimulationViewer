@@ -1,3 +1,4 @@
+import { QueueInfoTag } from "./queueInfoTag";
 import { SurfaceTag } from "./surfaceTag";
 
 /**
@@ -6,6 +7,7 @@ import { SurfaceTag } from "./surfaceTag";
 export interface CreateTag {
   time: number;
   instanceName: string;
+  queueInfo?: QueueInfoTag;
   geometry?: string;
   surface?: SurfaceTag;
 }
