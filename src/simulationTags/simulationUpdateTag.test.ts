@@ -31,11 +31,9 @@ const mockUpdateTagVisible: UpdateTag = {
 
 function mockMeshGeometry() {
   return {
-    transformMesh: {
-      position: undefined,
-      scaling: undefined,
-      rotation: undefined,
-    },
+    setPosition: vi.fn(),
+    setScaling: vi.fn(),
+    setRotation: vi.fn(),
   };
 }
 
@@ -83,12 +81,12 @@ describe("SimulationUpdateTag class", () => {
     // Act
     await simulationUpdateTag.actOnTagLogic();
 
-    // Assert position has been set given it is no longer undefined
-    expect(typeof mockedMeshGeometry.transformMesh.position).toBeTruthy();
-    // Assert scaling has been set given it is no longer undefined
-    expect(typeof mockedMeshGeometry.transformMesh.scaling).toBeTruthy();
-    // Assert rotation has been set given it is no longer undefined
-    expect(typeof mockedMeshGeometry.transformMesh.rotation).toBeTruthy();
+    // Assert 'setPosition' method has been invoked
+    expect(mockedMeshGeometry.setPosition).toHaveBeenCalled();
+    // Assert 'setScaling' method has been invoked
+    expect(mockedMeshGeometry.setScaling).toHaveBeenCalled();
+    // Assert 'setRotation' method has been invoked
+    expect(mockedMeshGeometry.setRotation).toHaveBeenCalled();
   });
 
   it("should setVisibility as necessary when invoking 'actOnTagLogic'", async () => {
