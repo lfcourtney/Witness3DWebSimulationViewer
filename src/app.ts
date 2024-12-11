@@ -85,13 +85,22 @@ export class App {
         }
       });
 
+      let frameNumber = 0;
+
       // run the main render loop
       engine.runRenderLoop(() => {
+        console.log(this.formatFrameNumber(frameNumber));
         scene.render();
+        frameNumber += 0.01;
       });
 
       this.addWindowResizeEventListener();
     });
+  }
+
+  private formatFrameNumber(frameNumber): string {
+    const roundFrameNumber = Math.floor(frameNumber * 100) / 100;
+    return roundFrameNumber.toFixed(2);
   }
 
   /**
