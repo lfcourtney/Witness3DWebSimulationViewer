@@ -39,8 +39,40 @@ export class MachineGeometry extends MeshGeometry {
   }
 
   /**
+   * Return the starting position of the queue scaled along the parent geometry
+   */
+  private get scaledQueueInfo(): {
+    x: number;
+    y: number;
+    z: number;
+  } {
+    let scaleFactor = 1;
+
+    if (
+      this._instanceName !== "[130] Treatment(1) - Main Icon" &&
+      this._instanceName !== "[130] Treatment(2) - Main Icon"
+    ) {
+      //TODO: Undo 'scaleFactor' variable as soon as all the models are properly sized, and thus do not need their sizes scaled up by 97% to
+      // reflect their true scalings as they were initially shrunk by 3%
+      scaleFactor = 33.333333;
+    }
+
+    return {
+      x:
+        this.queueInfoTag.position.x *
+        (this._transformMesh.scaling.x * scaleFactor),
+      y:
+        this.queueInfoTag.position.y *
+        (this._transformMesh.scaling.y * scaleFactor),
+      z:
+        this.queueInfoTag.position.z *
+        (this._transformMesh.scaling.z * scaleFactor),
+    };
+  }
+
+  /**
    * @override
-   * Set the position of the machine. Updates machine part positions in
+   * Set the position of the machine. Updates queue position in
    * accordance with this new position.
    * @param newPosition New position of the machine
    */
@@ -52,18 +84,29 @@ export class MachineGeometry extends MeshGeometry {
   }
 
   /**
+   * @override
+   * Set the scaling of the machine. Updates queue position in
+   * accordance with this new scaling.
+   * @param newScaling New scaling of the machine
+   */
+  setScaling(newScaling: Vector3) {
+    super.setScaling(newScaling);
+    if (this.part) {
+      this.setPositionOfPart(this.part);
+    }
+  }
+
+  /**
    * Updates the position of the part in relation to the machine mesh. So this method
    * should be called in conjunction with updating the position of the main machine.
    * @param part The machine part to update the position of
    */
   private setPositionOfPart(part: Mesh): void {
-    part.position.x =
-      this._transformMesh.position.x + this.queueInfoTag.position.x;
+    part.position.x = this._transformMesh.position.x + this.scaledQueueInfo.x;
     part.position.y =
       this._transformMesh.position.y +
       this.applyPartPositioningToQueuePosition();
-    part.position.z =
-      this._transformMesh.position.z + this.queueInfoTag.position.z;
+    part.position.z = this._transformMesh.position.z + this.scaledQueueInfo.z;
   }
 
   /**
@@ -73,15 +116,15 @@ export class MachineGeometry extends MeshGeometry {
   private applyPartPositioningToQueuePosition(): number {
     const partSizeHalved = this.PART_SIZE / 2;
     if (this.queueInfoTag.behaviour.partPositioning === "partOver") {
-      return this.queueInfoTag.position.y + partSizeHalved;
+      return this.scaledQueueInfo.y + partSizeHalved;
     }
     if (this.queueInfoTag.behaviour.partPositioning === "partUnder") {
-      return this.queueInfoTag.position.y - partSizeHalved;
+      return this.scaledQueueInfo.y - partSizeHalved;
     }
 
     // A value of 'partCentre' does not need modification: origin of the part, which is the middle,
     // will be aligned with the queue y-axis position anyway.
-    return this.queueInfoTag.position.y;
+    return this.scaledQueueInfo.y;
   }
 
   /**

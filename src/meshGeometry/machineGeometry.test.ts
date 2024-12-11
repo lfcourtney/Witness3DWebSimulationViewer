@@ -120,8 +120,6 @@ describe("MachineGeometry class", () => {
 
     const queueInfoTag_mock = mockQueueInfoTag();
 
-    queueInfoTag_mock.behaviour.partPositioning = "partUnder";
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const setPositionOfPart_spy = vi.spyOn<any, string>(
       MachineGeometry.prototype,
@@ -145,6 +143,36 @@ describe("MachineGeometry class", () => {
     expect(setPositionOfPart_spy).toHaveBeenCalled();
   });
 
+  it("should set part position when 'setScaling' method is invoked to update position", () => {
+    // Arrange
+
+    const transformMesh_mock = mockTransformMesh();
+
+    const queueInfoTag_mock = mockQueueInfoTag();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const setPositionOfPart_spy = vi.spyOn<any, string>(
+      MachineGeometry.prototype,
+      "setPositionOfPart",
+    );
+
+    const machineGeometry = new MachineGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformMesh_mock as any,
+      exampleMachineGeometryName,
+      queueInfoTag_mock,
+    );
+
+    const mockScaling = { x: 10, y: 10, z: 10 };
+
+    // Act
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    machineGeometry.setScaling(mockScaling as any);
+
+    // Assert that 'setPositionOfPart' method has been called
+    expect(setPositionOfPart_spy).toHaveBeenCalled();
+  });
+
   it(`should return the correct value of 'applyPartPositioningToQueuePosition' when 'partPositioning' attribute
     is set to 'partUnder'`, () => {
     // Arrange
@@ -160,6 +188,15 @@ describe("MachineGeometry class", () => {
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      machineGeometry,
+      "scaledQueueInfo",
+      "get",
+    ).mockImplementation(() => ({
+      ...queueInfoTag_mock.position,
+    }));
 
     // Act
     const applyPartPositioningToQueuePositionReturnValue =
@@ -189,6 +226,15 @@ describe("MachineGeometry class", () => {
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      machineGeometry,
+      "scaledQueueInfo",
+      "get",
+    ).mockImplementation(() => ({
+      ...queueInfoTag_mock.position,
+    }));
 
     // Act
     const applyPartPositioningToQueuePositionReturnValue =
