@@ -79,10 +79,8 @@ export class SimulationContentFormat {
     const definiteCreateTag = possibleCreateTag as { create: CreateTag };
 
     // 'queueInfo' field is optional, so this loop will have no iterations if it does not exist
-    for (const key in definiteCreateTag.create.queueInfo) {
-      this.parseObjectNumbersAndBooleans(
-        definiteCreateTag.create.queueInfo[key],
-      );
+    if (definiteCreateTag.create.queueInfo) {
+      this.parseObjectNumbersAndBooleans(definiteCreateTag.create.queueInfo);
     }
 
     // Ensure that surface tag is formatted correctly
@@ -152,6 +150,15 @@ export class SimulationContentFormat {
     if (typeof parseObject !== "object") return parseObject;
 
     for (const key in parseObject) {
+      /**
+       * Use recursion to search through and if necessary parse
+       * all child objects.
+       */
+      if (typeof parseObject[key] === "object") {
+        this.parseObjectNumbersAndBooleans(parseObject[key]);
+        continue;
+      }
+
       if (typeof parseObject[key] === "string") {
         /**************************************************
          *             Parse String to Number            *
