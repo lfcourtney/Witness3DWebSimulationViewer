@@ -1,9 +1,11 @@
+export type PartPositioning = "partOver" | "partUnder" | "partCentre";
+
 /**
  * Represents a formatted <queueInfo> tag
  */
 export interface QueueInfoTag {
   behaviour: {
-    partPositioning: string;
+    partPositioning: PartPositioning;
     partPitch: number;
     partRoll: number;
     partYaw: number;

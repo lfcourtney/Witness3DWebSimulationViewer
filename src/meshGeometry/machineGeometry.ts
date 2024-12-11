@@ -7,6 +7,8 @@ import { QueueInfoTag } from "../interfaces/queueInfoTag";
  * Subclass of the MeshGeometry class responsible for representing the status of an machine geometry in Babylon.js scene
  */
 export class MachineGeometry extends MeshGeometry {
+  private readonly PART_SIZE: number = 0.6;
+
   private readonly queueInfoTag: QueueInfoTag;
 
   private readonly part: Mesh | undefined;
@@ -29,7 +31,7 @@ export class MachineGeometry extends MeshGeometry {
      *                  Create part
      *********************************************/
     if (this.hasQueuePosition()) {
-      const part = MeshBuilder.CreateBox("part", { size: 0.6 });
+      const part = MeshBuilder.CreateBox("part", { size: this.PART_SIZE });
       part.material = blueMat();
       this.part = part;
       this.setPositionOfPart(part);
@@ -55,18 +57,31 @@ export class MachineGeometry extends MeshGeometry {
    * @param part The machine part to update the position of
    */
   private setPositionOfPart(part: Mesh): void {
-    // TODO: Mention this odd scale factor in Sprint Review. Why does this arbitrary value of 2
-    // seem to, more or less, be the accurate value and get the parts positioned correctly?
-    const scaleFactor = 2;
     part.position.x =
-      this._transformMesh.position.x +
-      this.queueInfoTag.position.x * scaleFactor;
+      this._transformMesh.position.x + this.queueInfoTag.position.x;
     part.position.y =
       this._transformMesh.position.y +
-      this.queueInfoTag.position.y * scaleFactor;
+      this.applyPartPositioningToQueuePosition();
     part.position.z =
-      this._transformMesh.position.z +
-      this.queueInfoTag.position.z * scaleFactor;
+      this._transformMesh.position.z + this.queueInfoTag.position.z;
+  }
+
+  /**
+   * Calculates correct vertical position of part relative to 'partPositioning' attribute
+   * @returns Vertical position of part based on 'partPositioning' attribute
+   */
+  private applyPartPositioningToQueuePosition(): number {
+    const partSizeHalved = this.PART_SIZE / 2;
+    if (this.queueInfoTag.behaviour.partPositioning === "partOver") {
+      return this.queueInfoTag.position.y + partSizeHalved;
+    }
+    if (this.queueInfoTag.behaviour.partPositioning === "partUnder") {
+      return this.queueInfoTag.position.y - partSizeHalved;
+    }
+
+    // A value of 'partCentre' does not need modification: origin of the part, which is the middle,
+    // will be aligned with the queue y-axis position anyway.
+    return this.queueInfoTag.position.y;
   }
 
   /**

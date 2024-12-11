@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 
 import { MachineGeometry } from "./machineGeometry";
+import { PartPositioning } from "../interfaces/queueInfoTag";
 
 const exampleMachineGeometryName = "exampleMachineGeometry";
 
@@ -28,7 +29,7 @@ function mockQueueInfoTag() {
   return {
     queueParent: "dg-vh-Agv1",
     behaviour: {
-      partPositioning: "partOver",
+      partPositioning: "partOver" as PartPositioning,
       partRoll: 0,
       partPitch: 0,
       partYaw: 0,
@@ -119,6 +120,8 @@ describe("MachineGeometry class", () => {
 
     const queueInfoTag_mock = mockQueueInfoTag();
 
+    queueInfoTag_mock.behaviour.partPositioning = "partUnder";
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const setPositionOfPart_spy = vi.spyOn<any, string>(
       MachineGeometry.prototype,
@@ -140,5 +143,60 @@ describe("MachineGeometry class", () => {
 
     // Assert that 'setPositionOfPart' method has been called
     expect(setPositionOfPart_spy).toHaveBeenCalled();
+  });
+
+  it(`should return the correct value of 'applyPartPositioningToQueuePosition' when 'partPositioning' attribute
+    is set to 'partUnder'`, () => {
+    // Arrange
+    const transformMesh_mock = mockTransformMesh();
+
+    const queueInfoTag_mock = mockQueueInfoTag();
+
+    queueInfoTag_mock.behaviour.partPositioning = "partUnder";
+
+    const machineGeometry = new MachineGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformMesh_mock as any,
+      exampleMachineGeometryName,
+      queueInfoTag_mock,
+    );
+
+    // Act
+    const applyPartPositioningToQueuePositionReturnValue =
+      machineGeometry["applyPartPositioningToQueuePosition"]();
+
+    const partSizeHalved = machineGeometry["PART_SIZE"] / 2;
+
+    // Assert that 'applyPartPositioningToQueuePosition' has returned the correct value for a value of 'partUnder'
+    expect(applyPartPositioningToQueuePositionReturnValue).toBe(
+      queueInfoTag_mock.position.y - partSizeHalved,
+    );
+  });
+
+  it(`should return the correct value of 'applyPartPositioningToQueuePosition' when 'partPositioning' attribute
+    is set to 'partCentre'`, () => {
+    // Arrange
+
+    const transformMesh_mock = mockTransformMesh();
+
+    const queueInfoTag_mock = mockQueueInfoTag();
+
+    queueInfoTag_mock.behaviour.partPositioning = "partCentre";
+
+    const machineGeometry = new MachineGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformMesh_mock as any,
+      exampleMachineGeometryName,
+      queueInfoTag_mock,
+    );
+
+    // Act
+    const applyPartPositioningToQueuePositionReturnValue =
+      machineGeometry["applyPartPositioningToQueuePosition"]();
+
+    // Assert that 'applyPartPositioningToQueuePosition' has returned the correct value for a value of 'partCentre'
+    expect(applyPartPositioningToQueuePositionReturnValue).toBe(
+      queueInfoTag_mock.position.y,
+    );
   });
 });
