@@ -369,4 +369,36 @@ describe("Main App class", () => {
     // Assert that 'loadEngine' method has been invoked
     expect(loadEngine_spy).toHaveBeenCalled();
   });
+
+  it("should convert frame number to string appropriately when 'formatFrameNumber' method is invoked", () => {
+    // Arrange
+
+    const mockScene = {
+      useRightHandedSystem: false,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
+      () => mockScene,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      App.prototype,
+      "createCameraAndPositionToFloor",
+    ).mockImplementation(() => null);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
+      () => null,
+    );
+
+    // Act
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const app = new App({} as HTMLElement, { tagStore: [] } as any);
+
+    const formattedFrameNumber = app["formatFrameNumber"](2);
+
+    expect(formattedFrameNumber).toBe("2.00");
+  });
 });
