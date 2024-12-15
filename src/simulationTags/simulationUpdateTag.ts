@@ -80,6 +80,7 @@ export class SimulationUpdateTag extends SimulationTag {
     if (this.updateTag.visible === false) {
       foundGeometry.changeVisibility(0);
     } else {
+      // Assume updated mesh should be visible unless explicitly stated otherwise.
       foundGeometry.changeVisibility(1);
     }
 

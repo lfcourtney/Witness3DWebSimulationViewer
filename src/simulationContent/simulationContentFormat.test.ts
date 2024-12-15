@@ -33,6 +33,13 @@ const validUpdateTag = {
   },
 };
 
+const validDeleteTag = {
+  delete: {
+    time: "0",
+    instanceName: "Box - Entity (67)",
+  },
+};
+
 /**
  * Mock instance of 'SimulationTag' super class
  */
@@ -83,6 +90,21 @@ describe("SimulationContentFormat class", () => {
 
     // Assert 'formatUpdateTag' method has been called
     expect(formatUpdateTag_spy).toHaveBeenCalledOnce();
+  });
+
+  it("should call 'formatDeleteTag' if create tag is supplied to constructor", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formatDeleteTag_spy = vi.spyOn<any, string>(
+      SimulationContentFormat.prototype,
+      "formatDeleteTag",
+    );
+
+    // Act by calling constructor
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    new SimulationContentFormat(validDeleteTag, {} as any);
+
+    // Assert 'formatDeleteTag' method has been called
+    expect(formatDeleteTag_spy).toHaveBeenCalledOnce();
   });
 
   it(`should add array containing simulation tag to tag store if simulation tag has a time greater than
