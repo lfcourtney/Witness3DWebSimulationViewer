@@ -28,8 +28,6 @@ export class SimulationDeleteTag extends SimulationTag {
 
     if (!geometryToDelete) return;
 
-    console.log(this.deleteTag);
-
     // Simulate deleting mesh by making it invisible
     geometryToDelete.changeVisibility(0);
   }
