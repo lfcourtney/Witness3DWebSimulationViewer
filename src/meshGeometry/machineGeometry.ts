@@ -1,5 +1,4 @@
-import { blueMat } from "../materials/colors";
-import { AbstractMesh, MeshBuilder, Mesh, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
 
@@ -11,7 +10,10 @@ export class MachineGeometry extends MeshGeometry {
 
   private readonly queueInfoTag: QueueInfoTag;
 
-  private readonly part: Mesh | undefined;
+  /**
+   * Position of the queue. Should update in accordance with scaling and positioning of the machine.
+   */
+  private readonly queuePosition: Vector3 = Vector3.Zero();
 
   /**
    * Create an object representing a machine geometry imported into the Babylon.js scene
@@ -26,16 +28,7 @@ export class MachineGeometry extends MeshGeometry {
   ) {
     super(_transformMesh, _instanceName);
     this.queueInfoTag = _queueInfoTag;
-
-    /*********************************************
-     *                  Create part
-     *********************************************/
-    if (this.hasQueuePosition()) {
-      const part = MeshBuilder.CreateBox("part", { size: this.PART_SIZE });
-      part.material = blueMat();
-      this.part = part;
-      this.setPositionOfPart(part);
-    }
+    this.setPositionOfQueue();
   }
 
   /**
@@ -78,9 +71,7 @@ export class MachineGeometry extends MeshGeometry {
    */
   setPosition(newPosition: Vector3) {
     super.setPosition(newPosition);
-    if (this.part) {
-      this.setPositionOfPart(this.part);
-    }
+    this.setPositionOfQueue();
   }
 
   /**
@@ -91,51 +82,86 @@ export class MachineGeometry extends MeshGeometry {
    */
   setScaling(newScaling: Vector3) {
     super.setScaling(newScaling);
-    if (this.part) {
-      this.setPositionOfPart(this.part);
-    }
+    this.setPositionOfQueue();
   }
 
   /**
-   * Updates the position of the part in relation to the machine mesh. So this method
-   * should be called in conjunction with updating the position of the main machine.
+   * Position a part in the queue
+   * @param part The part to position in the queue
+   * @param position The amount to position the part in the queue by
+   */
+  public positionPart(part: MeshGeometry, partPosition: number): void {
+    part.setPosition(
+      new Vector3(
+        this.calculateQueueSizeLocation(
+          this.queuePosition.x,
+          this.queueInfoTag.direction.dx,
+          partPosition,
+        ),
+        this.processPartPositioningAttribute(),
+        this.calculateQueueSizeLocation(
+          this.queuePosition.z,
+          this.queueInfoTag.direction.dz,
+          partPosition,
+        ),
+      ),
+    );
+  }
+
+  /**
+   * For a given axis (eg, x, y, z), calculate part position based on queue size,
+   * which is calculated as the difference between the queue position and direction
+   * @param queuePosition The queue position of the given axis
+   * @param queueDirection The queue direction of the given axis
+   * @param partPosition The percentage in the queue the part should be positioned by relative to the overall queue size
+   * @returns The part position for the given axis
+   */
+  private calculateQueueSizeLocation(
+    queuePosition: number,
+    queueDirection: number,
+    partPosition: number,
+  ): number {
+    const startingPosition = queuePosition;
+    const endingPosition = queuePosition + queueDirection;
+    if (startingPosition === endingPosition) return queuePosition;
+
+    // With the 'partPosition' determining the percentage,
+    // the percentage of the difference between the queue position and direction
+    const percentageDifference =
+      (endingPosition - startingPosition) * partPosition;
+
+    return startingPosition + percentageDifference;
+  }
+
+  /**
+   * Updates the position of the queue in relation to the machine mesh. So this method
+   * should be called in conjunction with updating the position and scaling of the main machine.
    * @param part The machine part to update the position of
    */
-  private setPositionOfPart(part: Mesh): void {
-    part.position.x = this._transformMesh.position.x + this.scaledQueueInfo.x;
-    part.position.y =
-      this._transformMesh.position.y +
-      this.applyPartPositioningToQueuePosition();
-    part.position.z = this._transformMesh.position.z + this.scaledQueueInfo.z;
+  private setPositionOfQueue(): void {
+    this.queuePosition.x =
+      this._transformMesh.position.x + this.scaledQueueInfo.x;
+    this.queuePosition.y =
+      this._transformMesh.position.y + this.scaledQueueInfo.y;
+    this.queuePosition.z =
+      this._transformMesh.position.z + this.scaledQueueInfo.z;
   }
 
   /**
    * Calculates correct vertical position of part relative to 'partPositioning' attribute
    * @returns Vertical position of part based on 'partPositioning' attribute
    */
-  private applyPartPositioningToQueuePosition(): number {
+  private processPartPositioningAttribute(): number {
     const partSizeHalved = this.PART_SIZE / 2;
     if (this.queueInfoTag.behaviour.partPositioning === "partOver") {
-      return this.scaledQueueInfo.y + partSizeHalved;
+      return this.queuePosition.y + partSizeHalved;
     }
     if (this.queueInfoTag.behaviour.partPositioning === "partUnder") {
-      return this.scaledQueueInfo.y - partSizeHalved;
+      return this.queuePosition.y - partSizeHalved;
     }
 
     // A value of 'partCentre' does not need modification: origin of the part, which is the middle,
     // will be aligned with the queue y-axis position anyway.
-    return this.scaledQueueInfo.y;
-  }
-
-  /**
-   * Checks whether queue position is not 0, 0, 0 on all 3 axes.
-   * @returns True if position is not at origin. False otherwise.
-   */
-  private hasQueuePosition(): boolean {
-    let hasQueuePosition: boolean = false;
-    for (const position in this.queueInfoTag.position) {
-      hasQueuePosition = this.queueInfoTag.position[position] !== 0;
-    }
-    return hasQueuePosition;
+    return this.queuePosition.y;
   }
 }

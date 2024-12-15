@@ -8,6 +8,7 @@ import { MeshGeometry } from "../meshGeometry/meshGeometry";
 export interface SimulationTagData {
   scene: Scene;
   geometriesMap: Map<string, MeshGeometry>;
+  timeTagStore: Map<string, SimulationTag[]>;
 }
 
 /**
@@ -18,12 +19,22 @@ export interface SimulationTagData {
 export abstract class SimulationTag {
   protected readonly simulationTagData: SimulationTagData;
 
+  // Every parent tag should have a time attribute
+  protected _time: number | undefined;
+
   /**
    * Create the generic abstract representation of the tag functionality.
    * @param _simulationTagData Data from Babylon.js scene
    */
   constructor(_simulationTagData: SimulationTagData) {
     this.simulationTagData = _simulationTagData;
+  }
+
+  /**
+   * Returns the value of the 'time' attribute of the tag an instance of this class is encapsulating
+   */
+  public get time() {
+    return this._time;
   }
 
   /**

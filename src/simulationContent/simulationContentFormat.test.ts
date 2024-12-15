@@ -33,6 +33,16 @@ const validUpdateTag = {
   },
 };
 
+/**
+ * Mock instance of 'SimulationTag' super class
+ */
+function mockSimulationTag() {
+  return {
+    time: 0,
+    actOnTagLogic: vi.fn(),
+  };
+}
+
 // mock SimulationTagData class
 vi.mock(import("../simulationTags/simulationTag"), () => {
   const SimulationTag = vi.fn();
@@ -73,5 +83,119 @@ describe("SimulationContentFormat class", () => {
 
     // Assert 'formatUpdateTag' method has been called
     expect(formatUpdateTag_spy).toHaveBeenCalledOnce();
+  });
+
+  it(`should add array containing simulation tag to tag store if simulation tag has a time greater than
+     0 when 'populateTimeTagStore' method is called`, () => {
+    // Arrange
+
+    // Fake tag store map
+    const fakeTimeTagStore = new Map();
+
+    const simulationContentFormat = new SimulationContentFormat(
+      validUpdateTag,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { timeTagStore: fakeTimeTagStore } as any,
+    );
+
+    const simulationTag_mock = mockSimulationTag();
+    simulationTag_mock.time = 0.927536;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (simulationContentFormat as any).simulationTag = simulationTag_mock;
+
+    // Act
+    simulationContentFormat["populateTimeTagStore"]();
+
+    // Assert that fake tag store map has the correct content added to it
+    expect(fakeTimeTagStore.get(simulationTag_mock.time.toFixed(2))).toEqual([
+      simulationTag_mock,
+    ]);
+  });
+
+  it(`should add to array containing simulation tag from tag store if simulation tag has a time greater than
+    0 when 'populateTimeTagStore' method is called and when array from tag store at the specified time already exists`, () => {
+    // Arrange
+
+    // Fake tag store map
+    const fakeTimeTagStore = new Map();
+
+    const simulationContentFormat = new SimulationContentFormat(
+      validUpdateTag,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { timeTagStore: fakeTimeTagStore } as any,
+    );
+
+    const simulationTag_mock = mockSimulationTag();
+    simulationTag_mock.time = 0.927536;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (simulationContentFormat as any).simulationTag = simulationTag_mock;
+
+    // Already add to tag store before 'populateTimeTagStore' method can be called
+    fakeTimeTagStore.set(simulationTag_mock.time.toFixed(2), [
+      simulationTag_mock,
+    ]);
+
+    // Act
+    simulationContentFormat["populateTimeTagStore"]();
+
+    // Assert that fake tag store map has the correct content added to it
+    expect(fakeTimeTagStore.get(simulationTag_mock.time.toFixed(2))).toEqual([
+      simulationTag_mock,
+      simulationTag_mock,
+    ]);
+  });
+
+  it(`should invoke 'actOnTagLogic' method from object assigned to 'simulationTag' field when 'actOnTagLogic' method is called`, () => {
+    // Arrange
+
+    const simulationContentFormat = new SimulationContentFormat(
+      validUpdateTag,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as any,
+    );
+
+    const simulationTag_mock = mockSimulationTag();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (simulationContentFormat as any).simulationTag = simulationTag_mock;
+
+    // Act
+    simulationContentFormat.actOnTagLogic();
+
+    // Assert that 'actOnTagLogic' method mock has been called
+    expect(simulationTag_mock.actOnTagLogic).toHaveBeenCalled();
+  });
+
+  it(`should invoke 'actOnTagLogicAtTimeZero' method from object assigned to 'simulationTag' field when 'actOnTagLogicAtTimeZero' method is called
+     but only if the 'simulationTag' time is greater than 0`, async () => {
+    // Arrange
+
+    const simulationContentFormat = new SimulationContentFormat(
+      validUpdateTag,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      {} as any,
+    );
+
+    const simulationTag_mock = mockSimulationTag();
+    simulationTag_mock.time = 0.927536;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (simulationContentFormat as any).simulationTag = simulationTag_mock;
+
+    // Act
+    await simulationContentFormat.actOnTagLogicAtTimeZero();
+
+    // Assert that 'actOnTagLogic' method mock has not been called
+    expect(simulationTag_mock.actOnTagLogic).not.toHaveBeenCalled();
+
+    simulationTag_mock.time = 0;
+
+    // Act
+    await simulationContentFormat.actOnTagLogicAtTimeZero();
+
+    // Assert that 'actOnTagLogic' method mock has not been called
+    expect(simulationTag_mock.actOnTagLogic).toHaveBeenCalled();
   });
 });
