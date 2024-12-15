@@ -6,6 +6,8 @@ import {
 } from "../simulationTags/simulationTag";
 import { SimulationCreateTag } from "../simulationTags/simulationCreateTag";
 import { SimulationUpdateTag } from "../simulationTags/simulationUpdateTag";
+import { DeleteTag } from "../interfaces/deleteTag";
+import { SimulationDeleteTag } from "../simulationTags/SimulationDeleteTag";
 
 /**
  * Class responsible for checking the format of a generic tag, converting this tag to its specific type (eg, <create>, <update>, etc.)
@@ -44,6 +46,18 @@ export class SimulationContentFormat {
       this.simulationTag = new SimulationUpdateTag(
         _simulationTagData,
         updateTag.update,
+      );
+      this.populateTimeTagStore();
+      return;
+    }
+
+    // possibly a <delete> tag
+    const deleteTag = this.formatDeleteTag(tagObj);
+
+    if (deleteTag) {
+      this.simulationTag = new SimulationDeleteTag(
+        _simulationTagData,
+        deleteTag.delete,
       );
       this.populateTimeTagStore();
       return;
@@ -146,6 +160,37 @@ export class SimulationContentFormat {
     this.parseObjectNumbersAndBooleans(definiteUpdateTag.update);
 
     return definiteUpdateTag;
+  }
+
+  /**
+   * Assigns formatted tag to the 'DeleteTag' TypeScript interface if object is formatted appropriately. Otherwise, returns undefined.
+   * @param possibleDeleteTag Object that should be formatted as a 'DeleteTag'
+   * @returns Tag formatted as 'DeleteTag'. Otherwise, undefined if tag was not formatted as a 'DeleteTag'.
+   */
+  private formatDeleteTag(
+    possibleDeleteTag: object,
+  ): { delete: DeleteTag } | undefined {
+    const deleteObj = possibleDeleteTag["delete"];
+
+    if (!deleteObj) return undefined;
+
+    const possibleDeleteTagKeys = Object.keys(deleteObj);
+
+    const hasEssentialFields: boolean = ["time", "instanceName"].every(
+      (essentialField) =>
+        possibleDeleteTagKeys.indexOf(essentialField) !== -1 &&
+        typeof deleteObj[essentialField] === "string",
+    );
+
+    // Does not include necessary fields, so return undefined
+    if (!hasEssentialFields) return undefined;
+
+    const definiteDeleteTag = possibleDeleteTag as { delete: DeleteTag };
+
+    // Ensure numbers and booleans are formatted correctly
+    this.parseObjectNumbersAndBooleans(definiteDeleteTag.delete);
+
+    return definiteDeleteTag;
   }
 
   /**
