@@ -79,41 +79,7 @@ describe("MachineGeometry class", () => {
     vi.restoreAllMocks(); // Restores all mocks to original implementations
   });
 
-  it("should instantiate MachineGeometry with the necessary part if the part is positioned appropriately", () => {
-    // Arrange
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hasQueuePosition_spy = vi.spyOn<any, string>(
-      MachineGeometry.prototype,
-      "hasQueuePosition",
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setPositionOfPart_spy = vi.spyOn<any, string>(
-      MachineGeometry.prototype,
-      "setPositionOfPart",
-    );
-
-    const transformMesh_mock = mockTransformMesh();
-
-    const queueInfoTag_mock = mockQueueInfoTag();
-
-    // Act
-    new MachineGeometry(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      transformMesh_mock as any,
-      exampleMachineGeometryName,
-      queueInfoTag_mock,
-    );
-
-    // Assert that 'hasQueuePosition' returned true
-    expect(hasQueuePosition_spy).toHaveLastReturnedWith(true);
-
-    // Assert that 'setPositionOfPart' method has been called
-    expect(setPositionOfPart_spy).toHaveBeenCalled();
-  });
-
-  it("should set part position when 'setPosition' method is invoked to update position", () => {
+  it("should set queue position when 'setPosition' method is invoked to update position", () => {
     // Arrange
 
     const transformMesh_mock = mockTransformMesh();
@@ -121,9 +87,9 @@ describe("MachineGeometry class", () => {
     const queueInfoTag_mock = mockQueueInfoTag();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setPositionOfPart_spy = vi.spyOn<any, string>(
+    const setPositionOfQueue_spy = vi.spyOn<any, string>(
       MachineGeometry.prototype,
-      "setPositionOfPart",
+      "setPositionOfQueue",
     );
 
     const machineGeometry = new MachineGeometry(
@@ -139,11 +105,11 @@ describe("MachineGeometry class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     machineGeometry.setPosition(mockPosition as any);
 
-    // Assert that 'setPositionOfPart' method has been called
-    expect(setPositionOfPart_spy).toHaveBeenCalled();
+    // Assert that 'setPositionOfQueue' method has been called
+    expect(setPositionOfQueue_spy).toHaveBeenCalled();
   });
 
-  it("should set part position when 'setScaling' method is invoked to update position", () => {
+  it("should set queue position when 'setScaling' method is invoked to update position", () => {
     // Arrange
 
     const transformMesh_mock = mockTransformMesh();
@@ -151,9 +117,9 @@ describe("MachineGeometry class", () => {
     const queueInfoTag_mock = mockQueueInfoTag();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setPositionOfPart_spy = vi.spyOn<any, string>(
+    const setPositionOfQueue_spy = vi.spyOn<any, string>(
       MachineGeometry.prototype,
-      "setPositionOfPart",
+      "setPositionOfQueue",
     );
 
     const machineGeometry = new MachineGeometry(
@@ -169,11 +135,11 @@ describe("MachineGeometry class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     machineGeometry.setScaling(mockScaling as any);
 
-    // Assert that 'setPositionOfPart' method has been called
-    expect(setPositionOfPart_spy).toHaveBeenCalled();
+    // Assert that 'setPositionOfQueue' method has been called
+    expect(setPositionOfQueue_spy).toHaveBeenCalled();
   });
 
-  it(`should return the correct value of 'applyPartPositioningToQueuePosition' when 'partPositioning' attribute
+  it(`should return the correct y-axis part position from 'processPartPositioningAttribute' when 'partPositioning' attribute
     is set to 'partUnder'`, () => {
     // Arrange
     const transformMesh_mock = mockTransformMesh();
@@ -189,6 +155,15 @@ describe("MachineGeometry class", () => {
       queueInfoTag_mock,
     );
 
+    const mockQueueYPosition = 10;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (machineGeometry as any).queuePosition = {
+      x: 0,
+      y: mockQueueYPosition,
+      z: 0,
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(
       machineGeometry,
@@ -199,18 +174,18 @@ describe("MachineGeometry class", () => {
     }));
 
     // Act
-    const applyPartPositioningToQueuePositionReturnValue =
-      machineGeometry["applyPartPositioningToQueuePosition"]();
+    const processPartPositioningAttributeReturnValue =
+      machineGeometry["processPartPositioningAttribute"]();
 
     const partSizeHalved = machineGeometry["PART_SIZE"] / 2;
 
-    // Assert that 'applyPartPositioningToQueuePosition' has returned the correct value for a value of 'partUnder'
-    expect(applyPartPositioningToQueuePositionReturnValue).toBe(
-      queueInfoTag_mock.position.y - partSizeHalved,
+    // Assert that 'processPartPositioningAttribute' has returned the correct value for a value of 'partUnder'
+    expect(processPartPositioningAttributeReturnValue).toBe(
+      mockQueueYPosition - partSizeHalved,
     );
   });
 
-  it(`should return the correct value of 'applyPartPositioningToQueuePosition' when 'partPositioning' attribute
+  it(`should return the correct y-axis part position from 'processPartPositioningAttribute' when 'partPositioning' attribute
     is set to 'partCentre'`, () => {
     // Arrange
 
@@ -227,6 +202,15 @@ describe("MachineGeometry class", () => {
       queueInfoTag_mock,
     );
 
+    const mockQueueYPosition = 10;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (machineGeometry as any).queuePosition = {
+      x: 0,
+      y: mockQueueYPosition,
+      z: 0,
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(
       machineGeometry,
@@ -237,12 +221,57 @@ describe("MachineGeometry class", () => {
     }));
 
     // Act
-    const applyPartPositioningToQueuePositionReturnValue =
-      machineGeometry["applyPartPositioningToQueuePosition"]();
+    const processPartPositioningAttributeReturnValue =
+      machineGeometry["processPartPositioningAttribute"]();
 
-    // Assert that 'applyPartPositioningToQueuePosition' has returned the correct value for a value of 'partCentre'
-    expect(applyPartPositioningToQueuePositionReturnValue).toBe(
-      queueInfoTag_mock.position.y,
+    // Assert that 'processPartPositioningAttribute' has returned the correct value for a value of 'partCentre'
+    expect(processPartPositioningAttributeReturnValue).toBe(mockQueueYPosition);
+  });
+
+  it(`should position part at the correct position in the queue when 'positionPart' method is invoked`, () => {
+    // Arrange
+
+    const transformMesh_mock = mockTransformMesh();
+
+    const queueInfoTag_mock = mockQueueInfoTag();
+
+    const machineGeometry = new MachineGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformMesh_mock as any,
+      exampleMachineGeometryName,
+      queueInfoTag_mock,
     );
+
+    // Note: Manually set queue position because getter method of 'scaledQueueInfo' is not
+    // interpreted correctly in testing environment
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (machineGeometry as any).queuePosition = { ...queueInfoTag_mock.position };
+
+    // Represents 60% of the way in the queue
+    const mockPartPosition = 0.6;
+
+    const partSetPosition_mock = vi.fn();
+
+    const mockPart = {
+      setPosition: partSetPosition_mock,
+    };
+
+    // Act
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    machineGeometry.positionPart(mockPart as any, mockPartPosition);
+
+    // Perform calculation of 'calculateQueueSizeLocation' method
+    const endingPositionZ =
+      queueInfoTag_mock.position.z + queueInfoTag_mock.direction.dz;
+
+    const percentageDifferenceForZ =
+      (endingPositionZ - queueInfoTag_mock.position.z) * mockPartPosition;
+
+    // Assert that 'setPosition' method of part has been invoked with the correct argument
+    expect(partSetPosition_mock).toHaveBeenCalledWith({
+      x: queueInfoTag_mock.position.x,
+      y: machineGeometry["processPartPositioningAttribute"](),
+      z: queueInfoTag_mock.position.z + percentageDifferenceForZ,
+    });
   });
 });

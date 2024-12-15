@@ -23,6 +23,7 @@ export class SimulationCreateTag extends SimulationTag {
   constructor(_simulationTagData: SimulationTagData, _createTag: CreateTag) {
     super(_simulationTagData);
     this.createTag = _createTag;
+    this._time = _createTag.time;
   }
 
   /**
@@ -76,6 +77,8 @@ export class SimulationCreateTag extends SimulationTag {
 
     const transformMesh = newMeshes[0];
 
+    //TODO: Undo default shrinking of meshes by 97%, relative to their original size,
+    // as soon as correct models are uploaded
     transformMesh.scaling = new Vector3(0.003, 0.003, 0.003);
 
     // Setting the name of the meshes allows us to search for the meshes from the scene
@@ -89,7 +92,11 @@ export class SimulationCreateTag extends SimulationTag {
     if (this.createTag.queueInfo) {
       this.simulationTagData.geometriesMap.set(
         this.createTag.instanceName,
-        new MachineGeometry(transformMesh, this.createTag.instanceName, this.createTag.queueInfo),
+        new MachineGeometry(
+          transformMesh,
+          this.createTag.instanceName,
+          this.createTag.queueInfo,
+        ),
       );
     } else {
       this.simulationTagData.geometriesMap.set(
@@ -138,7 +145,7 @@ export class SimulationCreateTag extends SimulationTag {
    */
   private extractGeometry(geometry: string): string | undefined {
     const geometryRegex =
-      /(dg-ic-Machine1|dg-ic-Machine1|dg-ic-WaterTank|dg-ic-Workbench2|dg-lq-Machine|dg-pt-ManWalking1|dg-pt-Part1|dg-vh-Agv1|dgu-pa-Conveyor5|dgu-pa-Conveyor6|dgu-pa-Track)(\.glb)?$/;
+      /(dg-ic-Machine1|dg-ic-WaterTank|dg-ic-Workbench2|dg-lq-Machine|dg-pt-ManWalking1|dg-pt-Part1|dg-vh-Agv1|dgu-pa-Conveyor5|dgu-pa-Conveyor6|dgu-pa-Track|QueuePlaceholder)(\.glb)?$/;
 
     const matchGeometry = geometryRegex.exec(geometry);
 

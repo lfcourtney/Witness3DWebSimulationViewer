@@ -1,9 +1,12 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
+import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import { App } from "./app";
 
 // mock SimulationContentFormat class
 vi.mock(import("./simulationContent/simulationContentFormat"), () => {
-  const fakeSimulationContentFormatObj = { actOnTagLogic: vi.fn() };
+  const fakeSimulationContentFormatObj = {
+    actOnTagLogic: vi.fn(),
+    actOnTagLogicAtTimeZero: vi.fn(),
+  };
 
   const SimulationContentFormat = vi.fn(
     () => fakeSimulationContentFormatObj,
@@ -72,8 +75,11 @@ vi.mock(import("@babylonjs/core"), () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Scene = vi.fn(() => ({ useRightHandedSystem: false })) as any;
+  const Scene = vi.fn(() => ({
+    useRightHandedSystem: false,
+    render: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })) as any;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const HemisphericLight = vi.fn(() => ({ intensity: null })) as any;
@@ -95,7 +101,21 @@ vi.mock(import("@babylonjs/core"), () => {
   };
 });
 
+/**
+ * Mock instance of 'SimulationTag' super class
+ */
+function mockSimulationTag() {
+  return {
+    time: 0,
+    actOnTagLogic: vi.fn(),
+  };
+}
+
 describe("Main App class", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks(); // Restores all mocks to original implementations
   });
@@ -114,6 +134,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
     };
 
     const createScene_spy = vi
@@ -159,6 +180,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -199,6 +221,67 @@ describe("Main App class", () => {
     expect(formatTag_mock).toHaveBeenCalledTimes(2);
   });
 
+  it("should invoke 'actOnTagLogic' method for each 'SimulationTag' object in tag store at the time they were stored in the tag store at", async () => {
+    // Arrange
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolve({
+            runRenderLoop: vi.fn(),
+          });
+        }),
+    );
+
+    const mockScene = {
+      useRightHandedSystem: false,
+      render: vi.fn(),
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
+      () => mockScene,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      App.prototype,
+      "createCameraAndPositionToFloor",
+    ).mockImplementation(() => null);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
+      () => null,
+    );
+
+    // Mock tag store
+    const fakeTimeTagStore = new Map();
+
+    // Mock Simulation Tag
+    const simulationTag_mock = mockSimulationTag();
+
+    // Add to fake tag store at time 0
+    fakeTimeTagStore.set("0.00", [simulationTag_mock]);
+
+    // Act
+    const app = new App(
+      {} as HTMLElement,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { tagStore: [] } as any,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (app as any).timeTagStore = fakeTimeTagStore;
+
+    await app["loadEngine"]();
+
+    // Mock waiting for 'setInterval'
+    vi.advanceTimersToNextTimer();
+
+    // Assert that 'actOnTagLogic' method has been called for mocked 'SimulationTag'
+    expect(simulationTag_mock.actOnTagLogic).toHaveBeenCalled();
+  });
+
   it("should invoke 'createBackButton' method during successful constructor invocation", async () => {
     // Arrange
 
@@ -220,6 +303,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -306,6 +390,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
       meshes: [
         { name: "Floor 1", position: { x: 0, y: 0, z: 0 } },
         { name: "Floor 2", position: { x: 0, y: 0, z: 0 } },
@@ -341,6 +426,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -375,6 +461,7 @@ describe("Main App class", () => {
 
     const mockScene = {
       useRightHandedSystem: false,
+      render: vi.fn(),
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -400,5 +487,47 @@ describe("Main App class", () => {
     const formattedFrameNumber = app["formatFrameNumber"](2);
 
     expect(formattedFrameNumber).toBe("2.00");
+  });
+
+  it("should remove canvas when 'clearCanvas' method is called", () => {
+    // Arrange
+
+    const mockCanvas = {
+      remove: vi.fn(),
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createCanvas").mockImplementation(
+      () => mockCanvas,
+    );
+
+    const mockScene = {
+      useRightHandedSystem: false,
+      render: vi.fn(),
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
+      () => mockScene,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      App.prototype,
+      "createCameraAndPositionToFloor",
+    ).mockImplementation(() => null);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
+      () => null,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const app = new App({} as HTMLElement, { tagStore: [] } as any);
+
+    // Act
+    app["clearCanvas"]();
+
+    expect(mockCanvas.remove).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { UpdateTag } from "../interfaces/updateTag";
 import { SimulationUpdateTag } from "./simulationUpdateTag";
+import { MachineGeometry } from "../meshGeometry/machineGeometry";
 
 const mockUpdateTag: UpdateTag = {
   time: 0,
@@ -23,18 +24,49 @@ const mockUpdateTag: UpdateTag = {
   },
 };
 
+const mockUpdateTagPartPosition: UpdateTag = {
+  time: 0,
+  instanceName: "Box - Entity (67)",
+  partPosition: {
+    instanceName: "[115] Buffer1(1) - Part Queue",
+    position: 0.3,
+  },
+};
+
 const mockUpdateTagVisible: UpdateTag = {
   time: 0,
   instanceName: "[130] Treatment(1) - Main Icon",
   visible: false,
 };
 
+/**
+ * Mock instance of mesh geometry class
+ */
 function mockMeshGeometry() {
   return {
     setPosition: vi.fn(),
     setScaling: vi.fn(),
     setRotation: vi.fn(),
+    changeVisibility: vi.fn(),
   };
+}
+
+/**
+ * Mock instance of machine geometry class
+ */
+function mockMachineGeometry() {
+  // Purpose: ensure that TypeScript considers it an instanceof 'MachineGeometry'
+  const mockMachineGeometry = Object.create(MachineGeometry.prototype);
+
+  Object.assign(mockMachineGeometry, {
+    setPosition: vi.fn(),
+    setScaling: vi.fn(),
+    setRotation: vi.fn(),
+    changeVisibility: vi.fn(),
+    positionPart: vi.fn(),
+  });
+
+  return mockMachineGeometry;
 }
 
 // mock needed babylon.js imports
@@ -119,5 +151,50 @@ describe("SimulationUpdateTag class", () => {
 
     // Assert 'changeVisibility' method on mocked 'MeshGeometry' has been invoked
     expect(changeVisibility_mock).toHaveBeenCalledOnce();
+  });
+
+  it("should position part when <update> tag has <partPosition> subtag", async () => {
+    // Arrange
+
+    // Add mocked instance of 'MeshGeometry' class to mocked map
+    const fakeGeometriesMap = new Map();
+
+    // Mock part
+    const mockedMeshGeometry = mockMeshGeometry();
+
+    fakeGeometriesMap.set(
+      mockUpdateTagPartPosition.instanceName,
+      mockedMeshGeometry,
+    );
+
+    // Mock machine geometry
+
+    const mockedMachineGeometry = mockMachineGeometry();
+
+    fakeGeometriesMap.set(
+      mockUpdateTagPartPosition.partPosition?.instanceName,
+      mockedMachineGeometry,
+    );
+
+    const simulationUpdateTag: SimulationUpdateTag = new SimulationUpdateTag(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { geometriesMap: fakeGeometriesMap } as any,
+      mockUpdateTagPartPosition,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handlePartPositioning_spy = vi.spyOn<any, string>(
+      simulationUpdateTag,
+      "handlePartPositioning",
+    );
+
+    // Act
+    await simulationUpdateTag.actOnTagLogic();
+
+    // Assert that 'handlePartPositioning' method has been invoked
+    expect(handlePartPositioning_spy).toHaveBeenCalled();
+
+    // Assert that 'positionPart' method of mocked machine has been called
+    expect(mockedMachineGeometry.positionPart).toHaveBeenCalled();
   });
 });

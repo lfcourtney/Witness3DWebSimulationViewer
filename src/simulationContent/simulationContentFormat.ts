@@ -13,22 +13,27 @@ import { SimulationUpdateTag } from "../simulationTags/simulationUpdateTag";
  * For instance, through this class, different functionality will be delegated to the different types of tags, including <create>, <update>, etc.
  */
 export class SimulationContentFormat {
-  private readonly simulationTag?: SimulationTag;
+  private readonly simulationTagData: SimulationTagData;
+
+  private readonly simulationTag: SimulationTag | undefined;
 
   /**
    * Create class responsible for working with specific functionality of a generic tag
    * @param tagObj Generic tag
    * @param simulationTagData Data from Babylon.js scene
    */
-  constructor(tagObj: object, simulationTagData: SimulationTagData) {
+  constructor(tagObj: object, _simulationTagData: SimulationTagData) {
+    this.simulationTagData = _simulationTagData;
+
     // possibly a <create> tag
     const createTag = this.formatCreateTag(tagObj);
 
     if (createTag) {
       this.simulationTag = new SimulationCreateTag(
-        simulationTagData,
+        _simulationTagData,
         createTag.create,
       );
+      this.populateTimeTagStore();
       return;
     }
 
@@ -37,11 +42,31 @@ export class SimulationContentFormat {
 
     if (updateTag) {
       this.simulationTag = new SimulationUpdateTag(
-        simulationTagData,
+        _simulationTagData,
         updateTag.update,
       );
+      this.populateTimeTagStore();
       return;
     }
+  }
+
+  /**
+   * Storing tags so that they can be accessed in animation loop, store tag in 'timeTagStore' Map,
+   * using the 'time' attribute of tag as the key in the key value pair added to the Map.
+   */
+  private populateTimeTagStore(): void {
+    // If time is 0 or undefined return
+    if (!this.simulationTag?.time) return;
+    const parseTime = this.simulationTag.time.toFixed(2);
+    const timeTagArray = this.simulationTagData.timeTagStore.get(parseTime);
+
+    // If array does not already exist, create array with simulation tag as the initial element
+    if (!timeTagArray) {
+      this.simulationTagData.timeTagStore.set(parseTime, [this.simulationTag]);
+      return;
+    }
+
+    timeTagArray.push(this.simulationTag);
   }
 
   /**
@@ -51,6 +76,14 @@ export class SimulationContentFormat {
     if (this.simulationTag) {
       await this.simulationTag.actOnTagLogic();
     }
+  }
+
+  /**
+   * Invoke asynchronous functionality related to specific tag but only if the tag is at time zero
+   */
+  async actOnTagLogicAtTimeZero(): Promise<void> {
+    if (this.simulationTag?.time !== 0) return;
+    await this.simulationTag.actOnTagLogic();
   }
 
   /**
@@ -77,16 +110,6 @@ export class SimulationContentFormat {
     if (!hasEssentialFields) return undefined;
 
     const definiteCreateTag = possibleCreateTag as { create: CreateTag };
-
-    // 'queueInfo' field is optional, so this loop will have no iterations if it does not exist
-    if (definiteCreateTag.create.queueInfo) {
-      this.parseObjectNumbersAndBooleans(definiteCreateTag.create.queueInfo);
-    }
-
-    // Ensure that surface tag is formatted correctly
-    if (definiteCreateTag.create.surface) {
-      this.parseObjectNumbersAndBooleans(definiteCreateTag.create.surface);
-    }
 
     // Ensure numbers and booleans are formatted correctly
     this.parseObjectNumbersAndBooleans(definiteCreateTag.create);
@@ -118,21 +141,6 @@ export class SimulationContentFormat {
     if (!hasEssentialFields) return undefined;
 
     const definiteUpdateTag = possibleUpdateTag as { update: UpdateTag };
-
-    // Ensure that translate tag is formatted correctly
-    if (definiteUpdateTag.update.translate) {
-      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.translate);
-    }
-
-    // Ensure that scale tag is formatted correctly
-    if (definiteUpdateTag.update.scale) {
-      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.scale);
-    }
-
-    // Ensure that rotate tag is formatted correctly
-    if (definiteUpdateTag.update.rotate) {
-      this.parseObjectNumbersAndBooleans(definiteUpdateTag.update.rotate);
-    }
 
     // Ensure numbers and booleans are formatted correctly
     this.parseObjectNumbersAndBooleans(definiteUpdateTag.update);

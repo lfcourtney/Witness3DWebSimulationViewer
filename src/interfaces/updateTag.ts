@@ -1,6 +1,7 @@
 import { TranslateTag } from "./translateTag";
 import { ScaleTag } from "./scaleTag";
 import { RotateTag } from "./rotateTag";
+import { PartPositionTag } from "./partPositionTag";
 /**
  * Represents a formatted <update> tag
  */
@@ -11,4 +12,5 @@ export interface UpdateTag {
   translate?: TranslateTag;
   rotate?: RotateTag;
   scale?: ScaleTag;
+  partPosition?: PartPositionTag;
 }

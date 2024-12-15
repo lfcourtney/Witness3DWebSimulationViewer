@@ -1,25 +1,36 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { MeshGeometry } from "./meshGeometry";
+import { AbstractMesh } from "@babylonjs/core";
 
 const exampleGeometryName = "exampleGeometry";
 
+// mock needed babylon.js imports
+vi.mock(import("@babylonjs/core"), () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const AbstractMesh = vi.fn(() => ({})) as any;
+  return { AbstractMesh };
+});
+
 function initialiseAbstractMesh() {
-  return {
-    getDescendants: vi.fn().mockImplementation(() => [
-      {
-        getBoundingInfo: function () {
-          return {
-            boundingBox: {
-              minimum: {
-                y: -10,
-              },
-            },
-            visibility: 1,
-          };
+  const mockNode = Object.create(AbstractMesh.prototype);
+
+  // Purpose: ensure that TypeScript considers this object an instanceof 'AbstractMesh'
+  Object.assign(mockNode, {
+    getBoundingInfo: function () {
+      return {
+        boundingBox: {
+          minimum: {
+            y: -10,
+          },
         },
-      },
-    ]),
+        visibility: 1,
+      };
+    },
+  });
+
+  return {
+    getDescendants: vi.fn().mockImplementation(() => [mockNode]),
     position: {
       x: 0,
       y: 0,
@@ -86,18 +97,17 @@ describe("MeshGeometry class", () => {
       exampleGeometryName,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isNodeAbstractMesh_spy = vi.spyOn<any, string>(
-      MeshGeometry.prototype,
-      "isNodeAbstractMesh",
-    );
-    isNodeAbstractMesh_spy.mockReturnValue(true);
+    const newVisibility: number = 0;
 
     // Act
-    geometryObject.changeVisibility(0);
+    geometryObject.changeVisibility(newVisibility);
 
     // Assert that 'getDescendants' has been called once
     expect(abstractMesh.getDescendants).toHaveBeenCalledOnce();
+
+    // Assert that new visibility has been applied
+    expect(geometryObject.visibility).toBe(newVisibility);
+    expect(abstractMesh.getDescendants()[0].visibility).toBe(newVisibility);
   });
 
   it("should apply position to 'transformMesh' when 'setPosition' method is invoked", () => {
@@ -152,5 +162,17 @@ describe("MeshGeometry class", () => {
 
     // Assert that scaling has been applied
     expect(abstractMesh.scaling).toEqual(mockScaling);
+  });
+
+  it("should return the correct value for 'instanceName' getter", () => {
+    // Arrange
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      abstractMesh as any,
+      exampleGeometryName,
+    );
+
+    // Assert that 'instanceName' getter returns the correct value
+    expect(geometryObject.instanceName).toBe(exampleGeometryName);
   });
 });

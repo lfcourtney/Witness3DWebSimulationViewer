@@ -19,6 +19,7 @@ import {
 import { SimulationContents } from "./simulationContent/simulationContent";
 import { MeshGeometry } from "./meshGeometry/meshGeometry";
 import { SimulationContentFormat } from "./simulationContent/simulationContentFormat";
+import { SimulationTag } from "./simulationTags/simulationTag";
 
 /**
  * Class responsible for creating Babylon.js engine and rendering 3d scene (environment) to the browser
@@ -27,11 +28,24 @@ export class App {
   private readonly canvas: HTMLCanvasElement;
   private engine?: Engine | WebGPUEngine;
 
+  /**
+   * Animation render loop. Should be cleared whenever canvas is removed.
+   */
+  private renderLoop?: NodeJS.Timeout;
+
   private simulationContents: SimulationContents;
 
   private readonly formContainer: HTMLElement;
 
+  /**
+   * Map where each key is a name of a mesh that exists in the Babylon.js scene and where each value is that mesh
+   */
   public readonly geometriesMap = new Map<string, MeshGeometry>();
+
+  /**
+   * Map where each key is a specific time and where each value is the parent tags from the uploaded simulation trace output file that correspond to that given time
+   */
+  public readonly timeTagStore = new Map<string, SimulationTag[]>();
 
   /**
    * Create class that renders 3d environment to the browser
@@ -62,10 +76,15 @@ export class App {
         const simulationContentFormat: SimulationContentFormat =
           new SimulationContentFormat(
             this.simulationContents.formatTag(tagObj),
-            { scene: scene, geometriesMap: this.geometriesMap },
+            {
+              scene: scene,
+              geometriesMap: this.geometriesMap,
+              timeTagStore: this.timeTagStore,
+            },
           );
 
-        await simulationContentFormat.actOnTagLogic();
+        // Only act at time zero
+        await simulationContentFormat.actOnTagLogicAtTimeZero();
       }
 
       // Must create camera and, if floor exists, position camera to floor
@@ -85,20 +104,34 @@ export class App {
         }
       });
 
+      const customFPS = 120; //120 or 250
+
       let frameNumber = 0;
 
       // run the main render loop
-      engine.runRenderLoop(() => {
-        console.log(this.formatFrameNumber(frameNumber));
+      this.renderLoop = setInterval(() => {
+        const timeTagStoreArray = this.timeTagStore.get(
+          this.formatFrameNumber(frameNumber),
+        );
+
+        timeTagStoreArray?.forEach((tag) => {
+          tag.actOnTagLogic();
+        });
+
         scene.render();
         frameNumber += 0.01;
-      });
+      }, 1000 / customFPS);
 
       this.addWindowResizeEventListener();
     });
   }
 
-  private formatFrameNumber(frameNumber): string {
+  /**
+   * Round a number down to 2 decimal places, returning this number as a string
+   * @param frameNumber The frame number to round down to 2 decimal places
+   * @returns The number rounded down to 2 decimal places as a string
+   */
+  private formatFrameNumber(frameNumber: number): string {
     const roundFrameNumber = Math.floor(frameNumber * 100) / 100;
     return roundFrameNumber.toFixed(2);
   }
@@ -259,7 +292,7 @@ export class App {
     button.background = "green";
 
     button.onPointerClickObservable.add(() => {
-      this.canvas.remove();
+      this.clearCanvas();
       // Must set the display to 'flex' because, by default, the display is 'none'
       this.formContainer.style.display = "flex";
       document.body.style.cursor = "";
@@ -273,5 +306,13 @@ export class App {
     });
 
     panel.addControl(button);
+  }
+
+  /**
+   * Delete HTML <canvas> element, thus un-rendering the current Babylon.js 3D environment.
+   */
+  private clearCanvas(): void {
+    clearInterval(this.renderLoop);
+    this.canvas.remove();
   }
 }

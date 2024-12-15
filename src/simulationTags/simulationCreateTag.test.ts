@@ -9,6 +9,32 @@ const mockCreateTag: CreateTag = {
   instanceName: "AGV(1) - Entity (88)",
 };
 
+const mockCreateTagQueueInfo: CreateTag = {
+  time: 0,
+  geometry:
+    "C:\\Users\\Public\\Documents\\Royal HaskoningDHV\\Witness 27\\W3D\\Assets\\Shapes\\dg-pt-Part1",
+  instanceName: "Box - Entity (67)",
+  queueInfo: {
+    queueParent: "dg-pt-Part1",
+    behaviour: {
+      partPositioning: "partOver",
+      partRoll: 0,
+      partPitch: 0,
+      partYaw: 0,
+    },
+    position: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    direction: {
+      dx: 0,
+      dy: 0,
+      dz: 1,
+    },
+  },
+};
+
 // Example create tag that is designed for the rendering of floors
 const mockFloorCreateTag: CreateTag = {
   time: 0,
@@ -61,6 +87,14 @@ vi.mock(import("@babylonjs/core"), () => {
   return { SceneLoader, MeshBuilder, Vector3 };
 });
 
+// mock MachineGeometry
+vi.mock(import("../meshGeometry/machineGeometry"), () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const MachineGeometry = vi.fn(() => ({ machineGeometry: true })) as any;
+
+  return { MachineGeometry };
+});
+
 describe("SimulationCreateTag class", () => {
   afterEach(() => {
     vi.restoreAllMocks(); // Restores all mocks to original implementations
@@ -105,6 +139,31 @@ describe("SimulationCreateTag class", () => {
 
     // Assert 'importMeshSuccess' has been invoked
     expect(importMeshSuccess_spy).toHaveBeenCalledOnce();
+  });
+
+  it("should create 'MachineGeometry' 'SimulationTag' object if <create> tag contains <queueInfo> sub tag", async () => {
+    // Arrange
+
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagQueueInfo,
+    );
+
+    // Act
+    await simulationCreateTag.actOnTagLogic();
+
+    // Assert that instance of 'MachineGeometry' has been added to simulation tag data
+    expect(
+      fakeGeometriesMap.get(mockCreateTagQueueInfo.instanceName)
+        .machineGeometry,
+    ).toBe(true);
   });
 
   it("should call 'renderGround' when imvoking 'actOnTagLogic' and it is necessary to render ground", async () => {
