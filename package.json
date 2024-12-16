@@ -21,9 +21,9 @@
     ]
   },
   "devDependencies": {
-    "@babylonjs/core": "^7.26.4",
-    "@babylonjs/gui": "^7.28.0",
-    "@babylonjs/inspector": "^7.26.4",
+    "@babylonjs/core": "^7.40.2",
+    "@babylonjs/gui": "^7.40.2",
+    "@babylonjs/inspector": "^7.40.2",
     "@eslint/js": "^9.11.1",
     "@types/node": "^22.7.4",
     "@vitest/coverage-v8": "^2.1.2",
