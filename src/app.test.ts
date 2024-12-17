@@ -104,10 +104,27 @@ vi.mock(import("@babylonjs/core"), () => {
 /**
  * Mock instance of 'SimulationTag' super class
  */
-function mockSimulationTag() {
+function createMockSimulationTag() {
   return {
     time: 0,
     actOnTagLogic: vi.fn(),
+  };
+}
+
+/**
+ * Mock instance of Babylon.js engine (either WebGPU engine or standard WebGL 2.0 engine)
+ */
+function createMockEngine() {
+  return { beginFrame: vi.fn(), endFrame: vi.fn() };
+}
+
+/**
+ * Mock instance of Babylon.js scene
+ */
+function createMockScene() {
+  return {
+    useRightHandedSystem: false,
+    render: vi.fn(),
   };
 }
 
@@ -122,20 +139,18 @@ describe("Main App class", () => {
 
   it("should adjust created scene to use right handed cartesian coordinate system", async () => {
     // Arrange
+
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     const createScene_spy = vi
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,20 +183,18 @@ describe("Main App class", () => {
 
   it("should invoke 'formatTag' method of 'SimulationContents' for each tag in tagStore", async () => {
     // Arrange
+
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -223,20 +236,18 @@ describe("Main App class", () => {
 
   it("should invoke 'actOnTagLogic' method for each 'SimulationTag' object in tag store at the time they were stored in the tag store at", async () => {
     // Arrange
+
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -258,7 +269,7 @@ describe("Main App class", () => {
     const fakeTimeTagStore = new Map();
 
     // Mock Simulation Tag
-    const simulationTag_mock = mockSimulationTag();
+    const simulationTag_mock = createMockSimulationTag();
 
     // Add to fake tag store at time 0
     fakeTimeTagStore.set("0.00", [simulationTag_mock]);
@@ -273,6 +284,8 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (app as any).timeTagStore = fakeTimeTagStore;
 
+    // Need to wait for 'loadEngine' so that the 'mockEngine' initialised above has time to be
+    // assigned to 'engine' field of App class
     await app["loadEngine"]();
 
     // Mock waiting for 'setInterval'
@@ -280,6 +293,38 @@ describe("Main App class", () => {
 
     // Assert that 'actOnTagLogic' method has been called for mocked 'SimulationTag'
     expect(simulationTag_mock.actOnTagLogic).toHaveBeenCalled();
+    // Assert that 'beginFrame' has been called so that WebGPU engine can render correctly
+    expect(mockEngine.beginFrame).toHaveBeenCalled();
+    // Assert that 'endFrame' has been called so that WebGPU engine can render correctly
+    expect(mockEngine.endFrame).toHaveBeenCalled();
+  });
+
+  it("should throw appropriate exception from 'runApplicationRenderLoop' method if engine is undefined", () => {
+    // Arrange
+
+    // Remove implementation of 'runMainAppSetup' so that engine is never initialised
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "runMainAppSetup").mockImplementation(
+      () => null,
+    );
+
+    const mockScene = createMockScene();
+
+    const undefinedEngineException =
+      "Unable to create render loop: engine was undefined";
+
+    // Act
+    const app = new App(
+      {} as HTMLElement,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { tagStore: [] } as any,
+    );
+
+    // Assert that correct error has been thrown
+    expect(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      app["runApplicationRenderLoop"](mockScene as any),
+    ).toThrowError(undefinedEngineException);
   });
 
   it("should invoke 'createBackButton' method during successful constructor invocation", async () => {
@@ -291,20 +336,17 @@ describe("Main App class", () => {
       "createBackButton",
     );
 
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -334,13 +376,13 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const createScene_spy = vi.spyOn<any, string>(App.prototype, "createScene");
 
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
@@ -378,24 +420,23 @@ describe("Main App class", () => {
       "createCameraAndPositionToFloor",
     );
 
+    const mockEngine = createMockEngine();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolve({
-            runRenderLoop: vi.fn(),
-          });
+          resolve(mockEngine);
         }),
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-      meshes: [
-        { name: "Floor 1", position: { x: 0, y: 0, z: 0 } },
-        { name: "Floor 2", position: { x: 0, y: 0, z: 0 } },
-      ],
-    };
+    const mockScene = createMockScene();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mockScene as any).meshes = [
+      { name: "Floor 1", position: { x: 0, y: 0, z: 0 } },
+      { name: "Floor 2", position: { x: 0, y: 0, z: 0 } },
+    ];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -424,10 +465,7 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const loadEngine_spy = vi.spyOn<any, string>(App.prototype, "loadEngine");
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -459,10 +497,7 @@ describe("Main App class", () => {
   it("should convert frame number to string appropriately when 'formatFrameNumber' method is invoked", () => {
     // Arrange
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -489,8 +524,18 @@ describe("Main App class", () => {
     expect(formattedFrameNumber).toBe("2.00");
   });
 
-  it("should remove canvas when 'clearCanvas' method is called", () => {
+  it("should remove canvas when 'clearCanvas' method is called", async () => {
     // Arrange
+
+    const mockEngine = createMockEngine();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "loadEngine").mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolve(mockEngine);
+        }),
+    );
 
     const mockCanvas = {
       remove: vi.fn(),
@@ -501,10 +546,7 @@ describe("Main App class", () => {
       () => mockCanvas,
     );
 
-    const mockScene = {
-      useRightHandedSystem: false,
-      render: vi.fn(),
-    };
+    const mockScene = createMockScene();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(App.prototype, "createScene").mockImplementation(
@@ -525,9 +567,14 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = new App({} as HTMLElement, { tagStore: [] } as any);
 
+    // Need to wait for 'loadEngine' so that the 'mockEngine' initialised above has time to be
+    // assigned to 'engine' field of App class
+    await app["loadEngine"]();
+
     // Act
     app["clearCanvas"]();
 
+    // Assert that 'remove' method from canvas has been called
     expect(mockCanvas.remove).toHaveBeenCalled();
   });
 });

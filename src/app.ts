@@ -61,69 +61,95 @@ export class App {
 
     this.canvas = this.createCanvas();
 
-    this.loadEngine().then(async (engine) => {
-      this.engine = engine;
+    this.loadEngine().then(
+      async (engine) => await this.runMainAppSetup(engine),
+    );
+  }
 
-      const scene = this.createScene();
+  /**
+   * Finish the set up of Babylon.js scene.
+   * Functions as the rest of the App constructor once the Babylon.js engine has now been initialised.
+   * @param engine The Babylon.js engine responsible for rendering the 3d environment to the browser
+   */
+  private async runMainAppSetup(engine: Engine | WebGPUEngine): Promise<void> {
+    this.engine = engine;
 
-      // Witness uses the right hand rule to describe the 3d coordinate axis
-      scene.useRightHandedSystem = true;
+    const scene = this.createScene();
 
-      /**************************************************
-       *             MAIN RENDER LOOP OF APPLICATION        *
-       **************************************************/
-      for (const tagObj of this.simulationContents.tagStore) {
-        const simulationContentFormat: SimulationContentFormat =
-          new SimulationContentFormat(
-            this.simulationContents.formatTag(tagObj),
-            {
-              scene: scene,
-              geometriesMap: this.geometriesMap,
-              timeTagStore: this.timeTagStore,
-            },
-          );
+    // Witness uses the right hand rule to describe the 3d coordinate axis
+    scene.useRightHandedSystem = true;
 
-        // Only act at time zero
-        await simulationContentFormat.actOnTagLogicAtTimeZero();
-      }
-
-      // Must create camera and, if floor exists, position camera to floor
-      this.createCameraAndPositionToFloor(scene);
-
-      this.createBackButton();
-
-      // hide/show the Inspector
-      window.addEventListener("keydown", (ev) => {
-        // Shift+Ctrl+Alt+I
-        if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
-          if (scene.debugLayer.isVisible()) {
-            scene.debugLayer.hide();
-          } else {
-            scene.debugLayer.show();
-          }
-        }
-      });
-
-      const customFPS = 120; //120 or 250
-
-      let frameNumber = 0;
-
-      // run the main render loop
-      this.renderLoop = setInterval(() => {
-        const timeTagStoreArray = this.timeTagStore.get(
-          this.formatFrameNumber(frameNumber),
-        );
-
-        timeTagStoreArray?.forEach((tag) => {
-          tag.actOnTagLogic();
+    /**************************************************
+     *  PARSE APPLICATION LOGIC (<create>, <update> and <delete> tags)   *
+     **************************************************/
+    for (const tagObj of this.simulationContents.tagStore) {
+      const simulationContentFormat: SimulationContentFormat =
+        new SimulationContentFormat(this.simulationContents.formatTag(tagObj), {
+          scene: scene,
+          geometriesMap: this.geometriesMap,
+          timeTagStore: this.timeTagStore,
         });
 
-        scene.render();
-        frameNumber += 0.01;
-      }, 1000 / customFPS);
+      // Only act at time zero
+      await simulationContentFormat.actOnTagLogicAtTimeZero();
+    }
 
-      this.addWindowResizeEventListener();
+    // Must create camera and, if floor exists, position camera to floor
+    this.createCameraAndPositionToFloor(scene);
+
+    this.createBackButton();
+
+    // hide/show the Inspector
+    window.addEventListener("keydown", (ev) => {
+      // Shift+Ctrl+Alt+I
+      if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+        if (scene.debugLayer.isVisible()) {
+          scene.debugLayer.hide();
+        } else {
+          scene.debugLayer.show();
+        }
+      }
     });
+
+    this.runApplicationRenderLoop(scene);
+
+    this.addWindowResizeEventListener();
+  }
+
+  /**
+   * Create render loop to render Babylon.js scene continuously to browser
+   * @param scene Babylon.js scene to render frames of
+   */
+  private runApplicationRenderLoop(scene: Scene): void {
+    if (!this.engine) {
+      throw new Error("Unable to create render loop: engine was undefined");
+    }
+
+    const engine = this.engine;
+
+    const customFPS = 120; //120 or 250
+
+    let frameNumber = 0;
+
+    // run the main render loop
+    this.renderLoop = setInterval(() => {
+      const timeTagStoreArray = this.timeTagStore.get(
+        this.formatFrameNumber(frameNumber),
+      );
+
+      timeTagStoreArray?.forEach((tag) => {
+        tag.actOnTagLogic();
+      });
+
+      /**
+       * Note: WebGPU engine requires 'beginFrame' and 'endFrame' methods to be called
+       * before rendering each frame
+       */
+      engine.beginFrame();
+      scene.render();
+      engine.endFrame();
+      frameNumber += 0.01;
+    }, 1000 / customFPS);
   }
 
   /**
