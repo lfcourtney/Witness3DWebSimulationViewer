@@ -1,4 +1,4 @@
-import { AbstractMesh, Vector3 } from "@babylonjs/core";
+import { AbstractMesh, TransformNode, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
 
@@ -6,14 +6,14 @@ import { QueueInfoTag } from "../interfaces/queueInfoTag";
  * Subclass of the MeshGeometry class responsible for representing the status of an machine geometry in Babylon.js scene
  */
 export class MachineGeometry extends MeshGeometry {
-  private readonly PART_SIZE: number = 0.6;
-
   private readonly queueInfoTag: QueueInfoTag;
 
   /**
    * Position of the queue. Should update in accordance with scaling and positioning of the machine.
    */
-  private readonly queuePosition: Vector3 = Vector3.Zero();
+  private readonly queuePosition: TransformNode = new TransformNode(
+    "queuePosition",
+  );
 
   /**
    * Create an object representing a machine geometry imported into the Babylon.js scene
@@ -86,21 +86,35 @@ export class MachineGeometry extends MeshGeometry {
   }
 
   /**
+   * @override
+   * Set the rotation of the mesh. Updates queue rotation in
+   * accordance with this new rotation.
+   * @param newRotation New rotation value of the mesh
+   */
+  setRotation(newRotation: Vector3) {
+    super.setRotation(newRotation);
+    this.queuePosition.rotation = newRotation;
+  }
+
+  /**
    * Position a part in the queue
    * @param part The part to position in the queue
    * @param position The amount to position the part in the queue by
    */
   public positionPart(part: MeshGeometry, partPosition: number): void {
+    // Apply the queue rotation and scale to the parts
+    part.setParent(this.queuePosition);
+
     part.setPosition(
       new Vector3(
         this.calculateQueueSizeLocation(
-          this.queuePosition.x,
+          this.queuePosition.position.x,
           this.queueInfoTag.direction.dx,
           partPosition,
         ),
-        this.processPartPositioningAttribute(),
+        this.processPartPositioningAttribute(part),
         this.calculateQueueSizeLocation(
-          this.queuePosition.z,
+          this.queuePosition.position.z,
           this.queueInfoTag.direction.dz,
           partPosition,
         ),
@@ -123,14 +137,16 @@ export class MachineGeometry extends MeshGeometry {
   ): number {
     const startingPosition = queuePosition;
     const endingPosition = queuePosition + queueDirection;
-    if (startingPosition === endingPosition) return queuePosition;
+
+    // Queue direction is 0 (no difference), so no change in position is necessary
+    if (startingPosition === endingPosition) return 0;
 
     // With the 'partPosition' determining the percentage,
     // the percentage of the difference between the queue position and direction
     const percentageDifference =
       (endingPosition - startingPosition) * partPosition;
 
-    return startingPosition + percentageDifference;
+    return percentageDifference;
   }
 
   /**
@@ -139,11 +155,11 @@ export class MachineGeometry extends MeshGeometry {
    * @param part The machine part to update the position of
    */
   private setPositionOfQueue(): void {
-    this.queuePosition.x =
+    this.queuePosition.position.x =
       this._transformMesh.position.x + this.scaledQueueInfo.x;
-    this.queuePosition.y =
+    this.queuePosition.position.y =
       this._transformMesh.position.y + this.scaledQueueInfo.y;
-    this.queuePosition.z =
+    this.queuePosition.position.z =
       this._transformMesh.position.z + this.scaledQueueInfo.z;
   }
 
@@ -151,17 +167,17 @@ export class MachineGeometry extends MeshGeometry {
    * Calculates correct vertical position of part relative to 'partPositioning' attribute
    * @returns Vertical position of part based on 'partPositioning' attribute
    */
-  private processPartPositioningAttribute(): number {
-    const partSizeHalved = this.PART_SIZE / 2;
+  private processPartPositioningAttribute(part: MeshGeometry): number {
+    const partSizeHalved = part.getScaling().y / 2;
     if (this.queueInfoTag.behaviour.partPositioning === "partOver") {
-      return this.queuePosition.y + partSizeHalved;
+      return partSizeHalved;
     }
     if (this.queueInfoTag.behaviour.partPositioning === "partUnder") {
-      return this.queuePosition.y - partSizeHalved;
+      return -partSizeHalved;
     }
 
     // A value of 'partCentre' does not need modification: origin of the part, which is the middle,
     // will be aligned with the queue y-axis position anyway.
-    return this.queuePosition.y;
+    return 0;
   }
 }

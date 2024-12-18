@@ -55,6 +55,22 @@ export class MeshGeometry {
   }
 
   /**
+   * Apply a parent mesh to the given mesh
+   * @param parent Parent mesh to apply
+   */
+  setParent(parent: Node) {
+    this._transformMesh.parent = parent;
+  }
+
+  /**
+   * Get the scaling value of the mesh
+   * @returns Scaling value of the mesh
+   */
+  getScaling(): Vector3 {
+    return this._transformMesh.scaling;
+  }
+
+  /**
    * Adds to 'y' position of geometry the difference between the origin of the scene and the 'y' position of the
    * geometry to make the geometry level with the floor in the Babylon.js scene
    */
