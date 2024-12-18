@@ -46,6 +46,7 @@ function initialiseAbstractMesh() {
       y: 0,
       z: 0,
     },
+    parent: undefined,
   };
 }
 
@@ -174,5 +175,36 @@ describe("MeshGeometry class", () => {
 
     // Assert that 'instanceName' getter returns the correct value
     expect(geometryObject.instanceName).toBe(exampleGeometryName);
+  });
+
+  it("should apply parent when 'setParent' method is called", () => {
+    // Arrange
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      abstractMesh as any,
+      exampleGeometryName,
+    );
+
+    const mockParent = vi.fn();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    geometryObject.setParent(mockParent as any);
+
+    // Assert that parent has been applied
+    expect(abstractMesh.parent).toEqual(mockParent);
+  });
+
+  it("should return scaling when 'getScaling' is called", () => {
+    // Arrange
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      abstractMesh as any,
+      exampleGeometryName,
+    );
+
+    const scalingValue = geometryObject.getScaling();
+
+    // Assert that scaling has been returned
+    expect(scalingValue).toEqual(abstractMesh.scaling);
   });
 });
