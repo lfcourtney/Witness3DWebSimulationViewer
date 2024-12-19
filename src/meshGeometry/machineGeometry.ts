@@ -1,6 +1,7 @@
 import { AbstractMesh, TransformNode, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
+import { PartGeometry } from "./partGeometry";
 
 /**
  * Subclass of the MeshGeometry class responsible for representing the status of an machine geometry in Babylon.js scene
@@ -19,14 +20,16 @@ export class MachineGeometry extends MeshGeometry {
    * Create an object representing a machine geometry imported into the Babylon.js scene
    * @param _transformMesh The transformation mesh of the geometry: can have transformations applied to it to move the mesh in the global scene
    * @param _instanceName The instance name of the geometry
+   * @param _geometryName The name of the geometry model used to render the given mesh
    * @param _queueInfoTag The <queueInfo> tag contained directly as the child tag of the <create> tag responsible for creating the machine
    */
   constructor(
     _transformMesh: AbstractMesh,
     _instanceName: string,
+    _geometryName: string,
     _queueInfoTag: QueueInfoTag,
   ) {
-    super(_transformMesh, _instanceName);
+    super(_transformMesh, _instanceName, _geometryName);
     this.queueInfoTag = _queueInfoTag;
     this.setPositionOfQueue();
   }
@@ -101,7 +104,7 @@ export class MachineGeometry extends MeshGeometry {
    * @param part The part to position in the queue
    * @param position The amount to position the part in the queue by
    */
-  public positionPart(part: MeshGeometry, partPosition: number): void {
+  public positionPart(part: PartGeometry, partPosition: number): void {
     // Apply the queue rotation and scale to the parts
     part.setParent(this.queuePosition);
 
@@ -167,13 +170,16 @@ export class MachineGeometry extends MeshGeometry {
    * Calculates correct vertical position of part relative to 'partPositioning' attribute
    * @returns Vertical position of part based on 'partPositioning' attribute
    */
-  private processPartPositioningAttribute(part: MeshGeometry): number {
-    const partSizeHalved = part.getScaling().y / 2;
+  private processPartPositioningAttribute(part: PartGeometry): number {
+    const effectivePartHeight = part.getEffectivePartHeight();
+
+    if (!effectivePartHeight) return 0;
+
     if (this.queueInfoTag.behaviour.partPositioning === "partOver") {
-      return partSizeHalved;
+      return effectivePartHeight / 2;
     }
     if (this.queueInfoTag.behaviour.partPositioning === "partUnder") {
-      return -partSizeHalved;
+      return -(effectivePartHeight / 2);
     }
 
     // A value of 'partCentre' does not need modification: origin of the part, which is the middle,

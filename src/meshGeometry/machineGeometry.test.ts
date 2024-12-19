@@ -3,7 +3,8 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import { MachineGeometry } from "./machineGeometry";
 import { PartPositioning } from "../interfaces/queueInfoTag";
 
-const exampleMachineGeometryName = "exampleMachineGeometry";
+const exampleMachineInstanceName = "exampleMachineInstanceName";
+const exampleMachineGeometryName = "exampleMachineGeometryName";
 
 function mockTransformMesh() {
   return {
@@ -101,6 +102,7 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
@@ -131,6 +133,7 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
@@ -155,6 +158,7 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
@@ -181,18 +185,15 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
 
-    const mockQueueYPosition = 10;
+    const mockPartHeight = 10;
 
     const mockPart = {
-      getScaling: vi.fn(() => ({
-        x: 0,
-        y: mockQueueYPosition,
-        z: 0,
-      })),
+      getEffectivePartHeight: vi.fn(() => mockPartHeight),
     };
 
     // Act
@@ -202,7 +203,7 @@ describe("MachineGeometry class", () => {
 
     // Assert that 'processPartPositioningAttribute' has returned the correct value for a value of 'partUnder'
     expect(processPartPositioningAttributeReturnValue).toBe(
-      -(mockQueueYPosition / 2),
+      -(mockPartHeight / 2),
     );
   });
 
@@ -219,18 +220,13 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
 
-    const mockQueueYPosition = 10;
-
     const mockPart = {
-      getScaling: vi.fn(() => ({
-        x: 0,
-        y: mockQueueYPosition,
-        z: 0,
-      })),
+      getEffectivePartHeight: vi.fn(),
     };
 
     // Act
@@ -252,6 +248,7 @@ describe("MachineGeometry class", () => {
     const machineGeometry = new MachineGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformMesh_mock as any,
+      exampleMachineInstanceName,
       exampleMachineGeometryName,
       queueInfoTag_mock,
     );
@@ -279,6 +276,7 @@ describe("MachineGeometry class", () => {
         y: mockQueueYPosition,
         z: 0,
       })),
+      getEffectivePartHeight: vi.fn(),
     };
 
     // Act

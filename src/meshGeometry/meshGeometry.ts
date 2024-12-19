@@ -8,6 +8,8 @@ export class MeshGeometry {
 
   protected readonly _instanceName: string;
 
+  protected readonly _geometryName: string;
+
   // 1 if mesh is visible. 2 if mesh is invisible
   private _visibility: number = 1;
 
@@ -15,11 +17,18 @@ export class MeshGeometry {
    * Create an object representing a generic geometry imported into the Babylon.js scene
    * @param _transformMesh The transformation mesh of the geometry: can have transformations applied to it to move the mesh in the global scene
    * @param _instanceName The instance name of the geometry
+   * @param _geometryName The name of the geometry model used to render the given mesh
    */
-  constructor(_transformMesh: AbstractMesh, _instanceName: string) {
+  constructor(
+    _transformMesh: AbstractMesh,
+    _instanceName: string,
+    _geometryName: string,
+  ) {
     this._transformMesh = _transformMesh;
 
     this._instanceName = _instanceName;
+
+    this._geometryName = _geometryName;
   }
 
   public get instanceName() {
@@ -28,6 +37,10 @@ export class MeshGeometry {
 
   public get visibility() {
     return this._visibility;
+  }
+
+  public get geometryName() {
+    return this._geometryName;
   }
 
   /**
