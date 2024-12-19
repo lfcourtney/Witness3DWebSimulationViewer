@@ -164,9 +164,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,9 +209,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     const formatTag_mock = vi.fn();
 
@@ -261,9 +263,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Mock tag store
     const fakeTimeTagStore = new Map();
@@ -327,13 +330,13 @@ describe("Main App class", () => {
     ).toThrowError(undefinedEngineException);
   });
 
-  it("should invoke 'createBackButton' method during successful constructor invocation", async () => {
+  it("should invoke 'renderSimulationGUI' method during successful constructor invocation", async () => {
     // Arrange
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createBackButton_spy = vi.spyOn<any, string>(
+    const renderSimulationGUI_spy = vi.spyOn<any, string>(
       App.prototype,
-      "createBackButton",
+      "renderSimulationGUI",
     );
 
     const mockEngine = createMockEngine();
@@ -366,8 +369,8 @@ describe("Main App class", () => {
     // Explanation: constructor was Act. This is to simulation awaiting for 'loadEngine' in constructor
     await app["loadEngine"]();
 
-    // Assert that 'createBackButton' has been invoked in constructor
-    expect(createBackButton_spy).toHaveBeenCalled();
+    // Assert that 'renderSimulationGUI' has been invoked in constructor
+    expect(renderSimulationGUI_spy).toHaveBeenCalled();
   });
 
   it("should invoke 'createScene' method during successful constructor invocation", async () => {
@@ -396,9 +399,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -444,9 +448,10 @@ describe("Main App class", () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -479,9 +484,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -511,9 +517,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // Act
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -560,9 +567,10 @@ describe("Main App class", () => {
     ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createBackButton").mockImplementation(
-      () => null,
-    );
+    vi.spyOn<any, string>(
+      App.prototype,
+      "renderSimulationGUI",
+    ).mockImplementation(() => null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = new App({} as HTMLElement, { tagStore: [] } as any);
@@ -576,5 +584,35 @@ describe("Main App class", () => {
 
     // Assert that 'remove' method from canvas has been called
     expect(mockCanvas.remove).toHaveBeenCalled();
+  });
+
+  it("should update 'frameGUIButton' with new frame number when invoked with an integer frame number", () => {
+    // Arrange
+
+    // Remove implementation of 'runMainAppSetup' so that engine is never initialised
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(App.prototype, "runMainAppSetup").mockImplementation(
+      () => null,
+    );
+
+    const exampleFrameNumber = "12.00";
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const app = new App({} as HTMLElement, { tagStore: [] } as any);
+
+    const mockFrameGUIButton = {
+      textBlock: {
+        text: undefined,
+      },
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (app as any).frameGUIButton = mockFrameGUIButton;
+
+    // Act
+    app["updateGUIFrameNumber"](exampleFrameNumber);
+
+    // Assert that frame number has been applied to text contents of 'frameGUIButton'
+    expect(mockFrameGUIButton.textBlock.text).toBe("Time: 12");
   });
 });
