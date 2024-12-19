@@ -8,6 +8,7 @@ import { MeshGeometry } from "../meshGeometry/meshGeometry";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
+import { PartGeometry } from "../meshGeometry/partGeometry";
 
 /**
  * Class responsible for holding specific functionality of <create> tag
@@ -45,7 +46,7 @@ export class SimulationCreateTag extends SimulationTag {
           geometryName + ".glb",
           this.simulationTagData.scene,
         );
-        this.importMeshSuccess(importMeshResult.meshes);
+        this.importMeshSuccess(importMeshResult.meshes, geometryName);
       } catch (error) {
         console.error("Error loading mesh:", error);
       }
@@ -69,39 +70,68 @@ export class SimulationCreateTag extends SimulationTag {
   /**
    * Callback function to be used if Babylon.js mesh was successfully imported
    * @param newMeshes Array of meshes that have been imported
-   * @param createTag The 'instanceName' attribute of corresponding <create> tag
+   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
    */
-  private importMeshSuccess(newMeshes: AbstractMesh[]): void {
+  private importMeshSuccess(
+    newMeshes: AbstractMesh[],
+    geometryName: string,
+  ): void {
     // Must have the main mesh and at least one child mesh
     if (newMeshes.length < 2) return;
 
     const transformMesh = newMeshes[0];
 
-    //TODO: Undo default shrinking of meshes by 97%, relative to their original size,
-    // as soon as correct models are uploaded
-    transformMesh.scaling = new Vector3(0.003, 0.003, 0.003);
+    //TODO: Undo default shrinking of meshes to 3% of their original size as soon as correctly sized
+    // models are uploaded
+    if (geometryName === "dg-pt-ManWalking1") {
+      // TODO: Labour model is differently scaled from the other models: it only needs to be shrunk to 10% of its original size.
+      // If the correctly sized labour model is uploaded, this should be undone.
+      transformMesh.scaling = new Vector3(0.01, 0.01, 0.01);
+    } else {
+      transformMesh.scaling = new Vector3(0.003, 0.003, 0.003);
+    }
 
     // Setting the name of the meshes allows us to search for the meshes from the scene
     transformMesh.name = this.createTag.instanceName;
 
-    /******************************************************
-     * Only machines will have a <queueInfo> tag as a child
-     * of the <create> tag responsible for creating them
-     ******************************************************/
+    /***************************************************************************************************
+     * Choose whether to create part, machine, conveyor or regular mesh based on information in <create>
+     * tag
+     **************************************************************************************************/
 
-    if (this.createTag.queueInfo) {
+    if (
+      geometryName === "dg-pt-Part1" ||
+      geometryName === "dg-pt-ManWalking1"
+    ) {
+      this.simulationTagData.geometriesMap.set(
+        this.createTag.instanceName,
+        new PartGeometry(
+          transformMesh,
+          this.createTag.instanceName,
+          geometryName,
+        ),
+      );
+    } else if (this.createTag.queueInfo) {
+      /**
+       * Only machines will have a <queueInfo> tag as a child tag of the <create> tag responsible for creating them
+       */
       this.simulationTagData.geometriesMap.set(
         this.createTag.instanceName,
         new MachineGeometry(
           transformMesh,
           this.createTag.instanceName,
+          geometryName,
           this.createTag.queueInfo,
         ),
       );
     } else {
       this.simulationTagData.geometriesMap.set(
         this.createTag.instanceName,
-        new MeshGeometry(transformMesh, this.createTag.instanceName),
+        new MeshGeometry(
+          transformMesh,
+          this.createTag.instanceName,
+          geometryName,
+        ),
       );
     }
   }

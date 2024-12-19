@@ -37,27 +37,11 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 
 ## Debug
 
-Witness 3D Web Simulation Viewer is developed and debugged in Visual Studio Code. An example configuration file that can be used to debug Witness 3D Web Simulation Viewer in Visual Studio Code is shown below. This configuration file is configured to use the Microsoft Edge debugger (built into Visual Studio Code). When run, it will automatically launch Microsoft Edge running on port 4000. There is no need to begin the development server separately; hosting the application on port 4000 is included as the pre launch task in the configuration.
+Witness 3D Web Simulation Viewer is developed and debugged in Visual Studio Code. It is recommended to use Visual Studio Code for debugging due to its built-in debugging capabilities.
 
-Visual Studio Code may prompt you to begin beginning manually. It could display a message saying that it is waiting for the pre launch task. This message should show if you have begun the debug configuration, yet Microsoft Edge has not opened up, assuming the Edge browser is installed. You should select `Debug Anyway`. The Edge browser should then begin.
+To do open a debugging environment in Visual Studio Code, open a `JavaScript Debug Terminal` and run `npm run dev` to begin the development server as usual. From here, the application will stop at any breakpoints set in Visual Studio Code.
 
-    {
-        // Use IntelliSense to learn about possible attributes.
-        // Hover to view descriptions of existing attributes.
-        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-        "version": "0.2.0",
-        "configurations": [
-            {
-            "name": "Launch Edge",
-            "type": "msedge",
-            "request": "launch",
-            "preLaunchTask": "npm: dev",
-            "url": "http://localhost:4000/",
-            "webRoot": "${workspaceFolder}"
-            }
-        ]
-
-    }
+Alternatively, many web browsers offer debugging capabilities that can be used for debugging Witness 3D Web Simulation Viewer.
 
 # Running the tests
 
@@ -87,4 +71,4 @@ A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaS
 
 # Last Updated
 
-This README was last updated on 6 October 2024.
+This README was last updated on 19 December 2024.

@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { MeshGeometry } from "./meshGeometry";
 import { AbstractMesh } from "@babylonjs/core";
 
+const exampleInstanceName = "exampleInstance";
 const exampleGeometryName = "exampleGeometry";
 
 // mock needed babylon.js imports
@@ -78,6 +79,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -95,6 +97,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -116,6 +119,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -134,6 +138,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -152,6 +157,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -170,11 +176,12 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
     // Assert that 'instanceName' getter returns the correct value
-    expect(geometryObject.instanceName).toBe(exampleGeometryName);
+    expect(geometryObject.instanceName).toBe(exampleInstanceName);
   });
 
   it("should apply parent when 'setParent' method is called", () => {
@@ -182,6 +189,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 
@@ -199,6 +207,7 @@ describe("MeshGeometry class", () => {
     const geometryObject = new MeshGeometry(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       abstractMesh as any,
+      exampleInstanceName,
       exampleGeometryName,
     );
 

@@ -2,6 +2,7 @@ import { Vector3, Tools } from "@babylonjs/core";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { UpdateTag } from "../interfaces/updateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
+import { PartGeometry } from "../meshGeometry/partGeometry";
 
 /**
  * Class responsible for holding specific functionality of <update> tag
@@ -44,24 +45,30 @@ export class SimulationUpdateTag extends SimulationTag {
     }
 
     if (this.updateTag.scale) {
-      // TODO: remove this so that all meshes are scaled the same once new models are uploaded
-      if (
-        this.updateTag.instanceName !== "[130] Treatment(1) - Main Icon" &&
-        this.updateTag.instanceName !== "[130] Treatment(2) - Main Icon"
-      ) {
-        foundGeometry.setScaling(
-          new Vector3(
-            this.updateTag.scale.x * 0.03,
-            this.updateTag.scale.y * 0.03,
-            this.updateTag.scale.z * 0.03,
-          ),
-        );
-      } else {
+      if (foundGeometry.geometryName === "dg-ic-WaterTank") {
         foundGeometry.setScaling(
           new Vector3(
             this.updateTag.scale.x,
             this.updateTag.scale.y,
             this.updateTag.scale.z,
+          ),
+        );
+      } else if (foundGeometry.geometryName === "dg-pt-ManWalking1") {
+        foundGeometry.setScaling(
+          new Vector3(
+            this.updateTag.scale.x * 0.01,
+            this.updateTag.scale.y * 0.01,
+            this.updateTag.scale.z * 0.01,
+          ),
+        );
+      } else {
+        // TODO: unless explicitly labour or a water tank, assume that all meshes need to be scaled
+        // to 3% of their original size. Undo this if correct models are uploaded
+        foundGeometry.setScaling(
+          new Vector3(
+            this.updateTag.scale.x * 0.03,
+            this.updateTag.scale.y * 0.03,
+            this.updateTag.scale.z * 0.03,
           ),
         );
       }
@@ -103,7 +110,7 @@ export class SimulationUpdateTag extends SimulationTag {
       this.updateTag.partPosition.instanceName,
     );
 
-    if (!partGeometry) return;
+    if (!(partGeometry instanceof PartGeometry)) return;
 
     if (!(machineGeometry instanceof MachineGeometry)) return;
 

@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import { UpdateTag } from "../interfaces/updateTag";
 import { SimulationUpdateTag } from "./simulationUpdateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
+import { PartGeometry } from "../meshGeometry/partGeometry";
 
 const mockUpdateTag: UpdateTag = {
   time: 0,
@@ -49,6 +50,23 @@ function mockMeshGeometry() {
     setRotation: vi.fn(),
     changeVisibility: vi.fn(),
   };
+}
+
+/**
+ * Mock instance of part geometry class
+ */
+function mockPartGeometry() {
+  // Purpose: ensure that TypeScript considers it an instanceof 'PartGeometry'
+  const mockPartGeometry = Object.create(PartGeometry.prototype);
+
+  Object.assign(mockPartGeometry, {
+    setPosition: vi.fn(),
+    setScaling: vi.fn(),
+    setRotation: vi.fn(),
+    changeVisibility: vi.fn(),
+  });
+
+  return mockPartGeometry;
 }
 
 /**
@@ -160,11 +178,11 @@ describe("SimulationUpdateTag class", () => {
     const fakeGeometriesMap = new Map();
 
     // Mock part
-    const mockedMeshGeometry = mockMeshGeometry();
+    const mockedPartGeometry = mockPartGeometry();
 
     fakeGeometriesMap.set(
       mockUpdateTagPartPosition.instanceName,
-      mockedMeshGeometry,
+      mockedPartGeometry,
     );
 
     // Mock machine geometry

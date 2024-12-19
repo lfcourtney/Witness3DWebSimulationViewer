@@ -12,6 +12,32 @@ const mockCreateTag: CreateTag = {
 const mockCreateTagQueueInfo: CreateTag = {
   time: 0,
   geometry:
+    "C:\\Users\\Public\\Documents\\Royal HaskoningDHV\\Witness 27\\W3D\\Imported Assets\\Shapes\\QueuePlaceholder",
+  instanceName: "[115] Buffer1(1) - Part Queue",
+  queueInfo: {
+    queueParent: "QueuePlaceholder",
+    behaviour: {
+      partPositioning: "partOver",
+      partRoll: 0,
+      partPitch: 0,
+      partYaw: 0,
+    },
+    position: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    direction: {
+      dx: 0,
+      dy: 0,
+      dz: 1,
+    },
+  },
+};
+
+const mockCreateTagPart: CreateTag = {
+  time: 0,
+  geometry:
     "C:\\Users\\Public\\Documents\\Royal HaskoningDHV\\Witness 27\\W3D\\Assets\\Shapes\\dg-pt-Part1",
   instanceName: "Box - Entity (67)",
   queueInfo: {
@@ -89,10 +115,24 @@ vi.mock(import("@babylonjs/core"), () => {
 
 // mock MachineGeometry
 vi.mock(import("../meshGeometry/machineGeometry"), () => {
+  // Mocked implementation has 'machineGeometry' property so that we know a 'machineGeometry' specifically
+  // has been initialised and not some other type of mesh.
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const MachineGeometry = vi.fn(() => ({ machineGeometry: true })) as any;
 
   return { MachineGeometry };
+});
+
+// mock PartGeometry
+vi.mock(import("../meshGeometry/partGeometry"), () => {
+  // Mocked implementation has 'partGeometry' property so that we know a 'partGeometry' specifically
+  // has been initialised and not some other type of mesh.
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const PartGeometry = vi.fn(() => ({ partGeometry: true })) as any;
+
+  return { PartGeometry };
 });
 
 describe("SimulationCreateTag class", () => {
@@ -163,6 +203,31 @@ describe("SimulationCreateTag class", () => {
     expect(
       fakeGeometriesMap.get(mockCreateTagQueueInfo.instanceName)
         .machineGeometry,
+    ).toBe(true);
+  });
+
+  it(`should create 'PartGeometry' 'SimulationTag' object if <create> tag contains either a part or labour geometry as
+     the value of its 'geometry' attribute`, async () => {
+    // Arrange
+
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagPart,
+    );
+
+    // Act
+    await simulationCreateTag.actOnTagLogic();
+
+    // Assert that instance of 'PartGeometry' has been added to simulation tag data
+    expect(
+      fakeGeometriesMap.get(mockCreateTagPart.instanceName).partGeometry,
     ).toBe(true);
   });
 
