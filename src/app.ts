@@ -33,6 +33,14 @@ export class App {
    */
   private renderLoop?: NodeJS.Timeout;
 
+  /**
+   * Babylon.js GUI element. Should be updated on each frame of the simulation to reflect the current frame number.
+   */
+  private frameGUIButton?: Button;
+
+  /**
+   * Assigned on initialisation. Contains the tag information and the ability to format the tags from the uploaded w3d file.
+   */
   private simulationContents: SimulationContents;
 
   private readonly formContainer: HTMLElement;
@@ -97,7 +105,7 @@ export class App {
     // Must create camera and, if floor exists, position camera to floor
     this.createCameraAndPositionToFloor(scene);
 
-    this.createBackButton();
+    this.renderSimulationGUI();
 
     // hide/show the Inspector
     window.addEventListener("keydown", (ev) => {
@@ -133,8 +141,12 @@ export class App {
 
     // run the main render loop
     this.renderLoop = setInterval(() => {
+      // Parse frame number to string to resolve inconsistencies with floating point numbers
+      const formattedFrameNumberString: string =
+        this.formatFrameNumber(frameNumber);
+
       const timeTagStoreArray = this.timeTagStore.get(
-        this.formatFrameNumber(frameNumber),
+        formattedFrameNumberString,
       );
 
       timeTagStoreArray?.forEach((tag) => {
@@ -149,6 +161,8 @@ export class App {
       scene.render();
       engine.endFrame();
       frameNumber += 0.01;
+
+      this.updateGUIFrameNumber(formattedFrameNumberString);
     }, 1000 / customFPS);
   }
 
@@ -296,26 +310,40 @@ export class App {
   }
 
   /**
-   * Render button responsible for taking the user back to the initial form, whereby the
-   * user uploads a w3d file, and removes the currently rendered Babylon.js scene.
+   * Render simulation GUI using Babylon.js GUI library: button responsible for taking the user back to the initial form,
+   * removing the currently rendered Babylon.js scene and a frame counter element that will be updated to reflect the current
+   * frame number of the simulation.
    */
-  private createBackButton(): void {
+  private renderSimulationGUI(): void {
     // GUI
     const adt = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
     const panel = new StackPanel();
-    panel.width = "600px";
-    panel.left = "210px";
+    panel.isVertical = false;
+    panel.height = "40px";
     panel.top = "-25px";
     panel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
     adt.addControl(panel);
 
+    const frameGUIButton = Button.CreateSimpleButton("backButton", "Time: 0");
+
+    frameGUIButton.width = "300px";
+    frameGUIButton.color = "white";
+    frameGUIButton.background = "green";
+    frameGUIButton.paddingRight = "10px";
+
+    this.frameGUIButton = frameGUIButton;
+
+    panel.addControl(frameGUIButton);
+
     const button = Button.CreateSimpleButton("backButton", "New Simulation");
-    button.width = 0.25;
-    button.height = "40px";
+    button.width = "300px";
     button.color = "white";
     button.background = "green";
+    button.paddingRight = "10px";
+
+    panel.addControl(button);
 
     button.onPointerClickObservable.add(() => {
       this.clearCanvas();
@@ -330,8 +358,23 @@ export class App {
     button.onPointerOutObservable.add(() => {
       document.body.style.cursor = "";
     });
+  }
 
-    panel.addControl(button);
+  /**
+   * Updates the frame GUI button to reflect the current frame number of the simulation.
+   * To reduce computation overhead, will only update on new full numbers of the frame.
+   * @param currentFrameNumber The current frame number of the simulation
+   */
+  private updateGUIFrameNumber(currentFrameNumber: string): void {
+    const splitFrameNumber = currentFrameNumber.split(".");
+
+    if (splitFrameNumber.length !== 2) return;
+
+    if (splitFrameNumber[1] !== "00") return;
+
+    if (this.frameGUIButton?.textBlock) {
+      this.frameGUIButton.textBlock.text = "Time: " + splitFrameNumber[0];
+    }
   }
 
   /**
