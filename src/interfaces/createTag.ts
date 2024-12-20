@@ -1,4 +1,5 @@
 import { QueueInfoTag } from "./queueInfoTag";
+import { PathTag } from "./pathTag";
 import { SurfaceTag } from "./surfaceTag";
 
 /**
@@ -7,7 +8,11 @@ import { SurfaceTag } from "./surfaceTag";
 export interface CreateTag {
   time: number;
   instanceName: string;
-  queueInfo?: QueueInfoTag;
   geometry?: string;
+  /**
+   * Conveyors are identified by the presence of a <path> sub tag in their <create> tags
+   */
+  path?: PathTag;
+  queueInfo?: QueueInfoTag;
   surface?: SurfaceTag;
 }

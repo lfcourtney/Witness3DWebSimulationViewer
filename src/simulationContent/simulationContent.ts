@@ -77,11 +77,27 @@ export class SimulationContents {
     let tagObject = {};
 
     if (Array.isArray(tagArray)) {
-      tagArray.forEach((tagIter) => {
-        tagObject = { ...tagObject, ...this.formatTag(tagIter) };
-      });
+      /**
+       * <path> subtag of the parent <create> tag, if present, can contain multiple <path> and <arc> subtags.
+       * So, to prevent subtags from overwriting each other, the <path> subtag should be formatted differently from all other tags.
+       */
+      if (tagName === "path") {
+        const lineAndArcs: object[] = [];
+        tagObject = { path: lineAndArcs };
+        tagArray.forEach((tagIter) => {
+          lineAndArcs.push(this.formatTag(tagIter));
+        });
+      } else {
+        tagArray.forEach((tagIter) => {
+          tagObject = { ...tagObject, ...this.formatTag(tagIter) };
+        });
+      }
     }
 
+    /**
+     * Return an object with a single field reflecting the name of the parent tag (eg, <create>, <update>, etc).
+     * The value of this field is an object that reflects all the attributes and sub tags of the parent tag.
+     */
     return {
       [tagName]: { ...tagAttributes, ...tagObject },
     };

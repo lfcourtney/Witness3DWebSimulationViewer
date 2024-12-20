@@ -13,7 +13,8 @@ const exampleXMLStructure = `<start type="session" />
 			<position x="0.000000" y="0.300000" z="-0.500000" />
 			<direction dx="0.000000" dy="0.000000" dz="1.000000" />
 		</queueInfo>
-	</create>`;
+	</create>
+  <create time="0.000000" geometry="C:\\Users\\Public\\Documents\\Royal HaskoningDHV\\Witness 27\\W3D\\Assets\\Shapes\\dgu-pa-Conveyor6" instanceName="[116] Conv2(1) - Path"><queueInfo queueParent="dgu-pa-Conveyor6"><behaviour partPositioning="partOver" partRoll="0.000000" partPitch="0.000000" partYaw="0.000000" /><position x="0.000000" y="0.250000" z="-0.790000" /><direction dx="0.000000" dy="0.000000" dz="1.000000" /></queueInfo><path startX="18.250000" startY="0.000000" startZ="27.312500" width="0.750000"><line startX="18.250000" startY="0.000000" startZ="27.312500" endX="18.250000" endY="0.000000" endZ="20.437500" /><arc startX="18.250000" startY="0.000000" startZ="20.437500" endX="23.250000" endY="0.000000" endZ="15.437500" centreX="23.250000" centreY="0.000000" centreZ="20.437500" angle="90.000000" sweepDirection="clockwise" /><line startX="23.250000" startY="0.000000" startZ="15.437500" endX="28.250000" endY="0.000000" endZ="15.437500" /></path></create>`;
 let simulationContents: SimulationContents;
 
 const instantiationErrorMessage =
@@ -81,5 +82,28 @@ describe("SimulationContents class", () => {
     // Assert that new object only has one parent field named create
     expect(Object.keys(createTagFormatted).length).toBe(1);
     expect(Object.keys(createTagFormatted)[0]).toBe("create");
+  });
+
+  it(`formats <path> sub tag of <create> tag appropriately, storing each <line> and <arc> sub tag within an array`, () => {
+    const createTagForConveyor = simulationContents.tagStore[5];
+
+    // Assert that original tag object has more than one parent field, one for contents and the attributes
+    expect(Object.keys(createTagForConveyor).length).toBe(2);
+
+    // Act
+    const createTagFormatted =
+      simulationContents.formatTag(createTagForConveyor);
+
+    // Assert that new object only has one parent field named create
+    expect(Object.keys(createTagFormatted).length).toBe(1);
+    expect(Object.keys(createTagFormatted)[0]).toBe("create");
+
+    const createTagFormattedExtracted = createTagFormatted["create"];
+
+    // Assert that the 'path' field exists on the object of create field
+    expect(createTagFormattedExtracted["path"]).toBeTruthy();
+
+    // Assert that the 'path' field contains an array of 3 items: 2 <line> tags and 1 <arc> tag
+    expect(createTagFormattedExtracted["path"]["path"].length).toBe(3);
   });
 });
