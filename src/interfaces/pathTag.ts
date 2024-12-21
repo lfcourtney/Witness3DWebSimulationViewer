@@ -31,7 +31,7 @@ export interface ArcTag {
  * Represents a formatted <path> tag
  */
 export interface PathTag {
-  path: Array<LineTag | ArcTag>;
+  path: Array<{ line: LineTag } | { arc: ArcTag }>;
   startX: number;
   startY: number;
   startZ: number;
