@@ -15,9 +15,9 @@ export interface LineTag {
  */
 export interface ArcTag {
   angle: number;
-  centerX: number;
-  centerY: number;
-  centerZ: number;
+  centreX: number;
+  centreY: number;
+  centreZ: number;
   endX: number;
   endY: number;
   endZ: number;

@@ -7,7 +7,7 @@ export default defineConfig({
       reporter: ["text", "html", "cobertura"],
       exclude: [
         "mocks/**",
-        "src/materials/**",
+        "src/utilities/**",
         "src/interfaces/**",
         ...coverageConfigDefaults.exclude,
       ],

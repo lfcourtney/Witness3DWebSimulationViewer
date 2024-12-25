@@ -76,11 +76,6 @@ vi.mock(import("@babylonjs/core"), () => {
   return { TransformNode, Vector3 };
 });
 
-// mock necessary materials
-vi.mock("../materials/colors", () => ({
-  blueMat: vi.fn(),
-}));
-
 describe("MachineGeometry class", () => {
   afterEach(() => {
     vi.restoreAllMocks(); // Restores all mocks to original implementations

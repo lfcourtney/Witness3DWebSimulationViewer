@@ -2,11 +2,12 @@ import { AbstractMesh, TransformNode, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
 import { PartGeometry } from "./partGeometry";
+import { PositionPart } from "./positionPart";
 
 /**
  * Subclass of the MeshGeometry class responsible for representing the status of an machine geometry in Babylon.js scene
  */
-export class MachineGeometry extends MeshGeometry {
+export class MachineGeometry extends MeshGeometry implements PositionPart {
   private readonly queueInfoTag: QueueInfoTag;
 
   /**
