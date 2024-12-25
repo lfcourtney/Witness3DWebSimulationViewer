@@ -81,6 +81,78 @@ const mockFloorCreateTag: CreateTag = {
   },
 };
 
+const mockGeometryName = "dgu-pa-Conveyor6";
+
+// Example create tag for the creation of a conveyor
+const mockCreateTagConveyor: CreateTag = {
+  time: 0,
+  geometry:
+    "C:\\Users\\Public\\Documents\\Royal HaskoningDHV\\Witness 27\\W3D\\Assets\\Shapes\\dgu-pa-Conveyor6",
+  instanceName: "[116] Conv2(1) - Path",
+  queueInfo: {
+    queueParent: "dgu-pa-Conveyor6",
+    behaviour: {
+      partPositioning: "partOver",
+      partRoll: 0,
+      partPitch: 0,
+      partYaw: 0,
+    },
+    position: {
+      x: 0,
+      y: 0.25,
+      z: -0.79,
+    },
+    direction: {
+      dx: 0,
+      dy: 0,
+      dz: 1,
+    },
+  },
+  path: {
+    startX: 18.25,
+    startY: 0,
+    startZ: 27.3125,
+    width: 0.75,
+    path: [
+      {
+        line: {
+          startX: 18.25,
+          startY: 0,
+          startZ: 27.3125,
+          endX: 18.25,
+          endY: 0,
+          endZ: 20.4375,
+        },
+      },
+      {
+        arc: {
+          startX: 18.25,
+          startY: 0,
+          startZ: 20.4375,
+          endX: 23.25,
+          endY: 0,
+          endZ: 15.4375,
+          centreX: 23.25,
+          centreY: 0,
+          centreZ: 20.4375,
+          angle: 90,
+          sweepDirection: "clockwise",
+        },
+      },
+      {
+        line: {
+          startX: 23.25,
+          startY: 0,
+          startZ: 15.4375,
+          endX: 28.25,
+          endY: 0,
+          endZ: 15.4375,
+        },
+      },
+    ],
+  },
+};
+
 // mock needed babylon.js imports
 vi.mock(import("@babylonjs/core"), () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -135,6 +207,27 @@ vi.mock(import("../meshGeometry/partGeometry"), () => {
   return { PartGeometry };
 });
 
+// mock ConveyorGeometry
+vi.mock(import("../meshGeometry/conveyorGeometry"), () => {
+  // Mocked implementation has 'conveyorGeometry' property so that we know a 'ConveyorGeometry' specifically
+  // has been initialised and not some other type of mesh.
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ConveyorGeometry = vi.fn(() => ({ conveyorGeometry: true })) as any;
+
+  return { ConveyorGeometry };
+});
+
+// mock ConveyorBuilder
+vi.mock(import("../meshBuilder/conveyorBuilder"), () => {
+  const ConveyorBuilder = vi.fn(() => ({
+    buildConveyor: vi.fn(() => true),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })) as any;
+
+  return { ConveyorBuilder };
+});
+
 describe("SimulationCreateTag class", () => {
   afterEach(() => {
     vi.restoreAllMocks(); // Restores all mocks to original implementations
@@ -179,6 +272,48 @@ describe("SimulationCreateTag class", () => {
 
     // Assert 'importMeshSuccess' has been invoked
     expect(importMeshSuccess_spy).toHaveBeenCalledOnce();
+  });
+
+  it("should log error if contents of 'renderPartOrMachine' method throws error", async () => {
+    // Arrange
+    const consoleErrorMock = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: {
+          set: vi.fn(),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTag,
+    );
+
+    const mockImportMeshError = new Error("Mock Import Mesh Error");
+
+    /**
+     * Mock 'importMeshSuccess' so that it throws error
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      simulationCreateTag,
+      "importMeshSuccess",
+    ).mockImplementationOnce(() => {
+      throw mockImportMeshError;
+    });
+
+    const mockGeometryName = mockCreateTag.geometry || "";
+
+    // Act
+    await simulationCreateTag["renderPartOrMachine"](mockGeometryName);
+
+    // Assert 'console.error' has been invoked
+    expect(consoleErrorMock).toHaveBeenCalledWith(
+      "Error loading mesh:",
+      mockImportMeshError,
+    );
   });
 
   it("should create 'MachineGeometry' 'SimulationTag' object if <create> tag contains <queueInfo> sub tag", async () => {
@@ -228,6 +363,57 @@ describe("SimulationCreateTag class", () => {
     // Assert that instance of 'PartGeometry' has been added to simulation tag data
     expect(
       fakeGeometriesMap.get(mockCreateTagPart.instanceName).partGeometry,
+    ).toBe(true);
+  });
+
+  it(`should throw appropriate error if 'renderPathOrConveyor' method is invoked with a create tag that does not have
+    <path> sub tag`, () => {
+    // Arrange
+
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagPart,
+    );
+
+    const unableToCreatePathOrConveyorError =
+      "Unable to create instance of path or conveyor: <path> sub tag was not defined";
+
+    // Assert that appropriate error is thrown
+    expect(() => {
+      // Act
+      simulationCreateTag["renderPathOrConveyor"](mockGeometryName);
+    }).toThrowError(unableToCreatePathOrConveyorError);
+  });
+
+  it(`should create 'ConveyorGeometry' 'SimulationTag' object if <create> tag contains a <path> sub tag for drawing shape of conveyor or path`, () => {
+    // Arrange
+
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagConveyor,
+    );
+
+    // Act
+    simulationCreateTag["renderPathOrConveyor"](mockGeometryName);
+
+    // Assert that instance of 'ConveyorGeometry' has been added to simulation tag data
+    expect(
+      fakeGeometriesMap.get(mockCreateTagConveyor.instanceName)
+        .conveyorGeometry,
     ).toBe(true);
   });
 

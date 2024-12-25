@@ -7,6 +7,9 @@ export class SimulationContents {
    * @type {number}
    */
   private tagIndex: number = 0;
+  /**
+   * array of w3d tags formatted as JavaScript objects preserving the order of the tags in the original file
+   */
   private readonly _tagStore: object[];
 
   /**
@@ -23,6 +26,9 @@ export class SimulationContents {
     this._tagStore = _tagStore;
   }
 
+  /**
+   * Get array of w3d tags formatted as JavaScript objects preserving the order of the tags in the original file
+   */
   public get tagStore() {
     return this._tagStore;
   }

@@ -9,6 +9,8 @@ import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { PartGeometry } from "../meshGeometry/partGeometry";
+import { ConveyorBuilder } from "../meshBuilder/conveyorBuilder";
+import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 /**
  * Class responsible for holding specific functionality of <create> tag
@@ -39,17 +41,16 @@ export class SimulationCreateTag extends SimulationTag {
 
       if (!geometryName) return;
 
-      try {
-        const importMeshResult = await SceneLoader.ImportMeshAsync(
-          "",
-          "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
-          geometryName + ".glb",
-          this.simulationTagData.scene,
-        );
-        this.importMeshSuccess(importMeshResult.meshes, geometryName);
-      } catch (error) {
-        console.error("Error loading mesh:", error);
+      if (
+        geometryName === "dgu-pa-Conveyor5" ||
+        geometryName === "dgu-pa-Conveyor6" ||
+        geometryName === "dgu-pa-Track"
+      ) {
+        this.renderPathOrConveyor(geometryName);
+      } else {
+        await this.renderPartOrMachine(geometryName);
       }
+
       return;
     }
 
@@ -64,6 +65,52 @@ export class SimulationCreateTag extends SimulationTag {
       floorRegex.test(this.createTag.instanceName)
     ) {
       this.renderGround();
+    }
+  }
+
+  /**
+   * Create instance of conveyor or path as declared within the given <create> tag
+   * @param geometryName The name of the geometry model used to render the conveyor or path of the <create> tag
+   */
+  private renderPathOrConveyor(geometryName: string): void {
+    if (!this.createTag.path) {
+      throw new Error(
+        "Unable to create instance of path or conveyor: <path> sub tag was not defined",
+      );
+    }
+    const conveyorBuilder = new ConveyorBuilder(this.createTag.path);
+
+    const conveyorMesh = conveyorBuilder.buildConveyor();
+
+    if (!conveyorMesh) return;
+
+    this.simulationTagData.geometriesMap.set(
+      this.createTag.instanceName,
+      new ConveyorGeometry(
+        conveyorMesh,
+        this.createTag.instanceName,
+        geometryName,
+        conveyorBuilder.conveyorPoints,
+      ),
+    );
+  }
+
+  /**
+   *  Asynchronous function to import the machine or part mesh as named in the
+   * value of the 'geometry' attribute of the given <create> tag
+   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
+   */
+  private async renderPartOrMachine(geometryName: string): Promise<void> {
+    try {
+      const importMeshResult = await SceneLoader.ImportMeshAsync(
+        "",
+        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
+        geometryName + ".glb",
+        this.simulationTagData.scene,
+      );
+      this.importMeshSuccess(importMeshResult.meshes, geometryName);
+    } catch (error) {
+      console.error("Error loading mesh:", error);
     }
   }
 
