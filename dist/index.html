@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Witness3DWebSimulationViewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" crossorigin src="./assets/index-BuIDUe2t.js"></script>
+  </head>
+  <body>
+    <div class="loaderContainer" id="loaderContainer">
+      <div class="loader"></div>
+    </div>
+    <div class="formContainer" id="formContainer">
+      <div>
+        <h1 class="formHeader">Witness3DWebSimulationViewer</h1>
+        <p class="formText">
+          Witness simulations harness predictive simulation capabilities and
+          model assets to improve decision making, enhance revenues, reduce
+          costs, and optimise operations. To visualise a simulation, upload its
+          detailed trace output (w3d file).
+        </p>
+        <form method="post" enctype="multipart/form-data">
+          <div>
+            <label for="w3dFile">Choose a w3d file:</label>
+            <input type="file" id="w3dFile" accept=".w3d" />
+          </div>
+          <div class="preview" id="fileUploadSection">
+            <p>No w3d file selected for upload</p>
+          </div>
+          <div id="fileUploadBtnSection">
+            <button id="fileUploadBtn" type="button">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--MODULE-->
+  </body>
+</html>
