@@ -9,6 +9,8 @@ export default defineConfig({
         "mocks/**",
         "src/utilities/**",
         "src/interfaces/**",
+        // Ignore TypeScript interface
+        "src/meshGeometry/positionPart.ts",
         ...coverageConfigDefaults.exclude,
       ],
     },

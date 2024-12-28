@@ -37,18 +37,27 @@ export class ConveyorBuilder {
    * @return Mesh that represents conveyor or path. Otherwise, undefined if there was a problem creating such mesh
    */
   buildConveyor(): Mesh | undefined {
+    // Array of Vector3 points that, collectively, represent the shape of the conveyor or path
     const conveyorPoints: Vector3[] = [];
 
     this._pathTag.path.forEach((lineOrArc) => {
       if (this.isLineTag(lineOrArc)) {
         const getLineTag = lineOrArc.line;
 
-        conveyorPoints.push(
+        const linePoints: Vector3[] = [
           // Start of <line>
           new Vector3(getLineTag.startX, getLineTag.startY, getLineTag.startZ),
           // End of <line>
           new Vector3(getLineTag.endX, getLineTag.endY, getLineTag.endZ),
-        );
+        ];
+
+        // Add points to overall conveyor array.
+        conveyorPoints.push(...linePoints);
+
+        // Add line to overall meshes array
+        const localLineMesh = line2D("line", { path: linePoints, width: 0.5 });
+
+        this.formatLine(localLineMesh);
 
         return;
       }
@@ -75,13 +84,27 @@ export class ConveyorBuilder {
 
     const conveyorPath = line2D("line", { path: conveyorPoints, width: 0.5 });
 
-    const conveyorMesh = this.increaseConveyorPathHeight(10, conveyorPath);
+    const conveyorMesh = this.formatLine(conveyorPath);
 
     if (!conveyorMesh) return undefined;
 
-    conveyorMesh.material = blackMat();
-
     return conveyorMesh;
+  }
+
+  /**
+   * Format line mesh produced by 'line2D' utility function so that the mesh has the correct height and
+   * texture to be the shape of a conveyor or path.
+   * @param lineMesh Line mesh produced by 'line2D' utility function.
+   * @returns Formatted mesh. Otherwise null if formatting was unsuccessful.
+   */
+  private formatLine(lineMesh: Mesh): Mesh | undefined {
+    const thickLineMesh = this.increaseConveyorPathHeight(10, lineMesh);
+
+    if (!thickLineMesh) return undefined;
+
+    thickLineMesh.material = blackMat();
+
+    return thickLineMesh;
   }
 
   /**
