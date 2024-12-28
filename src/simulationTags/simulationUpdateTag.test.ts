@@ -3,6 +3,7 @@ import { UpdateTag } from "../interfaces/updateTag";
 import { SimulationUpdateTag } from "./simulationUpdateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { PartGeometry } from "../meshGeometry/partGeometry";
+import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 const mockUpdateTag: UpdateTag = {
   time: 0,
@@ -85,6 +86,24 @@ function mockMachineGeometry() {
   });
 
   return mockMachineGeometry;
+}
+
+/**
+ * Mock instance of conveyor geometry class
+ */
+function mockConveyorGeometry() {
+  // Purpose: ensure that TypeScript considers it an instanceof 'ConveyorGeometry'
+  const mockConveyorGeometry = Object.create(ConveyorGeometry.prototype);
+
+  Object.assign(mockConveyorGeometry, {
+    setPosition: vi.fn(),
+    setScaling: vi.fn(),
+    setRotation: vi.fn(),
+    changeVisibility: vi.fn(),
+    positionPart: vi.fn(),
+  });
+
+  return mockConveyorGeometry;
 }
 
 // mock needed babylon.js imports
@@ -214,5 +233,50 @@ describe("SimulationUpdateTag class", () => {
 
     // Assert that 'positionPart' method of mocked machine has been called
     expect(mockedMachineGeometry.positionPart).toHaveBeenCalled();
+  });
+
+  it("should call 'positionPart' method on conveyor when <update> tag has <partPosition> subtag", async () => {
+    // Arrange
+
+    // Add mocked instance of 'MeshGeometry' class to mocked map
+    const fakeGeometriesMap = new Map();
+
+    // Mock part
+    const mockedPartGeometry = mockPartGeometry();
+
+    fakeGeometriesMap.set(
+      mockUpdateTagPartPosition.instanceName,
+      mockedPartGeometry,
+    );
+
+    // Mock conveyor geometry
+
+    const mockedConveyorGeometry = mockConveyorGeometry();
+
+    fakeGeometriesMap.set(
+      mockUpdateTagPartPosition.partPosition?.instanceName,
+      mockedConveyorGeometry,
+    );
+
+    const simulationUpdateTag: SimulationUpdateTag = new SimulationUpdateTag(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { geometriesMap: fakeGeometriesMap } as any,
+      mockUpdateTagPartPosition,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handlePartPositioning_spy = vi.spyOn<any, string>(
+      simulationUpdateTag,
+      "handlePartPositioning",
+    );
+
+    // Act
+    await simulationUpdateTag.actOnTagLogic();
+
+    // Assert that 'handlePartPositioning' method has been invoked
+    expect(handlePartPositioning_spy).toHaveBeenCalled();
+
+    // Assert that 'positionPart' method of mocked conveyor has been called
+    expect(mockedConveyorGeometry.positionPart).toHaveBeenCalled();
   });
 });

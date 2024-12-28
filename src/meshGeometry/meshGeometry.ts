@@ -71,7 +71,7 @@ export class MeshGeometry {
    * Apply a parent mesh to the given mesh
    * @param parent Parent mesh to apply
    */
-  setParent(parent: Node) {
+  setParent(parent: Node | null) {
     this._transformMesh.parent = parent;
   }
 

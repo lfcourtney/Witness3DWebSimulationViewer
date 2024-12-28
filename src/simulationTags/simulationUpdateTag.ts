@@ -3,6 +3,7 @@ import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { UpdateTag } from "../interfaces/updateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { PartGeometry } from "../meshGeometry/partGeometry";
+import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 /**
  * Class responsible for holding specific functionality of <update> tag
@@ -112,7 +113,13 @@ export class SimulationUpdateTag extends SimulationTag {
 
     if (!(partGeometry instanceof PartGeometry)) return;
 
-    if (!(machineGeometry instanceof MachineGeometry)) return;
+    if (
+      !(
+        machineGeometry instanceof MachineGeometry ||
+        machineGeometry instanceof ConveyorGeometry
+      )
+    )
+      return;
 
     // Position part
     machineGeometry.positionPart(
