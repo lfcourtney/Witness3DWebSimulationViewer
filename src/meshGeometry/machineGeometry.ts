@@ -1,7 +1,6 @@
 import { AbstractMesh, TransformNode, Vector3 } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
 import { QueueInfoTag } from "../interfaces/queueInfoTag";
-import { PartGeometry } from "./partGeometry";
 import { PositionPart } from "./positionPart";
 
 /**
@@ -105,7 +104,7 @@ export class MachineGeometry extends MeshGeometry implements PositionPart {
    * @param part The part to position in the queue
    * @param position The amount to position the part in the queue by
    */
-  public positionPart(part: PartGeometry, partPosition: number): void {
+  public positionPart(part: MeshGeometry, partPosition: number): void {
     // Apply the queue rotation and scale to the parts
     part.setParent(this.queuePosition);
 
@@ -169,9 +168,10 @@ export class MachineGeometry extends MeshGeometry implements PositionPart {
 
   /**
    * Calculates correct vertical position of part relative to 'partPositioning' attribute
+   * @param part The part to get the correct vertical position of
    * @returns Vertical position of part based on 'partPositioning' attribute
    */
-  private processPartPositioningAttribute(part: PartGeometry): number {
+  private processPartPositioningAttribute(part: MeshGeometry): number {
     const effectivePartHeight = part.getEffectivePartHeight();
 
     if (!effectivePartHeight) return 0;

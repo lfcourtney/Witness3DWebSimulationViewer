@@ -2,8 +2,8 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import { UpdateTag } from "../interfaces/updateTag";
 import { SimulationUpdateTag } from "./simulationUpdateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
-import { PartGeometry } from "../meshGeometry/partGeometry";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
+import { MeshGeometry } from "../meshGeometry/meshGeometry";
 
 const mockUpdateTag: UpdateTag = {
   time: 0,
@@ -57,8 +57,8 @@ function mockMeshGeometry() {
  * Mock instance of part geometry class
  */
 function mockPartGeometry() {
-  // Purpose: ensure that TypeScript considers it an instanceof 'PartGeometry'
-  const mockPartGeometry = Object.create(PartGeometry.prototype);
+  // Purpose: ensure that TypeScript considers it an instanceof 'MeshGeometry'
+  const mockPartGeometry = Object.create(MeshGeometry.prototype);
 
   Object.assign(mockPartGeometry, {
     setPosition: vi.fn(),

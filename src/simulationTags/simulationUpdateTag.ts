@@ -2,7 +2,6 @@ import { Vector3, Tools } from "@babylonjs/core";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { UpdateTag } from "../interfaces/updateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
-import { PartGeometry } from "../meshGeometry/partGeometry";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 /**
@@ -111,7 +110,7 @@ export class SimulationUpdateTag extends SimulationTag {
       this.updateTag.partPosition.instanceName,
     );
 
-    if (!(partGeometry instanceof PartGeometry)) return;
+    if (partGeometry === undefined) return;
 
     if (
       !(
