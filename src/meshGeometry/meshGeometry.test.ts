@@ -211,9 +211,32 @@ describe("MeshGeometry class", () => {
       exampleGeometryName,
     );
 
+    // Act
     const scalingValue = geometryObject.getScaling();
 
     // Assert that scaling has been returned
     expect(scalingValue).toEqual(abstractMesh.scaling);
+  });
+
+  it("should return the appropriate geometry height based on the 'geometry name' when the 'getEffectivePartHeight' method is invoked", () => {
+    // Arrange
+
+    const newAbstractMesh = initialiseAbstractMesh();
+
+    // Set unique 'y' scaling value
+    newAbstractMesh.scaling.y = 10;
+
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      newAbstractMesh as any,
+      exampleInstanceName,
+      exampleGeometryName,
+    );
+
+    // Act
+    const effectivePartHeight = geometryObject.getEffectivePartHeight();
+
+    // Assert that 'y' value from abstract mesh scaling object has been returned
+    expect(effectivePartHeight).toBe(newAbstractMesh.scaling.y);
   });
 });

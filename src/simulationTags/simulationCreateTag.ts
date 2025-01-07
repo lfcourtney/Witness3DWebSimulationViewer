@@ -8,7 +8,6 @@ import { MeshGeometry } from "../meshGeometry/meshGeometry";
 import { SimulationTag, SimulationTagData } from "./simulationTag";
 import { CreateTag } from "../interfaces/createTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
-import { PartGeometry } from "../meshGeometry/partGeometry";
 import { ConveyorBuilder } from "../meshBuilder/conveyorBuilder";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
@@ -138,27 +137,21 @@ export class SimulationCreateTag extends SimulationTag {
       transformMesh.scaling = new Vector3(0.003, 0.003, 0.003);
     }
 
+    if (geometryName === "dg-vh-Agv1") {
+      // TODO: It is possible that the 'dg-vh-Agv1' is added to a path without first being scaled with an <update> tag.
+      // Therefore, we should apply this default scaling by default to this kind of vehicle, so it is scaled properly if
+      // it is immediately added to the shape of a path or conveyor.
+      transformMesh.scaling = new Vector3(
+        1.451429 * 0.03,
+        1.029986 * 0.03,
+        0.608542 * 0.03,
+      );
+    }
+
     // Setting the name of the meshes allows us to search for the meshes from the scene
     transformMesh.name = this.createTag.instanceName;
 
-    /***************************************************************************************************
-     * Choose whether to create part, machine, conveyor or regular mesh based on information in <create>
-     * tag
-     **************************************************************************************************/
-
-    if (
-      geometryName === "dg-pt-Part1" ||
-      geometryName === "dg-pt-ManWalking1"
-    ) {
-      this.simulationTagData.geometriesMap.set(
-        this.createTag.instanceName,
-        new PartGeometry(
-          transformMesh,
-          this.createTag.instanceName,
-          geometryName,
-        ),
-      );
-    } else if (this.createTag.queueInfo) {
+    if (this.createTag.queueInfo) {
       /**
        * Only machines will have a <queueInfo> tag as a child tag of the <create> tag responsible for creating them
        */

@@ -117,4 +117,19 @@ export class MeshGeometry {
       }
     });
   }
+
+  /**
+   * Gets the height of a geometry when it is being positioned in a queue or on the shape of a path or conveyor.
+   * @returns The returned height of the geometry specifically for being positioned in a queue or
+   * on the shape of a path or conveyor.
+   */
+  public getEffectivePartHeight(): number | undefined {
+    // TODO: If the geometry of 'dg-pt-ManWalking1' is updated, remove this if condition to
+    // make instance of labour geometry match the height of all the other geometries.
+    if (this._geometryName === "dg-pt-ManWalking1") {
+      return 2;
+    }
+
+    return this.getScaling().y;
+  }
 }

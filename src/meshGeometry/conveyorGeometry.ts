@@ -1,6 +1,5 @@
 import { AbstractMesh, Vector3, GreasedLineTools } from "@babylonjs/core";
 import { MeshGeometry } from "./meshGeometry";
-import { PartGeometry } from "./partGeometry";
 import { PositionPart } from "./positionPart";
 
 /**
@@ -34,7 +33,7 @@ export class ConveyorGeometry extends MeshGeometry implements PositionPart {
    * @param part The part to position conveyor or path on
    * @param position The amount to position the part on the conveyor or path by
    */
-  public positionPart(part: PartGeometry, partPosition: number): void {
+  public positionPart(part: MeshGeometry, partPosition: number): void {
     // Remove parent as this could be set to a queue position
     part.setParent(null);
 

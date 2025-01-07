@@ -196,17 +196,6 @@ vi.mock(import("../meshGeometry/machineGeometry"), () => {
   return { MachineGeometry };
 });
 
-// mock PartGeometry
-vi.mock(import("../meshGeometry/partGeometry"), () => {
-  // Mocked implementation has 'partGeometry' property so that we know a 'partGeometry' specifically
-  // has been initialised and not some other type of mesh.
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const PartGeometry = vi.fn(() => ({ partGeometry: true })) as any;
-
-  return { PartGeometry };
-});
-
 // mock ConveyorGeometry
 vi.mock(import("../meshGeometry/conveyorGeometry"), () => {
   // Mocked implementation has 'conveyorGeometry' property so that we know a 'ConveyorGeometry' specifically
@@ -338,31 +327,6 @@ describe("SimulationCreateTag class", () => {
     expect(
       fakeGeometriesMap.get(mockCreateTagQueueInfo.instanceName)
         .machineGeometry,
-    ).toBe(true);
-  });
-
-  it(`should create 'PartGeometry' 'SimulationTag' object if <create> tag contains either a part or labour geometry as
-     the value of its 'geometry' attribute`, async () => {
-    // Arrange
-
-    // Mock geometries map
-    const fakeGeometriesMap = new Map();
-
-    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
-      {
-        scene: undefined,
-        geometriesMap: fakeGeometriesMap,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      mockCreateTagPart,
-    );
-
-    // Act
-    await simulationCreateTag.actOnTagLogic();
-
-    // Assert that instance of 'PartGeometry' has been added to simulation tag data
-    expect(
-      fakeGeometriesMap.get(mockCreateTagPart.instanceName).partGeometry,
     ).toBe(true);
   });
 
