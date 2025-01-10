@@ -35,6 +35,12 @@ Babylon.js, which is an open-source web rendering engine, will utilise the WebGP
 - Run `npm run preview` to see the exported code bundle running in a local development server.
 - Now the contents of the `dist` folder can be uploaded to an external server, deploying the application.
 
+## Husky pre-commit hook
+
+`.husky\pre-commit` contains the contents of a pre-commit Git hook as per the [Husky](https://typicode.github.io/husky/) standard. This script will thus run each time you run `git commit`. Along with linting staged files to enforce code style, the script will run a Node.js script to automatically update the patch version number as held within `package.json`. Such updated `package.json` file will automatically be added to the outgoing commit.
+
+The `--no-verify` (shortened to -n) Git commit flag can bypass the pre-commit hook. Therefore, run `git commit -n` to make a commit without updating the version number. **Important**: this should be used sparingly, only for commits involving very trivial changes.
+
 ## Debug
 
 Witness 3D Web Simulation Viewer is developed and debugged in Visual Studio Code. It is recommended to use Visual Studio Code for debugging due to its built-in debugging capabilities.
@@ -71,4 +77,4 @@ A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaS
 
 # Last Updated
 
-This README was last updated on 19 December 2024.
+This README was last updated on 10 January 2024.
