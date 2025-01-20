@@ -147,6 +147,55 @@ export const line2D = (
   } else {
     // Alternative UV mapping logic
     // Implement here if needed
+    let flip = 0;
+    let p1 = 0;
+    let p2 = 0;
+    let p3 = 0;
+    let v0 = innerData[0];
+    let v1 = innerData[1].subtract(v0);
+    let v2 = outerData[0].subtract(v0);
+    let v3 = outerData[1].subtract(v0);
+    let axis = v1.clone();
+    axis.normalize();
+
+    p1 = Vector3.Dot(axis, v1);
+    p2 = Vector3.Dot(axis, v2);
+    p3 = Vector3.Dot(axis, v3);
+    const minX = Math.min(0, p1, p2, p3);
+    const maxX = Math.max(0, p1, p2, p3);
+
+    uvs[2 * indices[0]] = -minX / (maxX - minX);
+    uvs[2 * indices[0] + 1] = 1;
+    uvs[2 * indices[5]] = (p2 - minX) / (maxX - minX);
+    uvs[2 * indices[5] + 1] = 0;
+
+    uvs[2 * indices[1]] = (p1 - minX) / (maxX - minX);
+    uvs[2 * indices[1] + 1] = 1;
+    uvs[2 * indices[4]] = (p3 - minX) / (maxX - minX);
+    uvs[2 * indices[4] + 1] = 0;
+
+    for (let i = 6; i < indices.length; i += 6) {
+      flip = (flip + 1) % 2;
+      v0 = innerData[0];
+      v1 = innerData[1].subtract(v0);
+      v2 = outerData[0].subtract(v0);
+      v3 = outerData[1].subtract(v0);
+      axis = v1.clone();
+      axis.normalize();
+
+      p1 = Vector3.Dot(axis, v1);
+      p2 = Vector3.Dot(axis, v2);
+      p3 = Vector3.Dot(axis, v3);
+      const minX = Math.min(0, p1, p2, p3);
+      const maxX = Math.max(0, p1, p2, p3);
+
+      uvs[2 * indices[i + 1]] =
+        flip + (Math.cos(flip * Math.PI) * (p1 - minX)) / (maxX - minX);
+      uvs[2 * indices[i + 1] + 1] = 1;
+      uvs[2 * indices[i + 4]] =
+        flip + (Math.cos(flip * Math.PI) * (p3 - minX)) / (maxX - minX);
+      uvs[2 * indices[i + 4] + 1] = 0;
+    }
   }
 
   VertexData.ComputeNormals(positions, indices, normals);
