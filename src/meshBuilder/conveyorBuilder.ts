@@ -1,4 +1,4 @@
-import { Vector3, Mesh } from "@babylonjs/core";
+import { Vector3, Mesh, Texture, StandardMaterial } from "@babylonjs/core";
 import { PathTag, LineTag, ArcTag } from "../interfaces/pathTag";
 import { blackMat } from "../utilities/colors";
 import { line2D } from "../utilities/line2D";
@@ -7,6 +7,12 @@ import { line2D } from "../utilities/line2D";
  * Represents the means by which a conveyor or path mesh is created from information contained within the <path> tag of the given <create> tag.
  */
 export class ConveyorBuilder {
+  /**
+   * The name of the geometry model used to render the given conveyor or path as
+   * specified in the models corresponding <create> tag
+   */
+  private readonly _geometryName: string;
+
   /**
    * <path> tag from a <create> tag used to create the conveyor or path
    */
@@ -20,9 +26,12 @@ export class ConveyorBuilder {
   /**
    * Creates an instance of ConveyorBuilder class
    * @param pathTag <path> tag from a <create> tag used to create the conveyor or path
+   * @param geometryName The name of the geometry model used to render the given conveyor or path as specified
+   * in the models corresponding <create> tag
    */
-  constructor(pathTag: PathTag) {
+  constructor(pathTag: PathTag, geometryName: string) {
     this._pathTag = pathTag;
+    this._geometryName = geometryName;
   }
 
   /**
@@ -54,11 +63,6 @@ export class ConveyorBuilder {
         // Add points to overall conveyor array.
         conveyorPoints.push(...linePoints);
 
-        // Add line to overall meshes array
-        const localLineMesh = line2D("line", { path: linePoints, width: 0.5 });
-
-        this.formatLine(localLineMesh);
-
         return;
       }
 
@@ -82,7 +86,11 @@ export class ConveyorBuilder {
 
     this._conveyorPoints = conveyorPoints;
 
-    const conveyorPath = line2D("line", { path: conveyorPoints, width: 0.5 });
+    const conveyorPath = line2D("line", {
+      path: this.modifyConveyorPointsRemoveTwistedLines(),
+      width: 0.5,
+      standardUV: false,
+    });
 
     const conveyorMesh = this.formatLine(conveyorPath);
 
@@ -102,7 +110,27 @@ export class ConveyorBuilder {
 
     if (!thickLineMesh) return undefined;
 
-    thickLineMesh.material = blackMat();
+    const thickLineMaterial = new StandardMaterial("thickLineMaterial");
+    const thickLineMaterialTexture = new Texture(
+      "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/Textures/" +
+        this._geometryName +
+        ".png",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      // onLoad
+      () => {
+        thickLineMaterial.diffuseTexture = thickLineMaterialTexture;
+        thickLineMesh.material = thickLineMaterial;
+      },
+      // onError
+      (errorMessage) => {
+        console.error(errorMessage);
+        // Use standard black material as an alternative if the texture failed to load
+        thickLineMesh.material = blackMat();
+      },
+    );
 
     return thickLineMesh;
   }
@@ -153,5 +181,46 @@ export class ConveyorBuilder {
    */
   private isArcTag(isArc: object): isArc is { arc: ArcTag } {
     return isArc["arc"] !== undefined;
+  }
+
+  /**
+   * Modify conveyor points so as to remove twisted lines that can exist for lines on X and Z axes.
+   * @returns A modified version of the '_conveyorPoints' field so that such function can be passed into the Line2D utility function
+   * to draw a line on the X and Z axes without any unnecessary twisting of lines when the line increases on the Y axis.
+   * @see {@link https://forum.babylonjs.com/t/line-in-xoz-plane-utility-function-rendering-twisted-lines/56056|Line in XoZ Plane utility function rendering twisted lines}
+   * for the Babylon.js forum post that describes the issue this method is designed to solve in addition to the solution that this method
+   * is designed to implement.
+   */
+  private modifyConveyorPointsRemoveTwistedLines(): Vector3[] {
+    // Create shallow copy of an array
+    const newConveyorPoints: Vector3[] = [...this._conveyorPoints];
+
+    for (let i = 2; i < newConveyorPoints.length; i++) {
+      const secondPriorConveyorPoint = newConveyorPoints[i - 2];
+      const priorConveyorPoint = newConveyorPoints[i - 1];
+      const currentConveyorPoint = newConveyorPoints[i];
+      const diffZPosition = currentConveyorPoint.z - priorConveyorPoint.z;
+
+      // True if 'z' position has not changed for the previous 2 Vector3's and
+      // yet has changed for the current Vector3 and the one immediately prior to it. False otherwise.
+      const hasZPositionChanged: boolean =
+        secondPriorConveyorPoint.z === priorConveyorPoint.z &&
+        currentConveyorPoint.z !== priorConveyorPoint.z;
+
+      if (
+        hasZPositionChanged &&
+        /**
+         * Only consider a change in 'z' value position if the 'x' value position has not changed between this Vector3 and the prior one.
+         * Indeed, the given Line2D utility function is for creating lines on the X and Z axes, so such behaviour, by itself,
+         * can cause problems for the function unless this method is used.
+         */
+        currentConveyorPoint.x === priorConveyorPoint.x
+      ) {
+        newConveyorPoints[i] = priorConveyorPoint.add(
+          diffZPosition < 0 ? new Vector3(0, 0, -1) : new Vector3(0, 0, 1),
+        );
+      }
+    }
+    return newConveyorPoints;
   }
 }

@@ -69,7 +69,7 @@ export class SimulationCreateTag extends SimulationTag {
 
   /**
    * Create instance of conveyor or path as declared within the given <create> tag
-   * @param geometryName The name of the geometry model used to render the conveyor or path of the <create> tag
+   * @param geometryName The name of the geometry model used to render the conveyor or path specified in the given <create> tag
    */
   private renderPathOrConveyor(geometryName: string): void {
     if (!this.createTag.path) {
@@ -77,7 +77,10 @@ export class SimulationCreateTag extends SimulationTag {
         "Unable to create instance of path or conveyor: <path> sub tag was not defined",
       );
     }
-    const conveyorBuilder = new ConveyorBuilder(this.createTag.path);
+    const conveyorBuilder = new ConveyorBuilder(
+      this.createTag.path,
+      geometryName,
+    );
 
     const conveyorMesh = conveyorBuilder.buildConveyor();
 
