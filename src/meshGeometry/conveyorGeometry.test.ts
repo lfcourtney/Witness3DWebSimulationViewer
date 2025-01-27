@@ -33,6 +33,7 @@ function createMockPart() {
     setParent: vi.fn(),
     setPosition: vi.fn(),
     getEffectivePartHeight: vi.fn(),
+    setPartOrConveyorRotation: vi.fn(),
   };
 }
 
@@ -61,7 +62,23 @@ vi.mock(import("@babylonjs/core"), () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
-  return { Vector3, GreasedLineTools };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Tools = vi.fn(() => ({})) as any;
+
+  // use 'undefined' to represent meshes
+  Tools.ToRadians = vi.fn((inputValue) => inputValue);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Quaternion = vi.fn(() => ({})) as any;
+
+  Quaternion.FromLookDirectionRH = vi.fn(() => ({
+    x: null,
+    y: null,
+    z: null,
+    toEulerAngles: vi.fn(),
+  }));
+
+  return { Vector3, GreasedLineTools, Tools, Quaternion };
 });
 
 describe("ConveyorGeometry class", () => {
@@ -84,7 +101,11 @@ describe("ConveyorGeometry class", () => {
       transformMesh_mock as any,
       exampleConveyorInstanceName,
       exampleConveyorGeometryName,
-      mockConveyorPoints,
+      {
+        conveyorPoints: mockConveyorPoints,
+        conveyorTangents: [],
+        conveyorBinormals: [],
+      },
     );
 
     const mockPart = createMockPart();
@@ -122,7 +143,11 @@ describe("ConveyorGeometry class", () => {
       transformMesh_mock as any,
       exampleConveyorInstanceName,
       exampleConveyorGeometryName,
-      mockConveyorPoints,
+      {
+        conveyorPoints: mockConveyorPoints,
+        conveyorTangents: [],
+        conveyorBinormals: [],
+      },
     );
 
     const mockPart = createMockPart();

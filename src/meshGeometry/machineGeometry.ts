@@ -105,6 +105,9 @@ export class MachineGeometry extends MeshGeometry implements PositionPart {
    * @param position The amount to position the part in the queue by
    */
   public positionPart(part: MeshGeometry, partPosition: number): void {
+    // Part is no longer positioned on shape of path or conveyor, so it should be set back to its standard rotation
+    part.resetPartOrConveyorRotation();
+
     // Apply the queue rotation and scale to the parts
     part.setParent(this.queuePosition);
 

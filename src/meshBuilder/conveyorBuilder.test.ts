@@ -140,6 +140,12 @@ vi.mock(import("@babylonjs/core"), () => {
   })) as any;
   Vector3.Zero = vi.fn(() => ({ x: 0, y: 0, z: 0 }));
 
+  const Path3D = vi.fn(() => ({
+    getBinormals: vi.fn(),
+    getTangents: vi.fn(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })) as any;
+
   const Mesh = {
     MergeMeshes: vi.fn(() => ({
       material: undefined,
@@ -183,7 +189,7 @@ vi.mock(import("@babylonjs/core"), () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) as any;
 
-  return { Vector3, Mesh, StandardMaterial, Texture };
+  return { Vector3, Mesh, StandardMaterial, Texture, Path3D };
 });
 
 describe("ConveyorBuilder class", () => {

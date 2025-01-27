@@ -239,4 +239,37 @@ describe("MeshGeometry class", () => {
     // Assert that 'y' value from abstract mesh scaling object has been returned
     expect(effectivePartHeight).toBe(newAbstractMesh.scaling.y);
   });
+
+  it(`Should store non path or conveyor rotation correctly and subsequently reset it when 
+    'setPartOrConveyorRotation' and 'resetPartOrConveyorRotation' methods are called respectively`, () => {
+    // Arrange
+
+    const newAbstractMesh = initialiseAbstractMesh();
+
+    const geometryObject = new MeshGeometry(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      newAbstractMesh as any,
+      exampleInstanceName,
+      exampleGeometryName,
+    );
+
+    const mockRotationOne = { x: 10, y: 10, z: 10 };
+    const mockRotationTwo = { x: 0, y: 0, z: 0 };
+
+    // Set original rotation
+    newAbstractMesh.rotation = mockRotationOne;
+
+    // Act
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (geometryObject as any).setPartOrConveyorRotation(mockRotationTwo);
+
+    // Assert that transformMesh rotation is equal to new rotation
+    expect(newAbstractMesh.rotation).toEqual(mockRotationTwo);
+
+    // Act
+    geometryObject.resetPartOrConveyorRotation();
+
+    // Assert that transformMesh rotation is equal to original rotation
+    expect(newAbstractMesh.rotation).toEqual(mockRotationOne);
+  });
 });

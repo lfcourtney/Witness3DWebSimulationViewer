@@ -95,7 +95,8 @@ export class SimulationUpdateTag extends SimulationTag {
   }
 
   /**
-   * Process logic of <partPosition> subtag of <update> tag: position part in queue
+   * Process logic of <partPosition> subtag of <update> tag: position part either in queue
+   * or along the shape of a path or conveyor
    */
   private handlePartPositioning(): void {
     if (!this.updateTag.partPosition) return;
@@ -112,6 +113,9 @@ export class SimulationUpdateTag extends SimulationTag {
 
     if (partGeometry === undefined) return;
 
+    /**
+     * Cannot position a part on something that is not either a machine or a conveyor
+     */
     if (
       !(
         machineGeometry instanceof MachineGeometry ||

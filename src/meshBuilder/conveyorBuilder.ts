@@ -1,7 +1,14 @@
-import { Vector3, Mesh, Texture, StandardMaterial } from "@babylonjs/core";
+import {
+  Vector3,
+  Mesh,
+  Texture,
+  StandardMaterial,
+  Path3D,
+} from "@babylonjs/core";
 import { PathTag, LineTag, ArcTag } from "../interfaces/pathTag";
 import { blackMat } from "../utilities/colors";
 import { line2D } from "../utilities/line2D";
+import { ConveyorInformation } from "../interfaces/conveyorInformation";
 
 /**
  * Represents the means by which a conveyor or path mesh is created from information contained within the <path> tag of the given <create> tag.
@@ -19,9 +26,9 @@ export class ConveyorBuilder {
   private readonly _pathTag: PathTag;
 
   /**
-   * The array of Vector3 points representing the conveyor or path mesh shape
+   * The information representing the shape of the rendered conveyor or path
    */
-  private _conveyorPoints: Vector3[] = [];
+  private _conveyorInformation: ConveyorInformation;
 
   /**
    * Creates an instance of ConveyorBuilder class
@@ -32,13 +39,18 @@ export class ConveyorBuilder {
   constructor(pathTag: PathTag, geometryName: string) {
     this._pathTag = pathTag;
     this._geometryName = geometryName;
+    this._conveyorInformation = {
+      conveyorPoints: [],
+      conveyorTangents: [],
+      conveyorBinormals: [],
+    };
   }
 
   /**
-   * Get the array of Vector3 points representing the conveyor or path mesh shape
+   * Get the information representing the shape of the rendered conveyor or path
    */
-  public get conveyorPoints() {
-    return this._conveyorPoints;
+  public get conveyorInformation() {
+    return this._conveyorInformation;
   }
 
   /**
@@ -84,13 +96,24 @@ export class ConveyorBuilder {
       }
     });
 
-    this._conveyorPoints = conveyorPoints;
+    this._conveyorInformation.conveyorPoints = conveyorPoints;
+
+    /**
+     * Make necessary adjustments to array of Vectors before they are used to render the shape of the path or conveyor
+     */
+    const modifiedConveyorPoints =
+      this.modifyConveyorPointsRemoveTwistedLines();
 
     const conveyorPath = line2D("line", {
-      path: this.modifyConveyorPointsRemoveTwistedLines(),
+      path: modifiedConveyorPoints,
       width: 0.5,
       standardUV: false,
     });
+
+    const conveyorPath3D = new Path3D(modifiedConveyorPoints);
+
+    this._conveyorInformation.conveyorBinormals = conveyorPath3D.getBinormals();
+    this._conveyorInformation.conveyorTangents = conveyorPath3D.getTangents();
 
     const conveyorMesh = this.formatLine(conveyorPath);
 
@@ -193,7 +216,9 @@ export class ConveyorBuilder {
    */
   private modifyConveyorPointsRemoveTwistedLines(): Vector3[] {
     // Create shallow copy of an array
-    const newConveyorPoints: Vector3[] = [...this._conveyorPoints];
+    const newConveyorPoints: Vector3[] = [
+      ...this._conveyorInformation.conveyorPoints,
+    ];
 
     for (let i = 2; i < newConveyorPoints.length; i++) {
       const secondPriorConveyorPoint = newConveyorPoints[i - 2];
