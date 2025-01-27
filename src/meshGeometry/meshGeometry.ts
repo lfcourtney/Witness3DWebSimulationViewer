@@ -10,6 +10,11 @@ export class MeshGeometry {
 
   protected readonly _geometryName: string;
 
+  /**
+   * Rotation of the mesh before it was added to the shape of a path or conveyor
+   */
+  private _nonPathOrConveyorRotation: Vector3 | null = null;
+
   // 1 if mesh is visible. 2 if mesh is invisible
   private _visibility: number = 1;
 
@@ -57,6 +62,27 @@ export class MeshGeometry {
    */
   setRotation(newRotation: Vector3) {
     this._transformMesh.rotation = newRotation;
+  }
+
+  /**
+   * Set the rotation of the mesh specifically for being positioned on the shape of a path or conveyor
+   * @param newRotation New rotation value of the mesh
+   */
+  setPartOrConveyorRotation(newRotation: Vector3) {
+    // Store original rotation before it was added to the shape of the path or conveyor
+    if (!this._nonPathOrConveyorRotation) {
+      this._nonPathOrConveyorRotation = this._transformMesh.rotation;
+    }
+    this._transformMesh.rotation = newRotation;
+  }
+
+  /**
+   * Resets rotation of mesh to its standard rotation before it was positioned on the shape of a path or conveyor
+   */
+  resetPartOrConveyorRotation(): void {
+    if (!this._nonPathOrConveyorRotation) return;
+    this._transformMesh.rotation = this._nonPathOrConveyorRotation;
+    this._nonPathOrConveyorRotation = null;
   }
 
   /**

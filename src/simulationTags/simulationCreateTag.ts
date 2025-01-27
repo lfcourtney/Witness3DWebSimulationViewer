@@ -92,7 +92,7 @@ export class SimulationCreateTag extends SimulationTag {
         conveyorMesh,
         this.createTag.instanceName,
         geometryName,
-        conveyorBuilder.conveyorPoints,
+        conveyorBuilder.conveyorInformation,
       ),
     );
   }

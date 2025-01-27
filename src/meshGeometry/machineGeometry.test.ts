@@ -272,6 +272,7 @@ describe("MachineGeometry class", () => {
         z: 0,
       })),
       getEffectivePartHeight: vi.fn(),
+      resetPartOrConveyorRotation: vi.fn(),
     };
 
     // Act
