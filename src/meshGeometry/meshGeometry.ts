@@ -6,6 +6,12 @@ import { AbstractMesh, Node, Vector3 } from "@babylonjs/core";
 export class MeshGeometry {
   protected readonly _transformMesh: AbstractMesh;
 
+  /**
+   * Original transform mesh upon mesh instantiation. Useful for cloning such mesh without any of the transformations that
+   * may have been subsequently applied to it.
+   */
+  private readonly _originalTransformMesh: AbstractMesh;
+
   protected readonly _instanceName: string;
 
   protected readonly _geometryName: string;
@@ -30,6 +36,7 @@ export class MeshGeometry {
     _geometryName: string,
   ) {
     this._transformMesh = _transformMesh;
+    this._originalTransformMesh = _transformMesh;
 
     this._instanceName = _instanceName;
 
@@ -107,6 +114,15 @@ export class MeshGeometry {
    */
   getScaling(): Vector3 {
     return this._transformMesh.scaling;
+  }
+
+  /**
+   * Copy the underling Abstract Mesh to create a new Abstract Mesh
+   * @param clonedMeshName Name of the new Abstract Mesh to create
+   * @returns The new Abstract Mesh created through copying or null if copy was unsuccessful
+   */
+  clone(clonedMeshName: string): AbstractMesh | null {
+    return this._originalTransformMesh.clone(clonedMeshName, null);
   }
 
   /**
