@@ -47,7 +47,10 @@ export class SimulationCreateTag extends SimulationTag {
       ) {
         this.renderPathOrConveyor(geometryName);
       } else {
-        await this.renderPartOrMachine(geometryName);
+        // Only import mesh from external location if a mesh loaded from a corresponding model does not yet exist.
+        if (this.actOnExistingMeshType(geometryName) === false) {
+          await this.renderPartOrMachine(geometryName);
+        }
       }
 
       return;
@@ -98,6 +101,35 @@ export class SimulationCreateTag extends SimulationTag {
   }
 
   /**
+   * Responds to a mesh that needs to be created when a mesh with a matching mesh type (as identified via the geometryName) has
+   * already been created and thus imported. In a word, creates a mesh without the overhead of importing such mesh twice.
+   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
+   * @returns True if a mesh with a corresponding mesh type already exists and thus a new mesh, matching the geometry of said mesh,
+   * has been created by cloning the previous mesh. False otherwise.
+   */
+  private actOnExistingMeshType(geometryName: string): boolean {
+    let clonedAbstractMesh: AbstractMesh | null = null;
+
+    for (const keyValuePair of this.simulationTagData.geometriesMap) {
+      const meshGeometry: MeshGeometry = keyValuePair[1];
+
+      if (geometryName === meshGeometry.geometryName) {
+        clonedAbstractMesh = meshGeometry.clone(this.createTag.instanceName);
+        // Break out of loop upon match with existing mesh type
+        break;
+      }
+    }
+
+    if (clonedAbstractMesh !== null) {
+      // New mesh created via cloning, so add it to the geometries map, as per usual
+      this.importMeshSuccess([clonedAbstractMesh], geometryName);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    *  Asynchronous function to import the machine or part mesh as named in the
    * value of the 'geometry' attribute of the given <create> tag
    * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
@@ -125,8 +157,10 @@ export class SimulationCreateTag extends SimulationTag {
     newMeshes: AbstractMesh[],
     geometryName: string,
   ): void {
-    // Must have the main mesh and at least one child mesh
-    if (newMeshes.length < 2) return;
+    // Must have at least one mesh
+    if (newMeshes.length < 1) {
+      throw new Error("Unable to import mesh: array of meshes was empty");
+    }
 
     const transformMesh = newMeshes[0];
 

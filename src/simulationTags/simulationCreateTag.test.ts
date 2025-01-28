@@ -153,6 +153,20 @@ const mockCreateTagConveyor: CreateTag = {
   },
 };
 
+/**
+ * Mock instance of 'MeshGeometry' class
+ */
+function createMockMeshGeometry() {
+  return {
+    setParent: vi.fn(),
+    // Mock the cloning of a mesh
+    clone: vi.fn(() => createMockMeshGeometry()),
+    setPosition: vi.fn(),
+    getEffectivePartHeight: vi.fn(),
+    setPartOrConveyorRotation: vi.fn(),
+  };
+}
+
 // mock needed babylon.js imports
 vi.mock(import("@babylonjs/core"), () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -251,6 +265,13 @@ describe("SimulationCreateTag class", () => {
       } as any,
       mockCreateTag,
     );
+
+    // Mock this method to return false so that 'renderPartOrMachine' can be invoked
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.spyOn<any, string>(
+      simulationCreateTag,
+      "actOnExistingMeshType",
+    ).mockImplementationOnce(() => false);
 
     const importMeshSuccess_spy = vi
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -356,6 +377,30 @@ describe("SimulationCreateTag class", () => {
     }).toThrowError(unableToCreatePathOrConveyorError);
   });
 
+  it(`should throw appropriate error if 'importMeshSuccess' method is invoked with an empty array as the first argument`, () => {
+    // Arrange
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: {
+          set: vi.fn(),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagPart,
+    );
+
+    const unableToImportMeshError =
+      "Unable to import mesh: array of meshes was empty";
+
+    // Assert that appropriate error is thrown given an empty array as the first argument
+    expect(() => {
+      // Act
+      simulationCreateTag["importMeshSuccess"]([], mockGeometryName);
+    }).toThrowError(unableToImportMeshError);
+  });
+
   it(`should create 'ConveyorGeometry' 'SimulationTag' object if <create> tag contains a <path> sub tag for drawing shape of conveyor or path`, () => {
     // Arrange
 
@@ -398,5 +443,38 @@ describe("SimulationCreateTag class", () => {
 
     // Assert 'renderGround' has been invoked
     expect(renderGround_spy).toHaveBeenCalledOnce();
+  });
+
+  it(`should return true to indicate that a new mesh has been created via cloning an existing abstract mesh when 'actOnExistingMeshType' 
+    method is invoked and a mesh using the corresponding model has already been imported`, () => {
+    // Arrange
+
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
+    const mockMeshGeometry = createMockMeshGeometry();
+
+    //Requires matching model type (as identified via this 'geometryName' property) via the new mesh that needs to be created.
+    // Otherwise, this mocked mesh will never be used to clone the new mesh
+    mockMeshGeometry["geometryName"] = mockGeometryName;
+
+    // Add mesh that already exists
+    fakeGeometriesMap.set(mockGeometryName, mockMeshGeometry);
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTagQueueInfo,
+    );
+
+    // Act
+    const didCloneMesh: boolean =
+      simulationCreateTag["actOnExistingMeshType"](mockGeometryName);
+
+    // Assert that return value of 'actOnExistingMeshType' method is true
+    expect(didCloneMesh).toBe(true);
   });
 });
