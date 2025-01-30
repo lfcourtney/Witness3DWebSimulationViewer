@@ -1,5 +1,6 @@
 import { Vector3, Tools } from "@babylonjs/core";
-import { SimulationTag, SimulationTagData } from "./simulationTag";
+import { SimulationTag } from "./simulationTag";
+import { SimulationTagData } from "../interfaces/simulationTagData";
 import { UpdateTag } from "../interfaces/updateTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";

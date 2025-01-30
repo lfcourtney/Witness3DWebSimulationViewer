@@ -1,9 +1,7 @@
 import { CreateTag } from "../interfaces/createTag";
 import { UpdateTag } from "../interfaces/updateTag";
-import {
-  SimulationTag,
-  SimulationTagData,
-} from "../simulationTags/simulationTag";
+import { SimulationTag } from "../simulationTags/simulationTag";
+import { SimulationTagData } from "../interfaces/simulationTagData";
 import { SimulationCreateTag } from "../simulationTags/simulationCreateTag";
 import { SimulationUpdateTag } from "../simulationTags/simulationUpdateTag";
 import { DeleteTag } from "../interfaces/deleteTag";

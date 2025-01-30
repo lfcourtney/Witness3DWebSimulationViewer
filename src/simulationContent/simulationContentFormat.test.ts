@@ -50,11 +50,10 @@ function mockSimulationTag() {
   };
 }
 
-// mock SimulationTagData class
+// mock SimulationTag class
 vi.mock(import("../simulationTags/simulationTag"), () => {
   const SimulationTag = vi.fn();
-  const SimulationTagData = vi.fn();
-  return { SimulationTag, SimulationTagData };
+  return { SimulationTag };
 });
 
 describe("SimulationContentFormat class", () => {
