@@ -5,7 +5,8 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import { MeshGeometry } from "../meshGeometry/meshGeometry";
-import { SimulationTag, SimulationTagData } from "./simulationTag";
+import { SimulationTag } from "./simulationTag";
+import { SimulationTagData } from "../interfaces/simulationTagData";
 import { CreateTag } from "../interfaces/createTag";
 import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { ConveyorBuilder } from "../meshBuilder/conveyorBuilder";

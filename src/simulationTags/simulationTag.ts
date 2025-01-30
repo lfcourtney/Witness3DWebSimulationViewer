@@ -1,15 +1,4 @@
-import { Scene } from "@babylonjs/core";
-import { MeshGeometry } from "../meshGeometry/meshGeometry";
-
-/**
- * Interface specifically for formatting the data that every concrete class implementation of 'SimulationTagData' will have.
- * To be precise, it contains the data from the wider Babylon.js scene that the class might need for performing its operations.
- */
-export interface SimulationTagData {
-  scene: Scene;
-  geometriesMap: Map<string, MeshGeometry>;
-  timeTagStore: Map<string, SimulationTag[]>;
-}
+import { SimulationTagData } from "../interfaces/simulationTagData";
 
 /**
  * Abstract class responsible for describing the format through which the functionality of a specific tag type will be invoked.

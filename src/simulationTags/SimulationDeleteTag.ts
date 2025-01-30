@@ -1,4 +1,5 @@
-import { SimulationTag, SimulationTagData } from "./simulationTag";
+import { SimulationTag } from "./simulationTag";
+import { SimulationTagData } from "../interfaces/simulationTagData";
 import { DeleteTag } from "../interfaces/deleteTag";
 
 /**
