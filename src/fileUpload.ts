@@ -144,6 +144,7 @@ export class FileUpload {
       this.simulationContents === undefined
     ) {
       if (
+        // Only insert warning above submit button if no such warning has already been inserted into HTML.
         !(
           this.fileUploadBtn.previousElementSibling &&
           this.fileUploadBtn.previousElementSibling.nodeName
@@ -180,6 +181,10 @@ export class FileUpload {
     this.fileUploadSection.appendChild(para);
   }
 
+  /**
+   * See {@link  FileUpload#reset} for companion method. Does the same as that method, only it deals with the HTML elements only and does not affect the
+   * state of the input form as managed by {@link  FileUpload} class
+   */
   private resetHtmlElements(): void {
     while (this.fileUploadSection.firstChild) {
       this.fileUploadSection.removeChild(this.fileUploadSection.firstChild);
