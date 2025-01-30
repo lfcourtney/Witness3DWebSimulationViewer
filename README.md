@@ -15,11 +15,19 @@ There are different approaches that can be taken to achieve these aims (eg, WebG
 **Demonstration of Witness Desktop 3D Visualisation Capabilities**
 ![Demonstration of Witness Desktop 3D Visualisation Capabilities](./WitnessImages/demonstration_of_witness_desktop_3d_visualisation_capabilities.gif "Demonstration of Witness Desktop 3D Visualisation Capabilities")
 
+**Use Case Diagram**
+![Witness 3D Web Simulation Viewer Use Case Diagram](./WitnessImages/witness_3d_web_simulation_viewer_uml_use_case_diagram.png "Witness 3D Web Simulation Viewer Use Case Diagram")
+
+**Package Diagram**
+![Witness 3D Web Simulation Viewer Package Diagram](./WitnessImages/witness_3d_web_simulation_viewer_uml_package_diagram.png "Witness 3D Web Simulation Viewer Package Diagram")
+
 ## Technologies
 
-Babylon.js, Vite and TypeScript will be used to create the web application. The official documentation for this approach can be found [here](https://doc.babylonjs.com/guidedLearning/usingVite).
+Babylon.js, Vite and TypeScript will be used to create the web application. Creating a Babylon.js web application using a Vite development environment is an established approach with an official [page](https://doc.babylonjs.com/guidedLearning/usingVite) on the Babylon.js documentation. An important advantage is that, unlike the other module bundler for JavaScript Webpack, Vite is able to reflect changes made to the source code immediately; unlike Webpack, it does not need to compile all the files into a JavaScript bundle before the web app hosted on the development server can reflect the new changes. This means development is quicker with Vite. Furthermore, Vite has fewer config files than its competitors, such as Webpack, and is therefore easier to maintain.
 
-Babylon.js, which is an open-source web rendering engine, will utilise the WebGPU engine.
+Run on a browser with native WebGPU support, such as Google Chrome, Witness 3D Web Simulation Viewer will automatically detect such compatibility and respond by initialising Babylon.js using the [WebGPUEngine](https://doc.babylonjs.com/typedoc/classes/BABYLON.WebGPUEngine) class. Run on a non-compatible browser and Witness 3D Web Simulation Viewer will intialise Babylon.js using the standard [Engine](https://doc.babylonjs.com/typedoc/classes/BABYLON.Engine) class, which uses WebGL2 rather than the newer WebGPU JavaScript API.
+
+(**Note**: As described in the official documentation, full Babylon.js support with WebGPU is still a work in progress, and, as a result, Witness 3D Web Simulation Viewer is more likely to encounter errors when using the WebGPU engine. Babylon.js aims to achieve full feature parity with WebGPU by version 5).
 
 # Getting Started
 
@@ -77,4 +85,4 @@ A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaS
 
 # Last Updated
 
-This README was last updated on 10 January 2024.
+This README was last updated on 30 January 2024.
