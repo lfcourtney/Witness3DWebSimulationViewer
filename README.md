@@ -23,6 +23,9 @@ There are different approaches that can be taken to achieve these aims (eg, WebG
 **Package Diagram**
 ![Witness 3D Web Simulation Viewer Package Diagram](./WitnessImages/witness_3d_web_simulation_viewer_uml_package_diagram.png "Witness 3D Web Simulation Viewer Package Diagram")
 
+**Class Diagram**
+![Witness 3D Web Simulation Viewer Class Diagram](./WitnessImages/witness_3d_web_simulation_viewer_uml_class_diagram.png "Witness 3D Web Simulation Viewer Class Diagram")
+
 ## Technologies
 
 Babylon.js, Vite and TypeScript will be used to create the web application. Creating a Babylon.js web application using a Vite development environment is an established approach with an official [page](https://doc.babylonjs.com/guidedLearning/usingVite) on the Babylon.js documentation. An important advantage is that, unlike other module bundlers for JavaScript such as Webpack, Vite is able to reflect changes made to the source code immediately; unlike Webpack, it does not need to compile all the files into a JavaScript bundle before the web app hosted on the development server can reflect the new changes. This makes development quicker with Vite. Furthermore, Vite has fewer config files than its competitors, such as Webpack, and is therefore easier to maintain.
@@ -87,4 +90,4 @@ A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaS
 
 # Last Updated
 
-This README was last updated on 30 January 2024.
+This README was last updated on 04 February 2024.

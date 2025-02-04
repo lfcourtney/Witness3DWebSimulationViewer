@@ -4,7 +4,9 @@ import { XMLParser } from "fast-xml-parser";
 
 /**
  * Class responsible for managing the state of the initial w3d file input form
- * and the operations of this form
+ * and the operations of this form.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file|<input type="file"> - HTML: HyperText Markup Language | MDN} for
+ * the inspiration for this class. Specifically, look to the source code of the example at the very bottom of the page.
  */
 export class FileUpload {
   private readonly fileInputElement: HTMLInputElement;
@@ -96,6 +98,15 @@ export class FileUpload {
 
     const arrayOfParsedTags = parser.parse(parsedTextContent);
 
+    // TODO: Wrap the instantiation of this class within a try...catch statement:
+    // currently, if the client attempts to upload a file that is indeed a '.w3d'
+    // file yet does not adhere to the expected XML format for a simulation trace
+    // output file produced from Witness, the 'loadFile' method will end here due
+    // to the corresponding exception thrown from the constructor of the `SimulationContents` class.
+    // This means the rest of the method will not be executed, and so the user will not be able to submit the
+    // form because no simulation contents has been stored. Correspondingly, there is nothing Witness 3D Web Simulation Viewer
+    // is displaying to the user to let them know that the given exception has occurred. Therefore, a try...catch statement
+    // should be added so that the file input form can react by displaying the proper exception message.
     const simulationContents: SimulationContents = new SimulationContents(
       arrayOfParsedTags,
     );
@@ -212,6 +223,8 @@ export class FileUpload {
    * Parses the 'size' property of a JavaScript File into a readable format.
    * @param number 'size' property of JavaScript File.
    * @returns 'size' of JavaScript file in readable format.
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file|<input type="file"> - HTML: HyperText Markup Language | MDN} for source.
+   * Specifically, look to the source code of the example at the very bottom of the page.
    */
   private returnFileSize(number) {
     if (number < 1e3) {

@@ -48,12 +48,12 @@ export class App {
   /**
    * Map where each key is a name of a mesh that exists in the Babylon.js scene and where each value is that mesh
    */
-  public readonly geometriesMap = new Map<string, MeshGeometry>();
+  private readonly geometriesMap = new Map<string, MeshGeometry>();
 
   /**
    * Map where each key is a specific time and where each value is the parent tags from the uploaded simulation trace output file that correspond to that given time
    */
-  public readonly timeTagStore = new Map<string, SimulationTag[]>();
+  private readonly timeTagStore = new Map<string, SimulationTag[]>();
 
   /**
    * Create class that renders 3d environment to the browser

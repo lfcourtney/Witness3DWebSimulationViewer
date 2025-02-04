@@ -3,11 +3,6 @@
  */
 export class SimulationContents {
   /**
-   * The current tag in the tagStore array when looping through it
-   * @type {number}
-   */
-  private tagIndex: number = 0;
-  /**
    * array of w3d tags formatted as JavaScript objects preserving the order of the tags in the original file
    */
   private readonly _tagStore: object[];
@@ -84,7 +79,7 @@ export class SimulationContents {
 
     if (Array.isArray(tagArray)) {
       /**
-       * <path> subtag of the parent <create> tag, if present, can contain multiple <path> and <arc> subtags.
+       * <path> subtag of a parent <create> tag, if present, can contain multiple <path> and <arc> subtags.
        * So, to prevent subtags from overwriting each other, the <path> subtag should be formatted differently from all other tags.
        */
       if (tagName === "path") {
