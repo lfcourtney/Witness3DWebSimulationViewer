@@ -248,15 +248,17 @@ export class App {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
       (resolve, reject) => {
         try {
-          // If client is using a browser compatible with WebGPU
-          if (navigator.gpu) {
-            const engine = new WebGPUEngine(this.canvas);
-            engine.initAsync().then(() => {
-              resolve(engine);
-            });
-          } else {
-            resolve(new Engine(this.canvas, true));
-          }
+          WebGPUEngine.IsSupportedAsync.then((isSupported) => {
+            if (isSupported) {
+              const engine = new WebGPUEngine(this.canvas);
+              engine.initAsync().then(() => {
+                resolve(engine);
+              });
+            } else {
+              //Instantiate regular WebGL 2.0 Babylon.js if the client is using a browser not compatible with WebGPU
+              resolve(new Engine(this.canvas, true));
+            }
+          });
         } catch (exception) {
           reject(exception);
         }

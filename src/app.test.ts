@@ -87,6 +87,17 @@ vi.mock(import("@babylonjs/core"), () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Engine = vi.fn(() => ({ runRenderLoop: vi.fn() })) as any;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const WebGPUEngine = vi.fn(() => ({})) as any;
+
+  WebGPUEngine.IsSupportedAsync = {
+    then: vi.fn((callbackFunction) => {
+      if (typeof callbackFunction === "function") {
+        callbackFunction();
+      }
+    }),
+  };
+
   return {
     Vector3,
     Tools,
@@ -98,6 +109,7 @@ vi.mock(import("@babylonjs/core"), () => {
     Scene,
     HemisphericLight,
     Engine,
+    WebGPUEngine,
   };
 });
 
