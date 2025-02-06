@@ -247,21 +247,22 @@ export class App {
   private loadEngine(): Promise<Engine | WebGPUEngine> {
     const returnEngine = new Promise<Engine | WebGPUEngine>(
       (resolve, reject) => {
-        try {
-          WebGPUEngine.IsSupportedAsync.then((isSupported) => {
-            if (isSupported) {
-              const engine = new WebGPUEngine(this.canvas);
-              engine.initAsync().then(() => {
+        WebGPUEngine.IsSupportedAsync.then((isSupported) => {
+          if (isSupported) {
+            const engine = new WebGPUEngine(this.canvas);
+            engine
+              .initAsync()
+              .then(() => {
                 resolve(engine);
+              })
+              .catch((reason) => {
+                reject(reason);
               });
-            } else {
-              //Instantiate regular WebGL 2.0 Babylon.js if the client is using a browser not compatible with WebGPU
-              resolve(new Engine(this.canvas, true));
-            }
-          });
-        } catch (exception) {
-          reject(exception);
-        }
+          } else {
+            //Instantiate regular WebGL 2.0 Babylon.js if the client is using a browser not compatible with WebGPU
+            resolve(new Engine(this.canvas, true));
+          }
+        });
       },
     );
     return returnEngine;
