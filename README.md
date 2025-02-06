@@ -38,7 +38,8 @@ Run on a browser with native WebGPU support, such as Google Chrome, Witness 3D W
 
 ## Prerequisites
 
-- Clone the GitHub repo, and run `npm i` to install Babylon.js, Vite and the other npm dependencies.
+- Clone the GitHub repo, and run `npm i` (short for install) to install Babylon.js, Vite and the other npm dependencies.
+- Immediately after installing the necessary Node.js packages, run `npm up` (short for update). Based on the configuration in `package.json`, this will update the node packages to all future minor and patch versions, ensuring that the latest versions are used without breaking compatibility. From time to time, this command should be run to minimise the chance of bugs and security vulnerabilities.
 - Run `npm run dev` to begin a development server running the code. The server will begin on port `4000`.
 - To stop the server, go back to the terminal and press Ctrl+C.
 
@@ -90,4 +91,4 @@ A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaS
 
 # Last Updated
 
-This README was last updated on 04 February 2024.
+This README was last updated on 06 February 2024.
