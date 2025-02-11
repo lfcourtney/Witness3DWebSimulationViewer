@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { FileUpload } from "./fileUpload";
 import { JSDOM } from "jsdom";
+import * as SimulationContentsModule from "./simulationContent/simulationContent";
 
 let fileUpload: FileUpload;
 
@@ -237,5 +238,40 @@ describe("FileUpload class", () => {
 
     // Assert that error message has been removed
     expect(fileUploadBtn?.previousElementSibling).toBeFalsy();
+  });
+
+  it(`should log error for Error formatting simulation information from uploaded w3d file`, () => {
+    // Arrange
+
+    const consoleErrorMock = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    const mockConsoleErrorMessage =
+      "Error formatting simulation information from uploaded w3d file.";
+
+    const mockErrorMessage =
+      "'_tagStore' argument is not an array of XML parsed JavaScript objects";
+
+    const mockError = new Error(mockErrorMessage);
+
+    vi.spyOn(
+      SimulationContentsModule,
+      "SimulationContents",
+    ).mockImplementationOnce(() => {
+      throw mockError;
+    });
+
+    // Arrange
+    const mockEvent = { target: { result: exampleXMLStructure } };
+    const w3dFile: File = new File([], w3dFileName);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fileUpload["loadFile"](mockEvent as any, w3dFile);
+
+    expect(consoleErrorMock).toHaveBeenCalledWith(
+      mockConsoleErrorMessage,
+      mockError,
+    );
   });
 });
