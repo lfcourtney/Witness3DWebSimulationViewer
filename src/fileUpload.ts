@@ -50,20 +50,14 @@ export class FileUpload {
     const currFiles = this.fileInputElement.files;
 
     if (!currFiles || currFiles.length === 0) {
-      const para = document.createElement("p");
-      para.classList.add("error");
-      para.textContent = "No w3d file selected for upload";
-      this.fileUploadSection.appendChild(para);
+      this.insertErrorFileUploadSection("No w3d file selected for upload");
       return;
     }
 
     const w3dFile = currFiles[0];
 
     if (this.hasW3dExtension(w3dFile.name) === false) {
-      const para = document.createElement("p");
-      para.classList.add("error");
-      para.textContent = "Error: w3d file type required";
-      this.fileUploadSection.appendChild(para);
+      this.insertErrorFileUploadSection("Error: w3d file type required");
       return;
     }
 
@@ -107,9 +101,20 @@ export class FileUpload {
     // form because no simulation contents has been stored. Correspondingly, there is nothing Witness 3D Web Simulation Viewer
     // is displaying to the user to let them know that the given exception has occurred. Therefore, a try...catch statement
     // should be added so that the file input form can react by displaying the proper exception message.
-    const simulationContents: SimulationContents = new SimulationContents(
-      arrayOfParsedTags,
-    );
+    let simulationContents: undefined | SimulationContents = undefined;
+    try {
+      simulationContents = new SimulationContents(arrayOfParsedTags);
+    } catch (error) {
+      console.error(
+        "Error formatting simulation information from uploaded w3d file.",
+        error,
+      );
+      this.insertErrorFileUploadSection(
+        "Error formatting simulation information from uploaded w3d file",
+      );
+
+      return;
+    }
 
     this.simulationContents = simulationContents;
 
@@ -207,6 +212,13 @@ export class FileUpload {
     ) {
       this.fileUploadBtn.previousElementSibling.remove();
     }
+  }
+
+  private insertErrorFileUploadSection(errorMessage: string): void {
+    const para = document.createElement("p");
+    para.classList.add("error");
+    para.textContent = errorMessage;
+    this.fileUploadSection.appendChild(para);
   }
 
   /**

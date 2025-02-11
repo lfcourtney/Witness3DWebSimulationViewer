@@ -33,10 +33,19 @@ export class SimulationCreateTag extends SimulationTag {
    * Invoke specific functionality related to <create> tag
    */
   async actOnTagLogic(): Promise<void> {
+    const doesGeometryExist = this.simulationTagData.geometriesMap.get(
+      this.createTag.instanceName,
+    );
+
+    if (doesGeometryExist) {
+      doesGeometryExist.changeVisibility(1);
+      return;
+    }
+
     /**************************************************
      *             HANDLE CREATION OF GEOMETRY            *
      **************************************************/
-    if (this.createTag.geometry && this.createTag.time === 0) {
+    if (this.createTag.geometry) {
       const geometryName = this.extractGeometry(this.createTag.geometry);
 
       if (!geometryName) return;

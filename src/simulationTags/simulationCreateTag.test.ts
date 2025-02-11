@@ -164,6 +164,7 @@ function createMockMeshGeometry() {
     setPosition: vi.fn(),
     getEffectivePartHeight: vi.fn(),
     setPartOrConveyorRotation: vi.fn(),
+    changeVisibility: vi.fn(),
   };
 }
 
@@ -255,12 +256,13 @@ describe("SimulationCreateTag class", () => {
 
   it("should call 'importMeshSuccess' when imvoking 'actOnTagLogic' and it is necessary to handle creation of geometry", async () => {
     // Arrange
+
+    const fakeGeometriesMap = new Map();
+
     const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
       {
         scene: undefined,
-        geometriesMap: {
-          set: vi.fn(),
-        },
+        geometriesMap: fakeGeometriesMap,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       mockCreateTag,
@@ -282,6 +284,43 @@ describe("SimulationCreateTag class", () => {
 
     // Assert 'importMeshSuccess' has been invoked
     expect(importMeshSuccess_spy).toHaveBeenCalledOnce();
+  });
+
+  it(`Should set the visibility of a mesh geometry to visible if model has already been created in the simulation. 
+    Then no more execution of the source code should occur.`, async () => {
+    // Arrange
+
+    const fakeGeometriesMap = new Map();
+
+    const mockMeshGeometry = createMockMeshGeometry();
+
+    // 'instanceName' key value should align with the 'instanceName' of the current create tag; otherwise it will not be able to be fetched from the map
+    fakeGeometriesMap.set(mockCreateTag.instanceName, mockMeshGeometry);
+
+    const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      mockCreateTag,
+    );
+
+    // Spy on 'renderPartOrMachine' method because this method will be invoked if the 'actOnTagLogic'
+    // method did not return as soon as it changed the visibility of the found mesh as it should
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const actOnExistingMeshType_spy = vi.spyOn<any, string>(
+      simulationCreateTag,
+      "actOnExistingMeshType",
+    );
+
+    // Act
+    await simulationCreateTag.actOnTagLogic();
+
+    // Assert 'changeVisibility' has not been invoked to set the mesh geometry to be visible
+    expect(mockMeshGeometry.changeVisibility).toHaveBeenCalledWith(1);
+    // Assert 'actOnExistingMeshType' has not been invoked
+    expect(actOnExistingMeshType_spy).not.toHaveBeenCalledOnce();
   });
 
   it("should log error if contents of 'renderPartOrMachine' method throws error", async () => {
@@ -428,9 +467,15 @@ describe("SimulationCreateTag class", () => {
 
   it("should call 'renderGround' when imvoking 'actOnTagLogic' and it is necessary to render ground", async () => {
     // Arrange
+    // Mock geometries map
+    const fakeGeometriesMap = new Map();
+
     const simulationCreateTag: SimulationCreateTag = new SimulationCreateTag(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { scene: undefined } as any,
+      {
+        scene: undefined,
+        geometriesMap: fakeGeometriesMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
       mockFloorCreateTag,
     );
 
