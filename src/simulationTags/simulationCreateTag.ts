@@ -37,6 +37,7 @@ export class SimulationCreateTag extends SimulationTag {
       this.createTag.instanceName,
     );
 
+    // If model already exists in the simulation scene, confirm it is visible then return: it does not need to be created again.
     if (doesGeometryExist) {
       doesGeometryExist.changeVisibility(1);
       return;

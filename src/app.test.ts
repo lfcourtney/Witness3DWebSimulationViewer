@@ -625,6 +625,6 @@ describe("Main App class", () => {
     app["updateGUIFrameNumber"](exampleFrameNumber);
 
     // Assert that frame number has been applied to text contents of 'frameGUIButton'
-    expect(mockFrameGUIButton.textBlock.text).toBe("Time: 12");
+    expect(mockFrameGUIButton.textBlock.text).toBe("Time: 12 mins");
   });
 });
