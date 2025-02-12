@@ -329,7 +329,10 @@ export class App {
     panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
     adt.addControl(panel);
 
-    const frameGUIButton = Button.CreateSimpleButton("backButton", "Time: 0");
+    const frameGUIButton = Button.CreateSimpleButton(
+      "backButton",
+      "Time: 0 mins",
+    );
 
     frameGUIButton.width = "300px";
     frameGUIButton.color = "white";
@@ -376,7 +379,8 @@ export class App {
     if (splitFrameNumber[1] !== "00") return;
 
     if (this.frameGUIButton?.textBlock) {
-      this.frameGUIButton.textBlock.text = "Time: " + splitFrameNumber[0];
+      this.frameGUIButton.textBlock.text =
+        "Time: " + splitFrameNumber[0] + " mins";
     }
   }
 

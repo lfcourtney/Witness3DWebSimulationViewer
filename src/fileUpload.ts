@@ -92,15 +92,6 @@ export class FileUpload {
 
     const arrayOfParsedTags = parser.parse(parsedTextContent);
 
-    // TODO: Wrap the instantiation of this class within a try...catch statement:
-    // currently, if the client attempts to upload a file that is indeed a '.w3d'
-    // file yet does not adhere to the expected XML format for a simulation trace
-    // output file produced from Witness, the 'loadFile' method will end here due
-    // to the corresponding exception thrown from the constructor of the `SimulationContents` class.
-    // This means the rest of the method will not be executed, and so the user will not be able to submit the
-    // form because no simulation contents has been stored. Correspondingly, there is nothing Witness 3D Web Simulation Viewer
-    // is displaying to the user to let them know that the given exception has occurred. Therefore, a try...catch statement
-    // should be added so that the file input form can react by displaying the proper exception message.
     let simulationContents: undefined | SimulationContents = undefined;
     try {
       simulationContents = new SimulationContents(arrayOfParsedTags);
