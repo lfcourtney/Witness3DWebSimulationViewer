@@ -81,14 +81,26 @@ A successful test run will produce code coverage. The directory for code coverag
 
 A run of Vitest unit tests can be debugged in VS Code. To do this, open a `JavaScript Debug Terminal` and run `npm run test`. For more information, go to the Vitest [official documentation](https://vitest.dev/guide/debugging).
 
+# Quick3D Models
+
+As Witness 3D Web Simulation Viewer is a prototype, its compatibility is limited, and, in this instance, its visualisation capabilities is limited to two trace output files `Quick3D.w3d` and `Quick3D-Large.w3d`, both of which are found within `./WitnessModels`.
+
+`Quick3D.w3d` is the simulation trace output file that was used during the development of Witness 3D Web Simulation Viewer, and for this reason, compatibility is guaranteed. It represents the Quick3D trace file capture of running the `Quick3D.mod` simulation model (also found within `./WitnessModels`) for 200 minutes. Once those 200 minutes are up, the various parts and labour elements will be deleted.
+
+`Quick3D-Large.w3d` represents the Quick3D trace file capture of running the `Quick3D-Large.mod` simulation model also for 200 minutes, a scaled-up version of the `Quick3D.mod` simulation model. To test the scalability of the Quick3D function in Witness and note the differences in performance, the `Quick3D-Large.w3d` simulation model consists of 12 separate instances of the original `Quick3D.mod` simulation model running simultaneously. Thus, its corresponding simulation trace output file can be uploaded to Witness 3D Web Simulation Viewer for similar purposes: to test the performance capabilities of the application knowing that it already has compatibility of the original `Quick3D.w3d` is the simulation trace output file. Likewise, it will delete all of the parts and labour elements in the simulation when 200 minutes (in the simulation) have passed.
+
+Further information on the difference in performance between the `Quick3D.mod` simulation model and the scaled up equivalent `Quick3D-Large.mod` can be found in the _witness-dev-witness-unity-spike_ document linked to below.
+
 # Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)
 - [Part Queuing Positions Overview 01](./WitnessDocs/Part%20Queuing%20Positions%20Overview%2001.pdf)
 - [The WebGPU Sourcebook](./WitnessDocs/The%20WebGPU%20Sourcebook.pdf)
 - [Witness W3D Queue Implementation](./WitnessDocs/Witness%20W3D%20Queue%20Implementation.pdf)
+- [witness-dev-witness14-3D](./WitnessDocs/witness-dev-witness14-3D.pdf)
+- [witness-dev-witness-unity-spike](./WitnessDocs/witness-dev-witness-unity-spike.pdf)
 - [WITNESS-Unity Proof of Concept 01](./WitnessDocs/WITNESS-Unity%20Proof%20of%20Concept%2001.pdf)
 
 # Last Updated
 
-This README was last updated on 06 February 2024.
+This README was last updated on 13 February 2025.

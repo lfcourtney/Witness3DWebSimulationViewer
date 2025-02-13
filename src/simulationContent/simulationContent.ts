@@ -104,6 +104,13 @@ export class SimulationContents {
     };
   }
 
+  /**
+   * Checks to see whether the array of JavaScript objects passed into this class on instantiation reflects the output of
+   * parsing a correctly formatted simulation trace output file that matches the format expected by Witness
+   * (using the tags expected, e.g., create, update, etc.) or whether the parsed output was derived from a file using an incorrect XML format.
+   * @param _tagStore The array of JavaScript objects derived from parsing the XML contents of the uploaded simulation trace output file into a JavaScript object
+   * @returns True if the JavaScript object array is formatted correctly. False otherwise.
+   */
   private isTagStoreArray(_tagStore: object[]): boolean {
     return _tagStore.every((tag) => this.tagName(tag) !== undefined);
   }

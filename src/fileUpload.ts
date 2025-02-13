@@ -205,6 +205,10 @@ export class FileUpload {
     }
   }
 
+  /**
+   * Repeatable method to insert <p> element styled as an error message to the main 'fileUploadSection' part of the file input form
+   * @param errorMessage The message to insert as the text contents of the <p> element styled as an error message
+   */
   private insertErrorFileUploadSection(errorMessage: string): void {
     const para = document.createElement("p");
     para.classList.add("error");
