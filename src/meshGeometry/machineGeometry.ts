@@ -44,10 +44,10 @@ export class MachineGeometry extends MeshGeometry implements PositionPart {
   } {
     let scaleFactor = 1;
 
-    if (
-      this._instanceName !== "[130] Treatment(1) - Main Icon" &&
-      this._instanceName !== "[130] Treatment(2) - Main Icon"
-    ) {
+    // All machines but instances of the 'dg-ic-WaterTank' model should be scaled up to 97% to reflect their original size as they were
+    // originally scaled from that original size to 3%. The 'dg-ic-WaterTank' model is excluded because, unlike the other models,
+    // it does not need to be shrunk to 3% of its original size.
+    if (this._geometryName !== "dg-ic-WaterTank") {
       //TODO: Undo 'scaleFactor' variable as soon as all the models are properly sized, and thus do not need their sizes scaled up by 97% to
       // reflect their true scalings as they were initially shrunk by 3%
       scaleFactor = 33.333333;
