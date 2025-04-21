@@ -101,6 +101,10 @@ Further information on the difference in performance between the `Quick3D.mod` s
 - [witness-dev-witness-unity-spike](./WitnessDocs/witness-dev-witness-unity-spike.pdf)
 - [WITNESS-Unity Proof of Concept 01](./WitnessDocs/WITNESS-Unity%20Proof%20of%20Concept%2001.pdf)
 
+## Witness Team User Testimonial (11 March 2025)
+
+Evidence of the success of Witness 3D Web Simulation Viewer was provided on the 11th of March 2025 in the form of a user testimonial document from the Witness team. [(Witness 3D Web Simulation Viewer Feedback)](./WitnessDocs/Witness%203D%20Web%20Simulation%20Viewer%20Feedback.pdf). This document describes how the deliverable was demonstrated to the simulation group of 40 people and concludes that the deliverable gives the Witness team the confidence that they "can utilize a web visualization technology such as WebGPU, using a library like Babylon js, to extend the reach of dynamic 3D simulation visualization beyond the desktop."
+
 # Last Updated
 
-This README was last updated on 13 February 2025.
+This README was last updated on 21 April 2025.
