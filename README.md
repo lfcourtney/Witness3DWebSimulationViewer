@@ -91,6 +91,14 @@ As Witness 3D Web Simulation Viewer is a prototype, its compatibility is limited
 
 Further information on the difference in performance between the `Quick3D.mod` simulation model and the scaled up equivalent `Quick3D-Large.mod` can be found in the _witness-dev-witness-unity-spike_ document linked to below.
 
+# JSDoc Documentation
+
+The source code of Witness 3D Web Simulation Viewer is annotated using the JSDoc markup language, describing the API of the JavaScript application. Because the source code of the application is written in TypeScript, a HTML documentation website cannot be generated using the the regular JSDoc 3 API documentation generator, since this can only read JavaScript code.
+
+Instead, the HTML document is generated using [TypeDoc](https://typedoc.org/index.html), a document generator for TypeScript that reads the JSDoc markup language.
+
+A `npm` script exists in the `package.json` file to generate the HTML document website using TypeDoc. Running this script by executing `npm run generate-docs` will output the updated HTML document to the `docs` directory. Excluded from the HTML documentation are the TypeScript test files.
+
 # Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)
@@ -107,4 +115,4 @@ Evidence of the success of Witness 3D Web Simulation Viewer was provided on the 
 
 # Last Updated
 
-This README was last updated on 21 April 2025.
+This README was last updated on 24 April 2025.
