@@ -19,10 +19,10 @@ export class FileUpload {
 
   /**
    * Create the object representing the TypeScript representation of the HTML w3d file input form
-   * @param _fileInputElement HTML <input> of type file
-   * @param _fileUploadSection HTML <div> for displaying form information
-   * @param _fileUploadBtn HTML <button> to submit the form
-   * @param _formContainer HTML <div> that is the parent of the entire form. Hiding this will hide the form in HTML
+   * @param _fileInputElement HTML \<input\> of type file
+   * @param _fileUploadSection HTML \<div\> for displaying form information
+   * @param _fileUploadBtn HTML \<button\> to submit the form
+   * @param _formContainer HTML \<div\> that is the parent of the entire form. Hiding this will hide the form in HTML
    */
   constructor(
     _fileInputElement: HTMLInputElement,
@@ -117,9 +117,9 @@ export class FileUpload {
   }
 
   /**
-   * Removes opening and closing parent <root> element given text contents of w3d file.
+   * Removes opening and closing parent \<root\> element given text contents of w3d file.
    * @param {string} fileContents Text content of w3d file
-   * @returns {string} If w3d file contained opening and closing parent <root> element, the text contents of w3d file with these tags removed.
+   * @returns {string} If w3d file contained opening and closing parent \<root\> element, the text contents of w3d file with these tags removed.
    * Otherwise, the original, unchanged text contents of w3d file.
    */
   private removeRootElement(fileContents: string): string {
@@ -206,8 +206,8 @@ export class FileUpload {
   }
 
   /**
-   * Repeatable method to insert <p> element styled as an error message to the main 'fileUploadSection' part of the file input form
-   * @param errorMessage The message to insert as the text contents of the <p> element styled as an error message
+   * Repeatable method to insert \<p\> element styled as an error message to the main 'fileUploadSection' part of the file input form
+   * @param errorMessage The message to insert as the text contents of the \<p\> element styled as an error message
    */
   private insertErrorFileUploadSection(errorMessage: string): void {
     const para = document.createElement("p");
@@ -230,7 +230,7 @@ export class FileUpload {
    * Parses the 'size' property of a JavaScript File into a readable format.
    * @param number 'size' property of JavaScript File.
    * @returns 'size' of JavaScript file in readable format.
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file|<input type="file"> - HTML: HyperText Markup Language | MDN} for source.
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file|\<input type="file"> - HTML: HyperText Markup Language | MDN} for source.
    * Specifically, look to the source code of the example at the very bottom of the page.
    */
   private returnFileSize(number) {

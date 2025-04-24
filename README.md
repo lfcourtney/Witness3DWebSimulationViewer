@@ -99,6 +99,8 @@ Instead, the HTML document is generated using [TypeDoc](https://typedoc.org/inde
 
 A `npm` script exists in the `package.json` file to generate the HTML document website using TypeDoc. Running this script by executing `npm run generate-docs` will output the updated HTML document to the `docs` directory. Excluded from the HTML documentation are the TypeScript test files.
 
+**NOTE that < and > characters need to be escaped (e.g., \<) for them to show up in HTML report. Otherwise, the content encapsulated between the opening < and > characters will not appear in HTML report.**
+
 # Important Links & Docs
 
 - [3D Command Reference 21](./WitnessDocs/3D%20Command%20Reference%2021.pdf)

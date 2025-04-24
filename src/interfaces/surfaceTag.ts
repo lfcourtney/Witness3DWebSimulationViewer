@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <surface> tag
+ * Represents a formatted \<surface\> tag
  */
 export interface SurfaceTag {
   x1: number;

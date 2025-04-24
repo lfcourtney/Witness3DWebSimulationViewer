@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <translate> tag
+ * Represents a formatted \<translate\> tag
  */
 export interface TranslateTag {
   x: number;

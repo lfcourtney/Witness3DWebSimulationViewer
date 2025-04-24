@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <rotate> tag
+ * Represents a formatted \<rotate\> tag
  */
 export interface RotateTag {
   order: string;

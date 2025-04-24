@@ -21,7 +21,7 @@ export class MachineGeometry extends MeshGeometry implements PositionPart {
    * @param _transformMesh The transformation mesh of the geometry: can have transformations applied to it to move the mesh in the global scene
    * @param _instanceName The instance name of the geometry
    * @param _geometryName The name of the geometry model used to render the given mesh
-   * @param _queueInfoTag The <queueInfo> tag contained directly as the child tag of the <create> tag responsible for creating the machine
+   * @param _queueInfoTag The \<queueInfo\> tag contained directly as the child tag of the \<create\> tag responsible for creating the machine
    */
   constructor(
     _transformMesh: AbstractMesh,

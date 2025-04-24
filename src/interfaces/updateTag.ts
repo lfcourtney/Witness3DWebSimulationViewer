@@ -3,7 +3,7 @@ import { ScaleTag } from "./scaleTag";
 import { RotateTag } from "./rotateTag";
 import { PartPositionTag } from "./partPositionTag";
 /**
- * Represents a formatted <update> tag
+ * Represents a formatted \<update\> tag
  */
 export interface UpdateTag {
   time: number;

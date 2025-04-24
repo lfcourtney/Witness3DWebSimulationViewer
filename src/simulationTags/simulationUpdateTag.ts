@@ -6,15 +6,15 @@ import { MachineGeometry } from "../meshGeometry/machineGeometry";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 /**
- * Class responsible for holding specific functionality of <update> tag
+ * Class responsible for holding specific functionality of \<update\> tag
  */
 export class SimulationUpdateTag extends SimulationTag {
   private readonly updateTag: UpdateTag;
 
   /**
-   * Create class responsible for holding specific functionality of <update> tag
+   * Create class responsible for holding specific functionality of \<update\> tag
    * @param _simulationTagData Data from Babylon.js scene
-   * @param _updateTag Specific <update tag>
+   * @param _updateTag Specific \<update tag\>
    */
   constructor(_simulationTagData: SimulationTagData, _updateTag: UpdateTag) {
     super(_simulationTagData);
@@ -23,7 +23,7 @@ export class SimulationUpdateTag extends SimulationTag {
   }
 
   /**
-   * Invoke specific functionality related to <update> tag
+   * Invoke specific functionality related to \<update\> tag
    */
   async actOnTagLogic(): Promise<void> {
     /********************************************************************
@@ -96,7 +96,7 @@ export class SimulationUpdateTag extends SimulationTag {
   }
 
   /**
-   * Process logic of <partPosition> subtag of <update> tag: position part either in queue
+   * Process logic of \<partPosition\> subtag of \<update\> tag: position part either in queue
    * or along the shape of a path or conveyor
    */
   private handlePartPositioning(): void {

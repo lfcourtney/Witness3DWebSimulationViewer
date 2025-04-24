@@ -79,8 +79,8 @@ export class SimulationContents {
 
     if (Array.isArray(tagArray)) {
       /**
-       * <path> subtag of a parent <create> tag, if present, can contain multiple <path> and <arc> subtags.
-       * So, to prevent subtags from overwriting each other, the <path> subtag should be formatted differently from all other tags.
+       * \<path\> subtag of a parent \<create\> tag, if present, can contain multiple \<path\> and \<arc\> subtags.
+       * So, to prevent subtags from overwriting each other, the \<path\> subtag should be formatted differently from all other tags.
        */
       if (tagName === "path") {
         const lineAndArcs: object[] = [];
@@ -96,7 +96,7 @@ export class SimulationContents {
     }
 
     /**
-     * Return an object with a single field reflecting the name of the parent tag (eg, <create>, <update>, etc).
+     * Return an object with a single field reflecting the name of the parent tag (eg, \<create\>, \<update\>, etc).
      * The value of this field is an object that reflects all the attributes and sub tags of the parent tag.
      */
     return {

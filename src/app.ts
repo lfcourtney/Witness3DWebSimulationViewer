@@ -222,8 +222,8 @@ export class App {
   }
 
   /**
-   * Create HTML <canvas> element that will be the target for rendering the 3d scene
-   * @returns HTML <canvas> element that will be the target for rendering the 3d scene
+   * Create HTML \<canvas\> element that will be the target for rendering the 3d scene
+   * @returns HTML \<canvas\> element that will be the target for rendering the 3d scene
    */
   private createCanvas(): HTMLCanvasElement {
     // create the canvas html element and attach it to the webpage
@@ -385,7 +385,7 @@ export class App {
   }
 
   /**
-   * Delete HTML <canvas> element, thus un-rendering the current Babylon.js 3D environment.
+   * Delete HTML \<canvas\> element, thus un-rendering the current Babylon.js 3D environment.
    */
   private clearCanvas(): void {
     clearInterval(this.renderLoop);

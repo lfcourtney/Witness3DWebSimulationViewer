@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <scale> tag
+ * Represents a formatted \<scale\> tag
  */
 export interface ScaleTag {
   x: number;

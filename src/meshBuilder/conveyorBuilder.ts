@@ -11,17 +11,17 @@ import { line2D } from "../utilities/line2D";
 import { ConveyorInformation } from "../interfaces/conveyorInformation";
 
 /**
- * Represents the means by which a conveyor or path mesh is created from information contained within the <path> tag of the given <create> tag.
+ * Represents the means by which a conveyor or path mesh is created from information contained within the \<path\> tag of the given \<create\> tag.
  */
 export class ConveyorBuilder {
   /**
    * The name of the geometry model used to render the given conveyor or path as
-   * specified in the models corresponding <create> tag
+   * specified in the models corresponding \<create\> tag
    */
   private readonly _geometryName: string;
 
   /**
-   * <path> tag from a <create> tag used to create the conveyor or path
+   * \<path\> tag from a \<create\> tag used to create the conveyor or path
    */
   private readonly _pathTag: PathTag;
 
@@ -32,9 +32,9 @@ export class ConveyorBuilder {
 
   /**
    * Creates an instance of ConveyorBuilder class
-   * @param pathTag <path> tag from a <create> tag used to create the conveyor or path
+   * @param pathTag \<path\> tag from a \<create\> tag used to create the conveyor or path
    * @param geometryName The name of the geometry model used to render the given conveyor or path as specified
-   * in the models corresponding <create> tag
+   * in the models corresponding \<create\> tag
    */
   constructor(pathTag: PathTag, geometryName: string) {
     this._pathTag = pathTag;
@@ -54,7 +54,7 @@ export class ConveyorBuilder {
   }
 
   /**
-   * Use information from <path> tag to create a Mesh extrusion that draws shape of conveyor or path.
+   * Use information from \<path\> tag to create a Mesh extrusion that draws shape of conveyor or path.
    * @return Mesh that represents conveyor or path. Otherwise, undefined if there was a problem creating such mesh
    */
   buildConveyor(): Mesh | undefined {
@@ -189,18 +189,18 @@ export class ConveyorBuilder {
   }
 
   /**
-   * Checks if a path object from PathTag object contains information of a <line> tag
+   * Checks if a path object from PathTag object contains information of a \<line\> tag
    * @param isLine path object from PathTag object
-   * @returns True if object contains a <line> tag. False otherwise.
+   * @returns True if object contains a \<line\> tag. False otherwise.
    */
   private isLineTag(isLine: object): isLine is { line: LineTag } {
     return isLine["line"] !== undefined;
   }
 
   /**
-   * Checks if a path object from PathTag object contains information of a <arc> tag
+   * Checks if a path object from PathTag object contains information of a \<arc\> tag
    * @param isArc path object from PathTag object
-   * @returns True if object contains a <arc> tag. False otherwise.
+   * @returns True if object contains a \<arc\> tag. False otherwise.
    */
   private isArcTag(isArc: object): isArc is { arc: ArcTag } {
     return isArc["arc"] !== undefined;

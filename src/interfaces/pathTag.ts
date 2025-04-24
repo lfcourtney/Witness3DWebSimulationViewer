@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <line> tag, which is exclusively a sub tag of a <path> tag
+ * Represents a formatted \<line\> tag, which is exclusively a sub tag of a \<path\> tag
  */
 export interface LineTag {
   endX: number;
@@ -11,7 +11,7 @@ export interface LineTag {
 }
 
 /**
- * Represents a formatted <arc> tag, which is exclusively a sub tag of a <path> tag
+ * Represents a formatted \<arc\> tag, which is exclusively a sub tag of a \<path\> tag
  */
 export interface ArcTag {
   angle: number;
@@ -28,7 +28,7 @@ export interface ArcTag {
 }
 
 /**
- * Represents a formatted <path> tag
+ * Represents a formatted \<path\> tag
  */
 export interface PathTag {
   path: Array<{ line: LineTag } | { arc: ArcTag }>;

@@ -2,7 +2,7 @@ import { SimulationTagData } from "../interfaces/simulationTagData";
 
 /**
  * Abstract class responsible for describing the format through which the functionality of a specific tag type will be invoked.
- * That means each derived class of this abstract class will represent a specific type of tag (<create>, <update>, etc.),
+ * That means each derived class of this abstract class will represent a specific type of tag (i.e., \<create\>, \<update\>, etc.),
  * with each type of class having their own unique functionality.
  */
 export abstract class SimulationTag {

@@ -1,5 +1,5 @@
 /**
- * Represents a formatted <delete> tag
+ * Represents a formatted \<delete\> tag
  */
 export interface DeleteTag {
   time: number;

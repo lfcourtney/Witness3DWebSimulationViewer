@@ -13,15 +13,15 @@ import { ConveyorBuilder } from "../meshBuilder/conveyorBuilder";
 import { ConveyorGeometry } from "../meshGeometry/conveyorGeometry";
 
 /**
- * Class responsible for holding specific functionality of <create> tag
+ * Class responsible for holding specific functionality of \<create\> tag
  */
 export class SimulationCreateTag extends SimulationTag {
   private readonly createTag: CreateTag;
 
   /**
-   * Create class responsible for holding specific functionality of <create> tag
+   * Create class responsible for holding specific functionality of \<create\> tag
    * @param _simulationTagData Data from Babylon.js scene
-   * @param _createTag Specific <create tag>
+   * @param _createTag Specific \<create\> tag
    */
   constructor(_simulationTagData: SimulationTagData, _createTag: CreateTag) {
     super(_simulationTagData);
@@ -30,7 +30,7 @@ export class SimulationCreateTag extends SimulationTag {
   }
 
   /**
-   * Invoke specific functionality related to <create> tag
+   * Invoke specific functionality related to \<create\> tag
    */
   async actOnTagLogic(): Promise<void> {
     const doesGeometryExist = this.simulationTagData.geometriesMap.get(
@@ -82,8 +82,8 @@ export class SimulationCreateTag extends SimulationTag {
   }
 
   /**
-   * Create instance of conveyor or path as declared within the given <create> tag
-   * @param geometryName The name of the geometry model used to render the conveyor or path specified in the given <create> tag
+   * Create instance of conveyor or path as declared within the given \<create\> tag
+   * @param geometryName The name of the geometry model used to render the conveyor or path specified in the given \<create\> tag
    */
   private renderPathOrConveyor(geometryName: string): void {
     if (!this.createTag.path) {
@@ -114,7 +114,7 @@ export class SimulationCreateTag extends SimulationTag {
   /**
    * Responds to a mesh that needs to be created when a mesh with a matching mesh type (as identified via the geometryName) has
    * already been created and thus imported. In a word, creates a mesh without the overhead of importing such mesh twice.
-   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
+   * @param geometryName The name of the geometry model used to render the mesh of the \<create\> tag
    * @returns True if a mesh with a corresponding mesh type already exists and thus a new mesh, matching the geometry of said mesh,
    * has been created by cloning the previous mesh. False otherwise.
    */
@@ -142,8 +142,8 @@ export class SimulationCreateTag extends SimulationTag {
 
   /**
    *  Asynchronous function to import the machine or part mesh as named in the
-   * value of the 'geometry' attribute of the given <create> tag
-   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
+   * value of the 'geometry' attribute of the given \<create\> tag
+   * @param geometryName The name of the geometry model used to render the mesh of the \<create\> tag
    */
   private async renderPartOrMachine(geometryName: string): Promise<void> {
     try {
@@ -162,7 +162,7 @@ export class SimulationCreateTag extends SimulationTag {
   /**
    * Callback function to be used if Babylon.js mesh was successfully imported
    * @param newMeshes Array of meshes that have been imported
-   * @param geometryName The name of the geometry model used to render the mesh of the <create> tag
+   * @param geometryName The name of the geometry model used to render the mesh of the \<create\> tag
    */
   private importMeshSuccess(
     newMeshes: AbstractMesh[],
@@ -186,7 +186,7 @@ export class SimulationCreateTag extends SimulationTag {
     }
 
     if (geometryName === "dg-vh-Agv1") {
-      // TODO: It is possible that the 'dg-vh-Agv1' is added to a path without first being scaled with an <update> tag.
+      // TODO: It is possible that the 'dg-vh-Agv1' is added to a path without first being scaled with an \<update\> tag.
       // Therefore, we should apply this default scaling by default to this kind of vehicle, so it is scaled properly if
       // it is immediately added to the shape of a path or conveyor.
       transformMesh.scaling = new Vector3(
@@ -201,7 +201,7 @@ export class SimulationCreateTag extends SimulationTag {
 
     if (this.createTag.queueInfo) {
       /**
-       * Only machines will have a <queueInfo> tag as a child tag of the <create> tag responsible for creating them
+       * Only machines will have a \<queueInfo\> tag as a child tag of the \<create\> tag responsible for creating them
        */
       this.simulationTagData.geometriesMap.set(
         this.createTag.instanceName,
@@ -225,7 +225,7 @@ export class SimulationCreateTag extends SimulationTag {
   }
 
   /**
-   * Render and position floor because the given <create> tag specifies a <surface> tag that corresponds to a floor
+   * Render and position floor because the given \<create\> tag specifies a \<surface\> tag that corresponds to a floor
    */
   private renderGround(): void {
     if (!this.createTag.surface) return;

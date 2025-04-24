@@ -8,9 +8,9 @@ import { DeleteTag } from "../interfaces/deleteTag";
 import { SimulationDeleteTag } from "../simulationTags/SimulationDeleteTag";
 
 /**
- * Class responsible for checking the format of a generic tag, converting this tag to its specific type (eg, <create>, <update>, etc.)
+ * Class responsible for checking the format of a generic tag, converting this tag to its specific type (eg, \<create\>, \<update\>, etc.)
  * and invoking the specific functionality of the converted tag.
- * For instance, through this class, different functionality will be delegated to the different types of tags, including <create>, <update>, etc.
+ * For instance, through this class, different functionality will be delegated to the different types of tags, including \<create\>, \<update\>, etc.
  */
 export class SimulationContentFormat {
   private readonly simulationTagData: SimulationTagData;
