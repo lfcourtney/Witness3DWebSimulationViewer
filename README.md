@@ -93,13 +93,13 @@ Further information on the difference in performance between the `Quick3D.mod` s
 
 # JSDoc Documentation
 
-The source code of Witness 3D Web Simulation Viewer is annotated using the JSDoc markup language, describing the API of the JavaScript application. Because the source code of the application is written in TypeScript, a HTML documentation website cannot be generated using the the regular JSDoc 3 API documentation generator, since this can only read JavaScript code.
+The source code of Witness 3D Web Simulation Viewer is annotated using the JSDoc markup language, describing the API of the JavaScript application.
 
-Instead, the HTML document is generated using [TypeDoc](https://typedoc.org/index.html), a document generator for TypeScript that reads the JSDoc markup language.
+A HTML documentation website is generated using [TypeDoc](https://typedoc.org/index.html), a documentation generator for TypeScript that reads the JSDoc markup language.
 
-A `npm` script exists in the `package.json` file to generate the HTML document website using TypeDoc. Running this script by executing `npm run generate-docs` will output the updated HTML document to the `docs` directory. Excluded from the HTML documentation are the TypeScript test files.
+A `npm` script exists in the `package.json` file to generate the HTML documentation website using TypeDoc. Running this script by executing `npm run generate-docs` will output the updated HTML documentation website to the `docs` directory. Excluded from the HTML documentation are the TypeScript test files.
 
-**NOTE that < and > characters need to be escaped (e.g., \<) for them to show up in HTML report. Otherwise, the content encapsulated between the opening < and > characters will not appear in HTML report.**
+**NOTE that < and > characters need to be escaped (e.g., \\<) for them to show up in HTML report. Otherwise, the content encapsulated between the opening < and > characters will not appear in HTML report.**
 
 # Important Links & Docs
 
@@ -117,4 +117,4 @@ Evidence of the success of Witness 3D Web Simulation Viewer was provided on the 
 
 # Last Updated
 
-This README was last updated on 24 April 2025.
+This README was last updated on 27 April 2025.
