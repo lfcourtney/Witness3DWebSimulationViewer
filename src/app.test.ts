@@ -378,7 +378,7 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = new App({} as HTMLElement, { tagStore: [] } as any);
 
-    // Explanation: constructor was Act. This is to simulation awaiting for 'loadEngine' in constructor
+    // Explanation: constructor was Act. This is to simulate awaiting for 'loadEngine' in constructor
     await app["loadEngine"]();
 
     // Assert that 'renderSimulationGUI' has been invoked in constructor
@@ -387,9 +387,6 @@ describe("Main App class", () => {
 
   it("should invoke 'createScene' method during successful constructor invocation", async () => {
     // Arrange
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const createScene_spy = vi.spyOn<any, string>(App.prototype, "createScene");
 
     const mockEngine = createMockEngine();
 
@@ -401,8 +398,9 @@ describe("Main App class", () => {
         }),
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.spyOn<any, string>(App.prototype, "createScene");
+    const createScene_spy = vi
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn<any, string>(App.prototype, "createScene");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn<any, string>(
@@ -420,7 +418,7 @@ describe("Main App class", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const app = new App({} as HTMLElement, { tagStore: [] } as any);
 
-    // Explanation: constructor was Act. This is to simulation awaiting for 'loadEngine' in constructor
+    // Explanation: constructor was Act. This is to simulate awaiting for 'loadEngine' in constructor
     await app["loadEngine"]();
 
     // Assert that 'createScene' method has been called
