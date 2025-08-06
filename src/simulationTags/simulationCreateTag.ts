@@ -1,6 +1,6 @@
 import {
   AbstractMesh,
-  SceneLoader,
+  ImportMeshAsync,
   MeshBuilder,
   Vector3,
 } from "@babylonjs/core";
@@ -147,10 +147,10 @@ export class SimulationCreateTag extends SimulationTag {
    */
   private async renderPartOrMachine(geometryName: string): Promise<void> {
     try {
-      const importMeshResult = await SceneLoader.ImportMeshAsync(
-        "",
-        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/",
-        geometryName + ".glb",
+      const importMeshResult = await ImportMeshAsync(
+        "https://raw.githubusercontent.com/lfcourtney/Witness3DWebSimulationViewerModels/main/WitnessGlbModels/" +
+          geometryName +
+          ".glb",
         this.simulationTagData.scene,
       );
       this.importMeshSuccess(importMeshResult.meshes, geometryName);

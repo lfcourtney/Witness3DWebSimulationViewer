@@ -170,16 +170,13 @@ function createMockMeshGeometry() {
 
 // mock needed babylon.js imports
 vi.mock(import("@babylonjs/core"), () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const SceneLoader = vi.fn(() => ({})) as any;
-
   const mockAbstractMesh = { name: null };
 
   // use 'undefined' to represent meshes
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (SceneLoader as any).ImportMeshAsync = vi.fn(() => ({
+  const ImportMeshAsync = vi.fn(() => ({
     meshes: [mockAbstractMesh, mockAbstractMesh],
-  }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })) as any;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const MeshBuilder = vi.fn(() => ({})) as any;
@@ -197,7 +194,7 @@ vi.mock(import("@babylonjs/core"), () => {
   const Vector3 = vi.fn((x, y, z) => ({ x, y, z })) as any;
   Vector3.Zero = vi.fn(() => ({ x: 0, y: 0, z: 0 }));
 
-  return { SceneLoader, MeshBuilder, Vector3 };
+  return { ImportMeshAsync, MeshBuilder, Vector3 };
 });
 
 // mock MachineGeometry
